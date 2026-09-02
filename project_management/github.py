@@ -1,6 +1,7 @@
 import json
 import os
 import subprocess
+from typing import ClassVar
 from urllib.error import HTTPError
 from urllib.parse import quote
 from urllib.request import Request, urlopen
@@ -245,9 +246,9 @@ class GitHubClient:
         })
 
     # Field names that accept date values (not single-select)
-    _DATE_FIELDS = {"Start date", "Target date"}
+    _DATE_FIELDS: ClassVar[set[str]] = {"Start date", "Target date"}
     # Field names that accept number values (not single-select)
-    _NUMBER_FIELDS = {"Estimate"}
+    _NUMBER_FIELDS: ClassVar[set[str]] = {"Estimate"}
 
     def stamp_project_fields(self, issue_number, fields_dict):
         """Set multiple project custom fields for an issue.

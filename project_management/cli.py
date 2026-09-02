@@ -1,12 +1,22 @@
 import argparse
+import contextlib
 import json
 import sys
-
-from .github import GitHubClient, GitHubError
 from pathlib import Path
 
-from .planner import KICKOFF_ASSIGNMENTS, ROLE_TO_USER, TEAM_MEMBERS, draft_task_clean_body, draft_task_to_project_fields, load_tasks, read_task, schedule_warnings, task_line, task_state, update_task_reference
-
+from .github import GitHubClient, GitHubError
+from .planner import (
+    KICKOFF_ASSIGNMENTS,
+    ROLE_TO_USER,
+    draft_task_clean_body,
+    draft_task_to_project_fields,
+    load_tasks,
+    read_task,
+    schedule_warnings,
+    task_line,
+    task_state,
+    update_task_reference,
+)
 
 LABELS = (
     ("type:feature", "c5def5", "New functionality"),
@@ -17,11 +27,9 @@ LABELS = (
     ("type:architecture", "0075ca", "Design decisions and diagrams"),
 )
 OBSOLETE_CUSTOM_FIELD_LABELS = (
-    "P0-critical",
-    "P1-high",
-    "P2-medium",
-    "P3-low",
-) + tuple(f"status:{name}" for name in ("todo", "in-progress", "blocked", "review", "done"))
+    *["P0-critical", "P1-high", "P2-medium", "P3-low"],
+    *(f"status:{name}" for name in ("todo", "in-progress", "blocked", "review", "done")),
+)
 
 
 def build_parser():
@@ -136,7 +144,7 @@ def main():
             if args.plan_command == "kickoff":
                 def _resolve(role_name):
                     """Map a placeholder like 'Person 1' to a real GitHub username."""
-                    if role_name in ROLE_TO_USER and ROLE_TO_USER[role_name]:
+                    if ROLE_TO_USER.get(role_name):
                         return ROLE_TO_USER[role_name]
                     return role_name
 
@@ -243,15 +251,11 @@ def main():
             output(prs if args.json else [issue_line(pr) for pr in prs], args.json)
         elif args.command == "labels":
             for name in OBSOLETE_CUSTOM_FIELD_LABELS:
-                try:
+                with contextlib.suppress(GitHubError):
                     client.delete_label(name)
-                except GitHubError:
-                    pass  # label doesn't exist yet, that's fine
             for name, color, description in LABELS:
-                try:
+                with contextlib.suppress(GitHubError):
                     client.create_label(name, color, description)
-                except GitHubError:
-                    pass  # label already exists, that's fine
             output(
                 f"Synchronized {len(LABELS)} labels; status and priority remain project custom fields."
             )

@@ -15,3 +15,5 @@ graphify-out/*
 !graphify-out/
 !graphify-out/graph.html
 !graphify-out/GRAPH_REPORT.md
+.*buff*/**
+**/__pycache__/**
