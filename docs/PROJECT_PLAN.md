@@ -84,31 +84,33 @@ No stream starts until Gate 1 is met. Database-dependent backend work starts onl
 ## Ordered Work
 
 ### Gate 1: Decisions, contract, and repository hygiene
-**September 2-3 | Team + scaffold pair**
+**September 2-4 | Team + scaffold pair**
 
 1. **01** - Sign `gruppkontrakt.md`, agree on roles, meetings, PR review, branch rules, and definition of done.
 2. **02** - Decide PostgreSQL for the shared two-server scenario; record the rejected alternatives and local setup decision.
 3. **03** - Run graphify on the initial repository and check in only `graphify-out/graph.html` and `graphify-out/GRAPH_REPORT.md`. Create the Mermaid system-context, data-flow, and access-log sequence diagrams.
 4. **20 (initial slice)** - Create the README skeleton, project purpose, architecture links, setup placeholder, team section, and meeting-note index.
 
-**Gate 1 exit:** contract is agreed, GitHub rules are active, decisions are written, the README points to the planned artifacts, and the graphify ignore policy is tested.
+**Gate 1 exit:** By end of Sun Sep 6 — contract agreed, GitHub rules active, decisions written, README points to planned artifacts, graphify ignore policy tested.
 
 The Gate 1 meeting note must also contain the first requirements checkpoint against `docs/Raw_Requirements.txt`.
 
-### Gate 2: Paired scaffold and executable contracts
-**September 3-5 | Person 1 + Person 2 pair; Persons 3 + 4 review**
+### Gate 2: Paired scaffold and executable contracts (compressed)
+**September 5-8 | Person 1 + Person 2 pair; Persons 3 + 4 review**
 
 5. **04** - Create `database/schema.dbml`, the Prisma schema, migration strategy, fictional seed data, and the Mermaid data-model diagram. Keep all four representations aligned.
 6. **05, 06, 07, 08, 09, 10** - Build one monorepo scaffold, strict TypeScript, lint/format, Playwright runner and fixtures, CI, environment examples, and local commands.
 7. **09 first test** - Before feature implementation, write the first Playwright smoke test for the login page/app shell. Run it red if the page does not exist yet, then keep it as the first green scaffold gate.
 8. Define the OpenAPI contract and generated client types before feature streams fork. Add health checks and a minimal frontend-to-backend request.
 
-**Gate 2 exit:** a clean checkout installs, lint/typecheck/build pass, frontend and backend both start, database migration/seed works, and the README setup steps work for one teammate.
+**Gate 2 exit:** By end of Tue Sep 8 — clean checkout installs, lint/typecheck/build pass, frontend and backend both start, database migration/seed works, README setup steps work for one teammate.
+
+⚠️ **This gate is compressed.** Person 1 + Person 2 must pair hard over the weekend. The goal is to have features start by Wed Sep 9.
 
 Run a second raw-requirements checkpoint at this gate and remove or re-plan anything that does not support the required demo.
 
 ### Gate 3: Four parallel feature streams
-**September 6-16 | Four owners, separate files and branches**
+**September 9-18 | Four owners, separate files and branches**
 
 | Stream | Primary tasks | Contract to freeze |
 |---|---|---|
@@ -122,7 +124,7 @@ Frontend work may use fixtures generated from the OpenAPI contract. Backend work
 Every stream follows the same small loop: write acceptance cases, implement the smallest behavior, run the focused test, then refactor only after it is green. The first test cases must cover the requirement's happy path and one relevant denial or error path.
 
 ### Gate 4: Authorization and real-time integration
-**September 17-21 | Team integration pairings**
+**September 19-23 | Team integration pairings**
 
 8. **17** - Centralize authorization policy and verify every route server-side; URL manipulation must never expose another patient's data.
 9. **18** - Connect Socket.IO broadcasting so a note written on server 1 appears on server 2 only for users allowed to see it.
@@ -133,7 +135,9 @@ Every stream follows the same small loop: write acceptance cases, implement the 
 Compare the working vertical flow line by line with `docs/Raw_Requirements.txt` before declaring this gate complete.
 
 ### Gate 5: Evidence, regression, and delivery
-**September 22-30 | Team**
+**September 24-October 1 | Team**
+
+⚠️ **Buffer:** Oct 1-2 is for final fixes, demo rehearsal, and submission. Do not plan new features after Sep 30.
 
 11. **19** - Unit/integration tests for policy, visibility, URL tampering, access-log creation, and blockchain immutability boundary.
 12. **09** - Expand the early Playwright setup into critical role-based flows and the two-server demo; capture stable screenshots.

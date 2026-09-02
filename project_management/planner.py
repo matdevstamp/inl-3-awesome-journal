@@ -21,7 +21,7 @@ class Task:
 # ── Team roster ──────────────────────────────────────────────
 # Update these once real names / GitHub usernames are confirmed.
 TEAM_MEMBERS = {
-    "matdevstamp": "Lead",
+    "matdevstamp": "Matias Marti",
     "Kassim10": "TBD",
     "rcilomba": "Ramadan",
     "umoraghad0-del": "TBD",
@@ -208,11 +208,13 @@ def draft_task_to_project_fields(task):
         "gate:4-integration": "4-Integration",
         "gate:5-delivery": "5-Delivery",
     }
+    # Also match mixed-case variants from draft task tags
+    gate_map.update({k.upper(): v for k, v in list(gate_map.items())})
     stream_map = {
-        "stream:A-identity": "A-Identity",
-        "stream:B-patient": "B-Patient",
-        "stream:C-notes": "C-Notes",
-        "stream:D-audit": "D-Audit",
+        "stream:a-identity": "A-Identity",
+        "stream:b-patient": "B-Patient",
+        "stream:c-notes": "C-Notes",
+        "stream:d-audit": "D-Audit",
     }
     for tag in task.tags:
         tag_lower = tag.lower().strip()

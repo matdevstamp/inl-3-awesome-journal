@@ -40,7 +40,7 @@ export GITHUB_REPOSITORY=owner/repo-name
 | `python3 -m project_management task create --title "X" --label type:feature --label gate:2-scaffold` | Creates an issue with labels |
 | `python3 -m project_management task create --title "X" --assignee octocat` | Creates and assigns to a GitHub user |
 | `python3 -m project_management task create --title "X" --deadline 2026-09-10` | Adds a deadline line to the issue body |
-| `python3 -m project_management task create --title "X" --draft docs/draft_tasks/05-vite-tailwind-shadcn.md` | Creates the issue **and** stamps the draft file with the issue URL |
+| `python3 -m project_management task create --title "X" --draft docs/draft_tasks/05-vite-tailwind-shadcn.md` | Creates the issue **and** stamps the draft file with the issue URL, plus sets project fields (Priority, Size, Estimate, Target date, Gate, Stream) |
 
 ### Update Work
 
@@ -83,11 +83,14 @@ The typical flow when turning a planned task into real work:
      --label type:feature --label gate:2-scaffold --label area:database \
      --draft docs/draft_tasks/04-database-design.md
    ```
-3. The CLI creates the GitHub issue and **automatically updates the draft file**, adding a line like:
-   ```
-   - **GitHub Issue:** #4 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/4)
-   ```
-4. Later, `plan show` reads that reference so you can see which draft tasks already have issues.
+3. The CLI creates the GitHub issue, **stamps the draft file** with the issue URL, and **sets project fields** automatically:
+   - `Priority` — from effort size (P0/P1/P2)
+   - `Size` — from effort (XS/S/M/L/XL)
+   - `Estimate` — numeric hours
+   - `Target date` — from draft deadline
+   - `Gate` — from `gate:` tag
+   - `Stream` — from `stream:` tag
+   - `Status` — left blank (kanban columns handle workflow; Status is for exceptions only: Blocked / Stuck / Needs review)
 
 ---
 
@@ -115,6 +118,26 @@ Status and priority live in **GitHub Projects custom fields**, not as labels. Th
 | Gate | `gate:1-decisions`, `gate:2-scaffold`, `gate:3-features`, `gate:4-integration`, `gate:5-delivery` |
 
 Run `python3 -m project_management labels sync` to create or refresh them.
+
+---
+
+## Graphify
+
+Graphify is installed globally (not a project dependency):
+
+```bash
+npm install --global @sentropic/graphify
+graphify --version
+```
+
+To generate architecture artifacts:
+
+```bash
+graphify install vscode
+graphify .
+```
+
+Keep only `graphify-out/graph.html` and `graphify-out/GRAPH_REPORT.md` under version control.
 
 ---
 
