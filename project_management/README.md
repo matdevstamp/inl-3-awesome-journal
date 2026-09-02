@@ -1,0 +1,131 @@
+# Project Management CLI
+
+A Python CLI that lets the team manage the entire GitHub project from the terminal — issues, labels, pull requests, project boards, and the local draft-plan — so nobody has to open the GitHub web UI.
+
+## Quick Start
+
+```bash
+# Authenticate once with gh CLI (browser-based login)
+gh auth login
+
+# That's it — the CLI auto-detects your token from gh.
+# No GITHUB_TOKEN or env vars needed.
+```
+
+The repo defaults to `matdevstamp/inl-3-awesome-journal`. Override with:
+
+```bash
+export GITHUB_REPOSITORY=owner/repo-name
+```
+
+---
+
+## Commands at a Glance
+
+### See What's Going On
+
+| Command | What it does |
+|---------|-------------|
+| `python3 -m project_management status` | Lists open GitHub issues with labels and links |
+| `python3 -m project_management issue list --state all` | Lists every issue (open, closed, or both) |
+| `python3 -m project_management issue view 3` | Shows the full JSON for one issue |
+| `python3 -m project_management project status` | Shows the GitHub Projects board with custom fields |
+| `python3 -m project_management pr list` | Lists open pull requests |
+
+### Create Work
+
+| Command | What it does |
+|---------|-------------|
+| `python3 -m project_management task create --title "Do the thing"` | Creates a GitHub issue (alias for `issue create`) |
+| `python3 -m project_management task create --title "X" --label type:feature --label gate:2-scaffold` | Creates an issue with labels |
+| `python3 -m project_management task create --title "X" --assignee octocat` | Creates and assigns to a GitHub user |
+| `python3 -m project_management task create --title "X" --deadline 2026-09-10` | Adds a deadline line to the issue body |
+| `python3 -m project_management task create --title "X" --draft docs/draft_tasks/05-vite-tailwind-shadcn.md` | Creates the issue **and** stamps the draft file with the issue URL |
+
+### Update Work
+
+| Command | What it does |
+|---------|-------------|
+| `python3 -m project_management issue edit 3 --state closed` | Closes an issue |
+| `python3 -m project_management issue edit 3 --assignee octocat` | Assigns or reassigns |
+| `python3 -m project_management issue close 3 --yes` | Closes with explicit confirmation |
+| `python3 -m project_management issue comment 3 "Done in PR #12"` | Adds a comment |
+
+### Local Plan (No GitHub Needed)
+
+These commands read the draft task files in `docs/draft_tasks/` and give you a quick overview.
+
+| Command | What it does |
+|---------|-------------|
+| `python3 -m project_management plan show` | Shows all draft tasks with deadlines, state, and assignees |
+| `python3 -m project_management plan show --only overdue` | Filters to overdue tasks only |
+| `python3 -m project_management plan show --only unassigned` | Filters to tasks with no assignee |
+| `python3 -m project_management plan kickoff` | Shows the recommended 4-person task split |
+| `python3 -m project_management plan check` | Warns about deadline collisions and broken dependencies |
+
+### Labels
+
+| Command | What it does |
+|---------|-------------|
+| `python3 -m project_management labels sync` | Creates/updates the standard label set (idempotent, safe to re-run) |
+
+---
+
+## Workflow: Draft Task → GitHub Issue
+
+The typical flow when turning a planned task into real work:
+
+1. **Write the draft** in `docs/draft_tasks/XX-name.md` (already done for all 21 tasks).
+2. **Create the issue** with `--draft` to link them:
+   ```bash
+   python3 -m project_management task create \
+     --title "04 - Database Design & Setup" \
+     --label type:feature --label gate:2-scaffold --label area:database \
+     --draft docs/draft_tasks/04-database-design.md
+   ```
+3. The CLI creates the GitHub issue and **automatically updates the draft file**, adding a line like:
+   ```
+   - **GitHub Issue:** #4 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/4)
+   ```
+4. Later, `plan show` reads that reference so you can see which draft tasks already have issues.
+
+---
+
+## JSON Mode
+
+Any command can output machine-readable JSON with `--json` before the subcommand:
+
+```bash
+python3 -m project_management --json status
+python3 -m project_management --json issue list
+python3 -m project_management --json plan show
+```
+
+---
+
+## Labels
+
+Status and priority live in **GitHub Projects custom fields**, not as labels. The label set covers type, area, stream, and gate:
+
+| Category | Examples |
+|----------|---------|
+| Type | `type:feature`, `type:bug`, `type:docs`, `type:chore`, `type:testing`, `type:architecture` |
+| Area | `area:frontend`, `area:backend`, `area:database`, `area:blockchain`, `area:p2p`, `area:auth`, `area:devops` |
+| Stream | `stream:A-identity`, `stream:B-patient`, `stream:C-notes`, `stream:D-audit` |
+| Gate | `gate:1-decisions`, `gate:2-scaffold`, `gate:3-features`, `gate:4-integration`, `gate:5-delivery` |
+
+Run `python3 -m project_management labels sync` to create or refresh them.
+
+---
+
+## Project Structure
+
+```
+project_management/
+├── __init__.py      # Package metadata
+├── __main__.py      # Entry point: python3 -m project_management
+├── cli.py           # Argument parsing and command routing
+├── github.py        # GitHub REST + GraphQL client (auto-authenticates via gh)
+├── planner.py       # Local draft-task reader, schedule checker, reference stamper
+└── README.md        # This file
+```
