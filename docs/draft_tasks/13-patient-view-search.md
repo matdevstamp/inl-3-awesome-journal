@@ -17,6 +17,8 @@
 - Unauthorized users see "Access Denied"
 - Search should be efficient and user-friendly
 
+React Query is an optional fit for patient search and journal data. If used, query functions should consume the generated API types from `src/api/generated.ts`, query keys should describe the request parameters, and authorization must remain entirely on the backend.
+
 ## User Stories
 
 - As healthcare staff, I want to search patients by name so that I can find the correct journal quickly.
@@ -149,6 +151,51 @@ async function searchPatients(query, filters) {
     return results;
 }
 ```
+
+### Optional Patient Query Example
+
+First, keep the generated types behind a small API module:
+
+```tsx
+// src/api/api.ts
+import createClient from 'openapi-fetch';
+import type { paths } from './generated';
+
+const client = createClient<paths>({
+    baseUrl: import.meta.env.VITE_API_URL ?? '',
+});
+
+export const api = {
+    searchPatients: (params: paths['/api/patients']['get']['parameters']['query']) =>
+        client.GET('/api/patients', { params: { query: params } }),
+    getPatientJournal: (patientId: string) =>
+        client.GET('/api/patients/{id}/journal', { params: { path: { id: patientId } } }),
+};
+```
+
+The exact generated path names depend on the final OpenAPI contract. The important pattern is that `generated.ts` supplies the types and the feature component calls `api.searchPatients` instead of constructing raw URLs.
+
+```tsx
+import type { paths } from '@/api/generated';
+
+type PatientSearchResponse = paths['/api/patients']['get']['responses'][200]['content']['application/json'];
+
+const patientsQuery = useQuery({
+    queryKey: ['patients', { name: debouncedName, page, filters }],
+    queryFn: () => api.searchPatients({ name: debouncedName, page, filters }),
+    enabled: debouncedName.trim().length >= 2,
+});
+
+const journalQuery = useQuery({
+    queryKey: ['patient-journal', patientId],
+    queryFn: () => api.getPatientJournal(patientId),
+    enabled: Boolean(patientId),
+});
+```
+
+The generated type file is not edited manually. When the patient endpoint changes, update the OpenAPI contract and regenerate `generated.ts` before updating the hook.
+
+Never put permissions in a query key or assume that changing a URL protects patient data. The API must authenticate, authorize, and filter every request.
 
 ## Tasks
 

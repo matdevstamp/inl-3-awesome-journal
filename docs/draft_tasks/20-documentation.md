@@ -21,6 +21,10 @@
 - Every meeting note must include a short checkpoint against `docs/Raw_Requirements.txt`
 - Meeting notes must identify the facilitator, timekeeper, note-taker, attendees, decisions, blockers, and action-item owners
 - Update instructions as project progresses
+
+Document the bug-report workflow: raw intake, lead triage, draft-task conversion, E2E reproduction, red/green fix progression, review evidence, and closure. The raw bug log must contain no patient data or secrets.
+
+The examples in this task are optional documentation starters, not mandatory technology choices. The team may document equivalent commands and tools if a new teammate can reproduce the project.
 - README must be usable by a new teammate on a clean machine, not merely describe the project
 - README must link to the DBML schema, Mermaid architecture diagrams, API contract, meeting notes, and graphify report
 - Document the deliberate privacy boundary: medical content remains in SQL; only access-log data is represented on the blockchain
@@ -72,6 +76,7 @@ Brief description of the project and its purpose.
 ## API Documentation
 [Link to API docs or include here]
 
+
 ## Team
 - Member 1: Role
 - Member 2: Role
@@ -81,6 +86,23 @@ Brief description of the project and its purpose.
 ## Meeting Notes
 [Link to meeting documentation]
 ```
+
+### Optional API Documentation Snippet
+
+If the team chooses Scalar, link the generated API reference from the README:
+
+```markdown
+## API Documentation
+
+- OpenAPI document: [`/openapi.json`](http://localhost:3001/openapi.json)
+- Interactive API reference: [`/docs`](http://localhost:3001/docs)
+```
+
+Scalar is optional. Swagger UI, ReDoc, or another documented OpenAPI viewer is equally acceptable.
+
+### Optional React Query Documentation Note
+
+If React Query is selected, document the client setup, generated `api/generated.ts` workflow, query-key conventions, cache invalidation after mutations, loading/error states, and any polling intervals. State clearly that `generated.ts` is regenerated from OpenAPI and is not edited manually. This is guidance for maintainability, not a required library choice.
 
 ### Meeting Documentation Template
 

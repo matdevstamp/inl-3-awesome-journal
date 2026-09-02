@@ -19,6 +19,8 @@
 - Notes are saved and displayed in patient view
 - Access to notes is logged
 
+React Query is an optional way to coordinate note queries and mutations. If used, request and response types should come from the generated `src/api/generated.ts` file, and the relevant cache should be invalidated or updated after successful writes. The backend still decides which note content is visible.
+
 ## User Stories
 
 - As healthcare staff, I want to create a note with an explicit visibility level so that sensitive information reaches only the intended audience.
@@ -126,6 +128,23 @@ All (all):
 │ [+ Add Note]                        │
 └─────────────────────────────────────┘
 ```
+
+### Optional Note Mutation Example
+
+```tsx
+const queryClient = useQueryClient();
+
+const createNote = useMutation({
+  mutationFn: (input: CreateNoteInput) => api.createNote(patientId, input),
+  onSuccess: () => {
+    queryClient.invalidateQueries({
+      queryKey: ['patient-notes', patientId],
+    });
+  },
+});
+```
+
+Show `isPending`, `isError`, and the server error message in the form. Do not infer hidden-note visibility only from cached client data.
 
 #### For Patient
 ```

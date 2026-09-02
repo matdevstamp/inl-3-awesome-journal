@@ -15,6 +15,8 @@
 - Utility-first CSS (Tailwind CSS)
 - Accessible component library (shadcn/ui)
 
+The examples below are optional starting points, not additional requirements. The team may use an equivalent setup if it meets the requirements.
+
 ## User Stories
 
 - As a frontend developer, I want a shared accessible UI foundation so that feature branches can build consistent screens without editing the scaffold.
@@ -113,6 +115,45 @@ export default defineConfig({
   },
 });
 ```
+
+### Optional Basic Setup Example
+
+```bash
+npm create vite@latest src/frontend -- --template react-ts
+cd src/frontend
+npm install
+npm install -D tailwindcss @tailwindcss/vite
+npm run dev
+```
+
+Keep the final commands and folder structure documented for the rest of the team, even if the implementation differs from this example.
+
+### Optional Server-State Foundation
+
+TanStack React Query is an optional way to manage server state. It is not required if the team chooses another consistent approach.
+
+```bash
+npm install @tanstack/react-query
+```
+
+```tsx
+// main.tsx
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { staleTime: 60_000, refetchOnWindowFocus: false },
+  },
+});
+
+createRoot(document.getElementById('root')!).render(
+  <QueryClientProvider client={queryClient}>
+    <App />
+  </QueryClientProvider>,
+);
+```
+
+Keep authentication tokens, API calls, and query keys in shared modules rather than scattering `fetch` calls through components.
 
 ### Tailwind Configuration
 

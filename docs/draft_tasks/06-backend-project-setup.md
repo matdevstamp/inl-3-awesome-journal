@@ -18,6 +18,8 @@
 - CORS configuration for frontend
 - Socket.io for real-time updates
 
+The examples below are optional starter snippets, not mandatory implementation choices. Equivalent Express, OpenAPI, validation, and documentation tooling is acceptable.
+
 ## User Stories
 
 - As a backend developer, I want a runnable typed server skeleton so that feature work can be added in separate modules.
@@ -169,6 +171,45 @@ SOCKET_CORS_ORIGIN="http://localhost:5173"
 RATE_LIMIT_WINDOW_MS=900000
 RATE_LIMIT_MAX_REQUESTS=100
 ```
+
+### Optional Scalar API Documentation Example
+
+Scalar is an optional alternative to Swagger UI or ReDoc. It should render the existing OpenAPI document; it does not replace the OpenAPI contract.
+
+```bash
+npm install @scalar/express-api-reference
+```
+
+```typescript
+// Optional route after the OpenAPI document is available
+import { apiReference } from '@scalar/express-api-reference';
+
+app.get('/openapi.json', (_request, response) => {
+  response.json(openApiDocument);
+});
+
+app.use(
+  '/docs',
+  apiReference({
+    spec: { url: '/openapi.json' },
+  }),
+);
+```
+
+If Scalar is not selected, document the chosen API documentation UI and its URL instead.
+
+### Optional Typed Client Boundary
+
+The OpenAPI document is the API contract, and `src/frontend/src/api/generated.ts` should be the generated source of truth for frontend API types. The frontend can use those types with `openapi-fetch`, then expose calls to React Query hooks. This is an example architecture, not a requirement:
+
+```bash
+npm install openapi-fetch
+npx openapi-typescript http://localhost:3001/openapi.json -o src/api/generated.ts
+```
+
+Do not edit `generated.ts` by hand. Regenerate it whenever the OpenAPI contract changes, and make type generation part of the documented setup or CI checks.
+
+The backend remains responsible for authentication, authorization, and filtering. A React Query cache must never be treated as a security boundary.
 
 ### Main Entry Point
 

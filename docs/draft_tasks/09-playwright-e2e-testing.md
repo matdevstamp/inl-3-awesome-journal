@@ -17,6 +17,8 @@
 - Regression testing for bug prevention
 - CI/CD integration
 
+The examples below are optional starter patterns, not extra acceptance criteria. Keep the required flows and assertions, but adapt the fixture and configuration style to the project structure.
+
 ## User Stories
 
 - As a presenter, I want the critical role-based journey automated so that the ten-minute demo is repeatable.
@@ -138,6 +140,29 @@ export default defineConfig({
       cwd: '../backend',
     },
   ],
+});
+```
+
+### Optional Quick Start
+
+```bash
+npm install -D @playwright/test
+npx playwright install
+npx playwright codegen http://localhost:5173/login
+npx playwright test --reporter=list
+```
+
+For CI, the reference projects use a single worker, retries, and failure artifacts. A small reusable authenticated state can reduce repeated login setup:
+
+```typescript
+import { test as setup } from '@playwright/test';
+
+setup('save authenticated state', async ({ page }) => {
+  await page.goto('/login');
+  await page.getByLabel('Username').fill(process.env.E2E_USERNAME ?? 'test-user');
+  await page.getByLabel('Password').fill(process.env.E2E_PASSWORD ?? 'test-password');
+  await page.getByRole('button', { name: /log in/i }).click();
+  await page.context().storageState({ path: 'playwright/.auth/user.json' });
 });
 ```
 

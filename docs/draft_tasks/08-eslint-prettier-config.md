@@ -15,6 +15,8 @@
 - Automatic code formatting on save
 - Linting rules for React, TypeScript, and Tailwind
 
+The examples below are optional starting points. The team may use an equivalent flat ESLint, Prettier, or formatter setup as long as local and CI behavior is documented and consistent.
+
 ## User Stories
 
 - As a contributor, I want automatic formatting and lint checks so that pull requests stay easy to review.
@@ -70,6 +72,16 @@ export default tseslint.config(
   }
 );
 ```
+
+### Optional Quick Start
+
+```bash
+npm install -D eslint @eslint/js typescript-eslint globals prettier
+npx eslint --init
+npx prettier --write .
+```
+
+Prefer a checked-in configuration and a single documented command such as `npm run lint` before opening a pull request.
 
 ### Prettier Configuration
 

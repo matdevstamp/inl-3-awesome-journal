@@ -20,6 +20,8 @@
 - Responsive design
 - Must use a framework (not plain HTML)
 
+The examples below are optional starter patterns. React Query, `openapi-fetch`, generated `api/generated.ts`, and the exact hook structure may be replaced with equivalent tools; backend authorization and clear loading/error states remain required.
+
 ## User Stories
 
 ### Authentication
@@ -111,6 +113,29 @@ src/
 │   └── api.js
 └── App.jsx
 ```
+
+### Optional React Query API Pattern
+
+For server data such as patients, records, notes, and access logs, keep API calls in one authenticated client and use stable query keys. Prefer generated OpenAPI types from `src/api/generated.ts` for request parameters and response data. Keep form state and visual state local to components.
+
+```tsx
+import { useQuery } from '@tanstack/react-query';
+import type { paths } from '@/api/generated';
+
+type CurrentUser = paths['/api/auth/me']['get']['responses'][200]['content']['application/json'];
+
+export function useCurrentUser(api: ApiClient) {
+	return useQuery({
+		queryKey: ['current-user'],
+		queryFn: () => api.getCurrentUser(),
+		retry: false,
+	});
+}
+```
+
+Regenerate `api/generated.ts` from the OpenAPI document instead of manually duplicating response interfaces in feature components.
+
+Render explicit loading, error, empty, and success states. The query key improves caching and refetching; it does not grant access to data.
 
 ### UI Mockups
 

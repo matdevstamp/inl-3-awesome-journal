@@ -15,6 +15,12 @@
 - Test all critical paths
 - Test role-based access control
 
+## Bug-Fix Workflow
+
+Use `docs/bug-reports.csv` as a lightweight raw intake log. The lead triages each report and converts valid defects into a draft task or GitHub issue. For a user-visible defect, reproduce the behavior with a focused Playwright E2E test before fixing it: the test is **red** for the known failure, the implementation fix makes it **green**, and the test remains in CI as regression protection.
+
+Do not put patient data, credentials, tokens, or other secrets in the raw report. Use fictional identifiers and sanitized evidence only.
+
 ## User Stories
 
 - As a team, we want tests for every required role and visibility rule so that regressions are caught before the demo.
