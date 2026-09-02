@@ -4,6 +4,7 @@ import json
 import sys
 from pathlib import Path
 
+from .bug_reports import load_reports, promote_report, triage_report
 from .github import GitHubClient, GitHubError
 from .planner import (
     KICKOFF_ASSIGNMENTS,
@@ -51,6 +52,24 @@ def build_parser():
     kickoff.add_argument("--directory", default="docs/draft_tasks")
     check = plan_commands.add_parser("check", help="Warn about schedule collisions and dependency problems.")
     check.add_argument("--directory", default="docs/draft_tasks")
+
+    bug = commands.add_parser("bug", help="Review and promote raw bug reports.")
+    bug_commands = bug.add_subparsers(dest="bug_command", required=True)
+    bug_list = bug_commands.add_parser("list", help="List raw bug reports.")
+    bug_list.add_argument("--csv", default="docs/bug-reports.csv")
+    bug_list.add_argument("--status", dest="bug_status")
+    triage = bug_commands.add_parser("triage", help="Set a report's lead triage status.")
+    triage.add_argument("report_id")
+    triage.add_argument("--status", required=True, choices=("untriaged", "accepted", "duplicate", "not-reproducible", "expected-behavior", "in-progress", "verified", "closed"))
+    triage.add_argument("--lead-owner")
+    triage.add_argument("--csv", default="docs/bug-reports.csv")
+    promote = bug_commands.add_parser("promote", help="Convert an accepted report into a stamped draft task.")
+    promote.add_argument("report_id")
+    promote.add_argument("--csv", default="docs/bug-reports.csv")
+    promote.add_argument("--draft-directory", default="docs/draft_tasks")
+    promote.add_argument("--assignee")
+    promote.add_argument("--deadline")
+    promote.add_argument("--yes", action="store_true")
 
     issue = commands.add_parser("issue", help="Manage GitHub issues.")
     issue_commands = issue.add_subparsers(dest="issue_command", required=True)
@@ -187,6 +206,30 @@ def main():
                     print(task_line(task))
             return
 
+        if args.command == "bug":
+            if args.bug_command == "list":
+                reports = load_reports(args.csv)
+                if args.bug_status:
+                    reports = tuple(report for report in reports if report.status == args.bug_status)
+                if args.json:
+                    output([report.values for report in reports], True)
+                else:
+                    for report in reports:
+                        print(f"{report.report_id} | {report.status:16} | {report.values.get('summary', '')}")
+                return
+            if args.bug_command == "triage":
+                triage_report(args.csv, args.report_id, args.status, args.lead_owner)
+                output(f"Updated {args.report_id}: {args.status}")
+                return
+            if args.bug_command == "promote":
+                if not args.yes:
+                    raise GitHubError("Promoting a bug report writes a draft and requires --yes.")
+                draft_path = promote_report(
+                    args.csv, args.report_id, args.draft_directory, args.assignee, args.deadline
+                )
+                output(f"Created stamped draft task: {draft_path}")
+                return
+
         client = GitHubClient()
         if args.command == "status":
             report = status_report(client, args.state)
@@ -259,6 +302,6 @@ def main():
             output(
                 f"Synchronized {len(LABELS)} labels; status and priority remain project custom fields."
             )
-    except GitHubError as error:
+    except (GitHubError, ValueError) as error:
         print(f"Error: {error}", file=sys.stderr)
         raise SystemExit(1) from error
