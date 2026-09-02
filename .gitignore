@@ -1,0 +1,17 @@
+node_modules/
+dist/
+coverage/
+.env
+.env.*
+!.env.example
+
+# Local databases and generated runtime data
+*.db
+*.db-journal
+src/backend/prisma/migrations/
+
+# Graphify: commit only the browsable report and human-readable report.
+graphify-out/*
+!graphify-out/
+!graphify-out/graph.html
+!graphify-out/GRAPH_REPORT.md
