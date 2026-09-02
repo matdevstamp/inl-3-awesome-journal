@@ -2,10 +2,10 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-04
+- **Deadline:** 2026-09-06
 - **Status:** TODO
 - **Assignee:** TBD
-- **Tags:** typescript, type-safety, required
+- **Tags:** typescript, type-safety, required, gate:2-scaffold
 - **Dependencies:** 05-vite-tailwind-shadcn.md, 06-backend-project-setup.md
 - **Estimated Effort:** 2h
 

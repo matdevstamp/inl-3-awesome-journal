@@ -2,10 +2,10 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-05
+- **Deadline:** 2026-09-06
 - **Status:** TODO
 - **Assignee:** TBD
-- **Tags:** backend, nodejs, express, required
+- **Tags:** backend, nodejs, express, required, gate:2-scaffold
 - **Dependencies:** 04-database-design.md, 05-vite-tailwind-shadcn.md
 - **Estimated Effort:** 4h
 

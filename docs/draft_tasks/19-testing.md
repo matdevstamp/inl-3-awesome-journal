@@ -2,10 +2,10 @@
 
 ## Metadata
 - **Priority:** P1 - High
-- **Deadline:** 2026-09-27
+- **Deadline:** 2026-09-29
 - **Status:** TODO
 - **Assignee:** TBD
-- **Tags:** testing, quality, required
+- **Tags:** testing, quality, required, gate:5-delivery
 - **Dependencies:** 17-user-roles-access-control.md, 15-blockchain-access-logging.md, 16-p2p-network.md, 18-socketio-broadcasting.md
 - **Estimated Effort:** 8h
 

@@ -2,10 +2,10 @@
 
 ## Metadata
 - **Priority:** P0 - Required throughout
-- **Deadline:** 2026-09-03 (initial), 2026-10-01 (final)
+- **Deadline:** 2026-09-29 (final; initial slice 2026-09-05)
 - **Status:** TODO
 - **Assignee:** TBD
-- **Tags:** documentation, readme, required
+- **Tags:** documentation, readme, required, gate:5-delivery
 - **Dependencies:** 01-project-setup-group-contract.md; final update depends on all implementation and testing tasks
 - **Estimated Effort:** 4h
 

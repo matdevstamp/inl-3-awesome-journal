@@ -5,7 +5,7 @@
 - **Deadline:** 2026-09-16
 - **Status:** TODO
 - **Assignee:** TBD
-- **Tags:** frontend, ui, required
+- **Tags:** frontend, ui, required, gate:3-features, stream:A-identity
 - **Dependencies:** 05-vite-tailwind-shadcn.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
 - **Estimated Effort:** 12h
 

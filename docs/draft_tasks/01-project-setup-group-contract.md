@@ -2,11 +2,12 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-03
+- **Deadline:** 2026-09-04
 - **Status:** TODO
 - **Assignee:** Team
-- **Tags:** setup, documentation, required
+- **Tags:** setup, documentation, required, gate:1-decisions
 - **Dependencies:** None
+- **GitHub Issue:** #1 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/1)
 - **Estimated Effort:** 2h
 
 ## Requirements

@@ -2,11 +2,12 @@
 
 ## Metadata
 - **Priority:** P0 - Foundation
-- **Deadline:** 2026-09-03
+- **Deadline:** 2026-09-05
 - **Status:** TODO
 - **Assignee:** Scaffold pair (Person 1 + Person 2)
-- **Tags:** graphify, architecture, documentation, mermaid, required
+- **Tags:** graphify, architecture, documentation, mermaid, required, gate:1-decisions
 - **Dependencies:** 01-project-setup-group-contract.md, 02-database-choice-discussion.md
+- **GitHub Issue:** #3 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/3)
 - **Estimated Effort:** 2h
 
 ## Requirements

@@ -2,10 +2,10 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-21
+- **Deadline:** 2026-09-23
 - **Status:** TODO
 - **Assignee:** TBD
-- **Tags:** realtime, websocket, socketio, required
+- **Tags:** realtime, websocket, socketio, required, gate:4-integration
 - **Dependencies:** 17-user-roles-access-control.md, 14-medical-notes.md, 16-p2p-network.md, 12-frontend-ui.md
 - **Estimated Effort:** 5h
 

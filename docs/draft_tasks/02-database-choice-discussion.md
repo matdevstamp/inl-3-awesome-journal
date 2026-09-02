@@ -2,11 +2,12 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-03
+- **Deadline:** 2026-09-04
 - **Status:** TODO
 - **Assignee:** Team
-- **Tags:** database, architecture, decision, required
+- **Tags:** database, architecture, decision, required, gate:1-decisions
 - **Dependencies:** 01-project-setup-group-contract.md
+- **GitHub Issue:** #2 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/2)
 - **Estimated Effort:** 1h (meeting)
 
 ## Requirements

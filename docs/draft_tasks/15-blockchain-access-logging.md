@@ -5,7 +5,7 @@
 - **Deadline:** 2026-09-16
 - **Status:** TODO
 - **Assignee:** TBD
-- **Tags:** blockchain, logging, gdpr, required
+- **Tags:** blockchain, logging, gdpr, required, gate:3-features, stream:D-audit
 - **Dependencies:** 04-database-design.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
 - **Estimated Effort:** 8h
 

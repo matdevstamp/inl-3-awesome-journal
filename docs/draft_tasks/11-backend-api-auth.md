@@ -5,7 +5,7 @@
 - **Deadline:** 2026-09-16
 - **Status:** TODO
 - **Assignee:** TBD
-- **Tags:** backend, api, auth, required
+- **Tags:** backend, api, auth, required, gate:3-features, stream:A-identity
 - **Dependencies:** 04-database-design.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
 - **Estimated Effort:** 8h
 

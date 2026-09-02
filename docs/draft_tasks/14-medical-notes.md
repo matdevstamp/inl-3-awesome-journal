@@ -2,10 +2,10 @@
 
 ## Metadata
 - **Priority:** P1 - High
-- **Deadline:** 2026-09-16
+- **Deadline:** 2026-09-18
 - **Status:** TODO
 - **Assignee:** TBD
-- **Tags:** frontend, notes, visibility, required
+- **Tags:** frontend, notes, visibility, required, gate:3-features, stream:C-notes
 - **Dependencies:** 04-database-design.md, 11-backend-api-auth.md, 12-frontend-ui.md
 - **Estimated Effort:** 5h
 

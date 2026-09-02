@@ -2,10 +2,10 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-04
+- **Deadline:** 2026-09-05
 - **Status:** TODO
 - **Assignee:** TBD
-- **Tags:** frontend, tooling, ui, required
+- **Tags:** frontend, tooling, ui, required, gate:2-scaffold
 - **Dependencies:** 01-project-setup-group-contract.md, 03-graphify-architecture-artifacts.md
 - **Estimated Effort:** 3h
 

@@ -2,10 +2,10 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-05
+- **Deadline:** 2026-09-08
 - **Status:** TODO
 - **Assignee:** TBD
-- **Tags:** ci/cd, github-actions, automation, required
+- **Tags:** ci/cd, github-actions, automation, required, gate:2-scaffold
 - **Dependencies:** 05-vite-tailwind-shadcn.md, 08-eslint-prettier-config.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
 - **Estimated Effort:** 3h
 

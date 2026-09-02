@@ -2,10 +2,10 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-16
+- **Deadline:** 2026-09-18
 - **Status:** TODO
 - **Assignee:** TBD
-- **Tags:** networking, p2p, distributed, required
+- **Tags:** networking, p2p, distributed, required, gate:3-features, stream:D-audit
 - **Dependencies:** 15-blockchain-access-logging.md, 06-backend-project-setup.md
 - **Estimated Effort:** 6h
 

@@ -5,7 +5,7 @@
 - **Deadline:** 2026-10-01
 - **Status:** TODO
 - **Assignee:** Team
-- **Tags:** presentation, demo, required
+- **Tags:** presentation, demo, required, gate:5-delivery
 - **Dependencies:** 19-testing.md, 09-playwright-e2e-testing.md, 20-documentation.md
 - **Estimated Effort:** 6h
 

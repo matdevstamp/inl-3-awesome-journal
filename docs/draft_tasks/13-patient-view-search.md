@@ -2,10 +2,10 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-16
+- **Deadline:** 2026-09-18
 - **Status:** TODO
 - **Assignee:** TBD
-- **Tags:** frontend, patient, search, required
+- **Tags:** frontend, patient, search, required, gate:3-features, stream:B-patient
 - **Dependencies:** 04-database-design.md, 11-backend-api-auth.md, 12-frontend-ui.md
 - **Estimated Effort:** 6h
 
