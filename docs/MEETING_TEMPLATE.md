@@ -15,6 +15,18 @@
 4. Assign next actions with one owner and a due date each.
 5. Read back decisions and confirm the next meeting.
 
+## Meeting Scope Policy
+
+Protect the purpose of the meeting. If a discussion is important but needs more time, different people, or preparation, the facilitator should say:
+
+> This is a longer discussion. Let us park it, record the decision needed, and book a separate meeting with the right people.
+
+The facilitator records the topic in the parking lot below instead of letting it consume the current meeting. Do not use this policy to avoid a blocker or a decision that must be made today.
+
+| Parked topic | Why separate time is needed | Required participants | Owner | Proposed meeting | Decision needed |
+|---|---|---|---|---|---|
+|  |  |  |  |  |  |
+
 ## Previous Actions
 
 | Action | Owner | Status | Follow-up |

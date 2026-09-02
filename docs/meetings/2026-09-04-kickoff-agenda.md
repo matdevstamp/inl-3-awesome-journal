@@ -241,7 +241,49 @@ Open `docs/Raw_Requirements.txt` together. For each section, mark:
 
 ---
 
-## 7. Next Steps & Close (5 min)
+## 7. Bug Reports and Red/Green Debugging (10 min)
+
+Agree on this workflow before feature work starts:
+
+1. Anyone records a new observation in `docs/bug-reports.csv` using fictional data only.
+2. The lead triages the report: duplicate, cannot reproduce, expected behavior, or valid defect.
+3. For a valid user-facing defect, the owner first writes a focused Playwright E2E test that reproduces it. The test should fail for the known reason: **red**.
+4. The owner implements the smallest fix and reruns the test until it passes: **green**.
+5. The owner adds or updates unit/integration tests where the defect crosses an API, policy, or data boundary.
+6. The lead reviews the evidence, converts the report into a draft task, and creates the real GitHub issue only after triage.
+7. The issue links back to the raw report and reproduction test. The PR explains the root cause, fix, and test result.
+
+### Decisions to Make
+
+- [ ] `docs/bug-reports.csv` is an append-only intake log, not the task board.
+- [ ] The lead owns triage and may merge duplicate reports.
+- [ ] No bug report contains names, personal numbers, medical content, passwords, tokens, or screenshots with sensitive data.
+- [ ] A bug is not done because the symptom disappeared manually; the reproduction test must be green in CI.
+- [ ] Severity, project status, priority, and assignee are managed in the project/task workflow, not improvised as duplicate labels.
+
+### Friday Action Items
+
+| Action | Owner | Due | Related task |
+|---|---|---|---|
+| Confirm the CSV fields and privacy rule | Team | Sep 4 | 01, 19 |
+| Review the first raw report workflow with a fictional example | Lead | Sep 4 | 19 |
+| Decide where Playwright reproduction tests live | Person 2 | Sep 5 | 09 |
+
+---
+
+## 8. Meeting Scope Policy (5 min)
+
+Agree to protect the purpose of each meeting. The facilitator may say:
+
+> This is a longer discussion. Let us park it, record the decision needed, and book a separate meeting with the right people.
+
+Use the parking lot in `docs/MEETING_TEMPLATE.md` for topics that need more time, different participants, or preparation. Do not park an urgent blocker or a decision required to complete the current agenda.
+
+- [ ] Facilitator owns keeping the meeting on scope.
+- [ ] Note-taker records parked topics, owner, participants, and decision needed.
+- [ ] Lead books a separate meeting when the topic is actionable.
+
+## 9. Next Steps & Close (5 min)
 
 - [ ] **Next meeting:** When? (suggest Sunday or Monday)
 - [ ] **Who facilitates next time?**

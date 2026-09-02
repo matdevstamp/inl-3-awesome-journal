@@ -1,0 +1,2 @@
+report_id,reported_at,reporter,summary,steps_to_reproduce,expected_behavior,actual_behavior,environment,severity,evidence,privacy_checked,triage_status,lead_owner,draft_task,github_issue,resolution
+BR-0001,,,,,,,,,,yes,untriaged,,,,
