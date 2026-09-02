@@ -1,6 +1,6 @@
 # Team Availability — September 2026
 
-**Project window:** Sep 2 – Oct 2  
+**Project window:** Sep 2 – Oct 2
 **Deadline:** Friday Oct 2 at 11:00
 
 Fill in your row during the kickoff meeting. This helps us find meeting slots and coordinate work across the month.
@@ -28,37 +28,33 @@ Example: `ALL` = free all day, `AM+PM` = morning and afternoon, `EVE` = only eve
 
 | Name | GitHub | Wed 2 | Thu 3 | Fri 4 | Sat 5 | Sun 6 | Mon 7 | Tue 8 |
 |------|--------|-------|-------|-------|-------|-------|-------|-------|
+| Kassim | Kassim10 | | | **KICKOFF** | | | | |
+| Ramadan | rcilomba | | | **KICKOFF** | | | | |
+| Najma | umoraghad0-del | | | **KICKOFF** | | | | |
 | Matias | matdevstamp | | | **KICKOFF** | | | | |
-| Kassim | Kassim10 | | | | | | | |
-| Ramadan | rcilomba | | | | | | | |
-| Najma | umoraghad0-del | | | | | | | |
 
-**Gate 1 exit:** By end of Sun Sep 6 — contract signed, DB chosen, graphify done.  
+**Gate 1 exit:** By end of Sun Sep 6 — contract signed, DB chosen, graphify done.
 **Gate 2 exit:** By end of Tue Sep 8 — scaffold working, CI green, first test red/green.
 
 ## Week 2 — Sep 9–15 (Gate 3: Features Start)
 
 | Name | GitHub | Wed 9 | Thu 10 | Fri 11 | Sat 12 | Sun 13 | Mon 14 | Tue 15 |
 |------|--------|-------|--------|--------|--------|--------|--------|--------|
+| Kassim | Kassim10 | | | **DEADLINE 11:00** | | | | |
+| Ramadan | rcilomba | | | **DEADLINE 11:00** | | | | |
+| Najma | umoraghad0-del | | | **DEADLINE 11:00** | | | | |
 | Matias | matdevstamp | | | | | | | |
-| Kassim | Kassim10 | | | | | | | |
-| Ramadan | rcilomba | | | | | | | |
-| Najma | umoraghad0-del | | | | | | | |
 
-**Stream owners start their feature branches.**  
-- Stream A (Auth): Person 1  
-- Stream B (Patient): Person 3  
-- Stream C (Notes): TBD  
-- Stream D (Audit/P2P): Person 4  
+**Stream owners start their feature branches.**
 
 ## Week 3 — Sep 16–22 (Gate 3 cont. + Gate 4: Integration)
 
 | Name | GitHub | Wed 16 | Thu 17 | Fri 18 | Sat 19 | Sun 20 | Mon 21 | Tue 22 |
 |------|--------|--------|--------|--------|--------|--------|--------|--------|
-| Matias | matdevstamp | | | | | | | |
 | Kassim | Kassim10 | | | | | | | |
 | Ramadan | rcilomba | | | | | | | |
 | Najma | umoraghad0-del | | | | | | | |
+| Matias | matdevstamp | | | | | | | |
 
 **Gate 4 exit:** By end of Tue Sep 22 — vertical flow works on two servers.
 
@@ -66,10 +62,10 @@ Example: `ALL` = free all day, `AM+PM` = morning and afternoon, `EVE` = only eve
 
 | Name | GitHub | Wed 23 | Thu 24 | Fri 25 | Sat 26 | Sun 27 | Mon 28 | Tue 29 |
 |------|--------|--------|--------|--------|--------|--------|--------|--------|
-| Matias | matdevstamp | | | | | | | |
 | Kassim | Kassim10 | | | | | | | |
 | Ramadan | rcilomba | | | | | | | |
 | Najma | umoraghad0-del | | | | | | | |
+| Matias | matdevstamp | | | | | | | |
 
 **Focus:** Tests, docs, screenshots, demo rehearsal.
 
@@ -77,10 +73,10 @@ Example: `ALL` = free all day, `AM+PM` = morning and afternoon, `EVE` = only eve
 
 | Name | GitHub | Wed 30 | Thu 1 | Fri 2 ⚠️ |
 |------|--------|--------|-------|----------|
-| Matias | matdevstamp | | | **DEADLINE 11:00** |
 | Kassim | Kassim10 | | | |
 | Ramadan | rcilomba | | | |
 | Najma | umoraghad0-del | | | |
+| Matias | matdevstamp | | | **DEADLINE 11:00** |
 
 ---
 
@@ -115,6 +111,6 @@ After everyone fills in availability, pick **2 fixed slots per week** that work 
 
 - Minimum **2 documented meetings per week** (course requirement)
 - Everyone should be available for **at least 1 meeting per week**
-- Scaffold is compressed — Person 1 + Person 2 pair hard Sep 5–8
+- Scaffold is compressed — pair hard Sep 5–8
 - Gate deadlines are hard — plan work backward from them
 - Buffer days before Oct 2 for demo rehearsal and final fixes
