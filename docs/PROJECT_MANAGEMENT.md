@@ -41,6 +41,14 @@ python3 -m project_management deps sync          # apply missing relationships
 python3 -m project_management deps sync --dry-run  # preview first
 ```
 
+Stakeholders get a merged Excel status workbook (no GitHub writes):
+
+```bash
+python3 -m project_management report export --output docs/stakeholder-report.xlsx
+```
+
+It contains Overview (per-epic/stream rollups), Changelog (diff vs. the previous export's snapshot), Tasks, and Questions sheets. A companion `.snapshot.json` stores the previous state so each export doubles as a "what changed since last time" report. See `docs/business-role-collaboration.md` for the business-facing explanation.
+
 Status and priority belong in GitHub Projects custom fields. They are intentionally not duplicated as issue labels.
 
 The CLI also supports the full daily issue workflow without the GitHub web UI:

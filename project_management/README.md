@@ -121,6 +121,25 @@ python3 -m project_management plan graph --output docs/diagrams/task-dependencie
 
 ---
 
+## Stakeholder Reports (Excel)
+
+Export a stakeholder `.xlsx` any time — it merges **live GitHub state** (issue open/closed, card links) with the **local draft plan** (epics/gates, streams, owners, deadlines, dependencies, questions). The export never writes to GitHub.
+
+```bash
+python3 -m project_management report export --output docs/stakeholder-report.xlsx
+```
+
+| Sheet | What it shows |
+|-------|---------------|
+| **Overview** | Summary counts, then one row per epic (Gate) and per Stream: planned/open/closed, blocked, overdue, unassigned, next deadline |
+| **Changelog** | What changed since the previous export (new cards, closed tasks, deadline/owner moves, resolved questions) — compared against the `.snapshot.json` stored next to the workbook |
+| **Tasks** | All draft tasks with merged state: epic, stream, title, state, owner, deadline, effort, blocked by, related, GitHub link |
+| **Questions** | Every open `## Questions to Resolve` item from the drafts |
+
+Re-running the command produces a fresh workbook whose Changelog sheet shows only what changed. Works without GitHub access too (planned view, with a warning). The snapshot file is the diff baseline; commit it alongside the workbook if you want changelogs to track across commits.
+
+---
+
 ## JSON Mode
 
 Any command can output machine-readable JSON with `--json` before the subcommand:
