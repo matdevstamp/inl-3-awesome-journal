@@ -22,10 +22,10 @@ Status and priority are managed through GitHub Projects custom fields rather tha
 - `area:devops` - CI/CD, GitHub Actions, Docker (gray)
 
 ## Stream Labels (for parallel work)
-- `stream:A-identity` - Auth, login, roles (assigned to Person 1)
-- `stream:B-patient` - Patient search, records (assigned to Person 3)
-- `stream:C-notes` - Medical notes, visibility (assigned to TBD)
-- `stream:D-audit` - Blockchain, P2P, Socket.IO (assigned to Person 4)
+- `stream:A-identity` - Auth, login, roles (backend Person 3, frontend Person 4)
+- `stream:B-patient` - Patient search, journal view (view Person 4, read API Person 3)
+- `stream:C-notes` - Medical notes, visibility (assigned to Person 3)
+- `stream:D-audit` - Blockchain access log, P2P, Socket.IO (chain core Person 1, P2P/realtime Person 2)
 
 ## Gate Labels
 - `gate:1-decisions` - Contract, repo setup, decisions

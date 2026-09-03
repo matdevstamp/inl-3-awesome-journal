@@ -280,7 +280,25 @@ def main():
             if args.plan_command == "graph":
                 mermaid = task_graph_mermaid(tasks)
                 if args.output:
-                    Path(args.output).write_text(mermaid, encoding="utf-8")
+                    output_path = Path(args.output)
+                    if output_path.suffix.lower() == ".md":
+                        # Markdown output renders the diagram on GitHub; do not hand-edit.
+                        content = (
+                            "# Task Dependency Graph\n\n"
+                            "_Auto-generated from the draft tasks in `docs/draft_tasks/`. "
+                            "Do not edit by hand._\n\n"
+                            "Regenerate whenever task metadata changes:\n\n"
+                            "```bash\n"
+                            "python3 -m project_management plan graph --output "
+                            f"{output_path}\n"
+                            "```\n\n"
+                            "```mermaid\n"
+                            f"{mermaid}"
+                            "```\n"
+                        )
+                        output_path.write_text(content, encoding="utf-8")
+                    else:
+                        output_path.write_text(mermaid, encoding="utf-8")
                     print(f"Wrote {args.output}")
                 else:
                     print(mermaid, end="")

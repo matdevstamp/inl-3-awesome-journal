@@ -63,7 +63,7 @@ These commands read the draft task files in `docs/draft_tasks/` and give you a q
 | `python3 -m project_management plan kickoff` | Shows the recommended 4-person task split |
 | `python3 -m project_management plan check` | Warns about deadline collisions and broken dependencies |
 | `python3 -m project_management plan graph` | Prints a Mermaid graph of task dependencies and relations |
-| `python3 -m project_management plan graph --output docs/diagrams/task-dependencies.mmd` | Writes the graph to a file |
+| `python3 -m project_management plan graph --output docs/diagrams/task-dependencies.md` | Writes a markdown page that renders the graph on GitHub (use a `.mmd` suffix for the raw Mermaid source) |
 
 ### Issue Relationships (Dependencies & Related)
 
@@ -116,8 +116,10 @@ References are resolved to issue numbers through the `- **GitHub Issue:** #N` st
 To see the whole relationship map as a Mermaid diagram (regenerate after any metadata change):
 
 ```bash
-python3 -m project_management plan graph --output docs/diagrams/task-dependencies.mmd
+python3 -m project_management plan graph --output docs/diagrams/task-dependencies.md
 ```
+
+GitHub does not render raw `.mmd` files; the `.md` output above is what renders the diagram when someone opens it on GitHub.
 
 ---
 

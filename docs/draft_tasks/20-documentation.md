@@ -19,7 +19,7 @@
   - Database structure with CREATE script
   - Team member contributions
 - Document at least 2 project meetings per week
-- Every meeting note must include a short checkpoint against `docs/Raw_Requirements.txt`
+- Every meeting note must include a short checkpoint against `docs/Raw_Requirements.md`
 - Meeting notes must identify the facilitator, timekeeper, note-taker, attendees, decisions, blockers, and action-item owners
 - Update instructions as project progresses
 
@@ -138,7 +138,7 @@ If React Query is selected, document the client setup, generated `api/generated.
 - [ ] Add API and Mermaid diagram links, graphify report link, screenshots, and demo script
 - [ ] Keep README and meeting notes current at each weekly review
 - [ ] Keep a requirements traceability section current: requirement, implementation/task, test or demo evidence, owner, status
-- [ ] Re-read `docs/Raw_Requirements.txt` before the final README and presentation review
+- [ ] Re-read `docs/Raw_Requirements.md` before the final README and presentation review
 - [ ] Perform a clean-machine walkthrough and have a teammate follow the README without verbal help
 - [ ] Add installation instructions
 - [ ] Document database structure

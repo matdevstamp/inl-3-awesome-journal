@@ -1,3 +1,14 @@
+# Task Dependency Graph
+
+_Auto-generated from the draft tasks in `docs/draft_tasks/`. Do not edit by hand._
+
+Regenerate whenever task metadata changes:
+
+```bash
+python3 -m project_management plan graph --output docs/diagrams/task-dependencies.md
+```
+
+```mermaid
 flowchart TD
     %% Solid arrow A --> B: B depends on A (blocked by A)
     %% Dotted line A -. related .- B: A and B are related
@@ -93,3 +104,4 @@ flowchart TD
     T13 -. related .- T14
     T15 -. related .- T18
     T19 -. related .- T20
+```

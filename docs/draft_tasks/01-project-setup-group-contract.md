@@ -16,7 +16,7 @@
 - Repository must be set up on GitHub (public or invite postmodernistx as collaborator)
 - README must exist with project description
 - Agile workflow must be established from start
-- `docs/Raw_Requirements.txt` must be established as the scope authority and reviewed continuously
+- `docs/Raw_Requirements.md` must be established as the scope authority and reviewed continuously
 - Each meeting must have an assigned facilitator, timekeeper, and note-taker
 - A shared agenda and meeting-note template must be agreed before feature work begins
 
@@ -53,6 +53,7 @@ The contract should cover:
 
 - [ ] Create GitHub repository
 - [ ] Write gruppkontrakt.md using provided template
+- [ ] Add the per-member loggbok files under `docs/logbooks/` (or the format the group decides at kickoff)
 - [ ] Set up branch protection rules (no direct commits to main)
 - [ ] Create README.md with initial project description
 - [ ] Set up project board (GitHub Projects or similar)
@@ -67,6 +68,7 @@ The contract should cover:
 ## Done Criteria
 
 - [ ] gruppkontrakt.md exists and is committed
+- [ ] Logbook format decided at kickoff and each member's logbook file exists in `docs/logbooks/`
 - [ ] README.md exists with project description
 - [ ] Repository is public or postmodernistx is collaborator
 - [ ] Branch protection rules are configured
@@ -80,7 +82,7 @@ The contract should cover:
 - The group contract should be specific enough to be actionable
 - Consider using a template from the course resources
 - Make sure everyone signs/agrees to the contract
-- Re-read `docs/Raw_Requirements.txt` before finalizing the contract so the workflow reflects the actual assignment
+- Re-read `docs/Raw_Requirements.md` before finalizing the contract so the workflow reflects the actual assignment
 
 ## Questions to Resolve
 

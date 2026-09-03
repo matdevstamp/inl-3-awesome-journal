@@ -20,44 +20,47 @@ class Task:
 
 
 # ── Team roster ──────────────────────────────────────────────
-# Update these once real names / GitHub usernames are confirmed.
 TEAM_MEMBERS = {
     "matdevstamp": "Matias Marti",
-    "Kassim10": "TBD",
+    "Kassim10": "Kassim Segerberg",
     "rcilomba": "Ramadan",
-    "umoraghad0-del": "TBD",
+    "umoraghad0-del": "Najma Hasan",
 }
 
 # Role-to-username mapping.  Fill in during the kickoff meeting.
-# The CLI's ``plan kickoff`` command uses this to suggest assignments.
+# Person areas follow the example split in ``docs/Raw_Requirements.md``:
+#   Person 1 - Crypto & liggare (Block/Blockchain, signing, Merkle, verification)
+#   Person 2 - P2P-nätverk (server sync, audit-block distribution, Socket.IO)
+#   Person 3 - Express API & middleware (routes, auditLogger, backend, database)
+#   Person 4 - Front end (login, journal search/view, live access-log view)
 ROLE_TO_USER = {
-    "Person 1": None,  # Scaffold pair, backend/auth → assign to a GitHub username
-    "Person 2": None,  # Scaffold pair, frontend shell
-    "Person 3": None,  # Database, patient/record domain
-    "Person 4": None,  # Blockchain, P2P, Socket.IO
+    "Person 1": None,  # Crypto & liggare → assign to a GitHub username
+    "Person 2": None,  # P2P-nätverk
+    "Person 3": None,  # Express API & middleware
+    "Person 4": None,  # Front end
 }
 
 KICKOFF_ASSIGNMENTS = {
     "01": "Team",
     "02": "Team",
-    "03": "Person 2",
+    "03": "Scaffold pair (Person 3 + Person 4)",
     "04": "Person 3",
-    "05": "Person 2",
-    "06": "Person 1",
-    "07": "Person 1",
-    "08": "Person 2",
-    "09": "Person 2",
-    "10": "Person 1",
-    "11": "Person 1",
-    "12": "Person 2",
-    "13": "Person 3",
+    "05": "Person 4",
+    "06": "Person 3",
+    "07": "Person 3",
+    "08": "Person 4",
+    "09": "Person 4",
+    "10": "Person 3",
+    "11": "Person 3",
+    "12": "Person 4",
+    "13": "Person 4",
     "14": "Person 3",
-    "15": "Person 4",
-    "16": "Person 4",
+    "15": "Person 1",
+    "16": "Person 2",
     "17": "Team",
-    "18": "Person 4",
+    "18": "Person 2",
     "19": "Team",
-    "20": "Person 2",
+    "20": "Person 4",
     "21": "Team",
 }
 

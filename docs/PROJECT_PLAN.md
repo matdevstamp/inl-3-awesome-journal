@@ -19,7 +19,7 @@ The project must also leave behind understandable evidence: a working README, me
 
 ## Requirements Loop
 
-`docs/Raw_Requirements.txt` is the controlling source for scope. The team must deliberately loop back to it throughout the project instead of treating the initial planning meeting as a one-time requirements read.
+`docs/Raw_Requirements.md` is the controlling source for scope. The team must deliberately loop back to it throughout the project instead of treating the initial planning meeting as a one-time requirements read.
 
 - At every planning meeting, review the raw requirements and confirm that the next tasks map to a named requirement.
 - At least twice per week, use a short requirements checkpoint in the meeting notes: `covered`, `unclear`, `missing evidence`, and `next action`.
@@ -33,16 +33,16 @@ The project must also leave behind understandable evidence: a working README, me
 
 ### Roles
 
-Use temporary labels until the group contract records real names.
+Use temporary labels until the group contract records real names. The split follows the example in `docs/Raw_Requirements.md` and maps onto the A–D feature streams; each person's backup/reviewer is their neighbor in the other half of the stack.
 
-| Person | Primary ownership | Backup ownership |
+| Person | Primary ownership (Raw Requirements example) | Backup / review |
 |---|---|---|
-| Person 1 | Scaffold pair, backend/auth | Integration |
-| Person 2 | Scaffold pair, frontend shell | UI and accessibility |
-| Person 3 | Database, patient/record domain | Test data and API tests |
-| Person 4 | Blockchain, P2P, Socket.IO | Documentation and demo |
+| Person 1 | Crypto & liggare — `Block`/`Blockchain` classes, public/private-key signing, Merkle tree, verification | Person 2 |
+| Person 2 | P2P-nätverk — WebSocket server sync, audit-block distribution, longest-chain rule, Socket.IO | Person 1 |
+| Person 3 | Express API & middleware — routes, `auditLogger`, backend, databases and routing | Person 4 |
+| Person 4 | Front end — login, journal search/view, live access-log view, verification badge | Person 3 |
 
-Person 1 and Person 2 pair-program the initial scaffold. No feature branch should create a competing root package, app shell, configuration, or directory layout.
+Person 3 and Person 4 (backend + frontend) pair-program the initial scaffold. No feature branch should create a competing root package, app shell, configuration, or directory layout.
 
 ### Collaboration Rules
 
@@ -59,109 +59,15 @@ The default rotation is alphabetical by person each week: the next person facili
 
 ## Dependency Gates
 
-Regenerate this diagram any time task metadata changes:
+The task dependency graph is generated from the draft-task metadata and renders automatically on GitHub — GitHub does not render raw `.mmd` files, so the generator writes a markdown page instead. The single rendered copy is [docs/diagrams/task-dependencies.md](diagrams/task-dependencies.md): open that file on GitHub and the diagram displays itself, no manual copying needed.
+
+Regenerate it whenever task metadata changes:
 
 ```bash
-python3 -m project_management plan graph --output docs/diagrams/task-dependencies.mmd
+python3 -m project_management plan graph --output docs/diagrams/task-dependencies.md
 ```
 
-```mermaid
-flowchart TD
-    %% Solid arrow A --> B: B depends on A (blocked by A)
-    %% Dotted line A -. related .- B: A and B are related
-    subgraph decisions["Gate 1-Decisions"]
-    T01["01 Project Setup & Group Contract"]
-    T02["02 Database Choice Discussion"]
-    T03["03 Graphify Architecture Artifacts"]
-    end
-    subgraph scaffold["Gate 2-Scaffold"]
-    T04["04 Database Design & Setup"]
-    T05["05 Vite + Tailwind CSS + shadcn/ui Setup"]
-    T06["06 Backend Project Setup"]
-    T07["07 TypeScript Strict Configuration"]
-    T08["08 ESLint + Prettier Configuration"]
-    T09["09 Playwright E2E Testing"]
-    T10["10 GitHub Actions CI/CD Workflow"]
-    end
-    subgraph features["Gate 3-Features"]
-    T11["11 Backend API & Authentication"]
-    T12["12 Frontend UI Development"]
-    T13["13 Patient View & Search"]
-    T14["14 Medical Notes with Visibility Control"]
-    T15["15 Blockchain Access Logging"]
-    T16["16 P2P Network Implementation"]
-    end
-    subgraph integration["Gate 4-Integration"]
-    T17["17 User Roles & Access Control"]
-    T18["18 Socket.io Broadcasting"]
-    end
-    subgraph delivery["Gate 5-Delivery"]
-    T19["19 Testing & Quality Assurance"]
-    T20["20 Documentation & README"]
-    T21["21 Presentation Preparation"]
-    end
-    T01 --> T02
-    T01 --> T03
-    T02 --> T03
-    T01 --> T04
-    T02 --> T04
-    T03 --> T04
-    T01 --> T05
-    T03 --> T05
-    T04 --> T06
-    T05 --> T06
-    T05 --> T07
-    T06 --> T07
-    T05 --> T08
-    T07 --> T08
-    T05 --> T09
-    T06 --> T09
-    T07 --> T09
-    T08 --> T09
-    T05 --> T10
-    T08 --> T10
-    T07 --> T10
-    T06 --> T10
-    T04 --> T11
-    T07 --> T11
-    T06 --> T11
-    T05 --> T12
-    T07 --> T12
-    T06 --> T12
-    T04 --> T13
-    T11 --> T13
-    T12 --> T13
-    T04 --> T14
-    T11 --> T14
-    T12 --> T14
-    T04 --> T15
-    T07 --> T15
-    T06 --> T15
-    T15 --> T16
-    T06 --> T16
-    T11 --> T17
-    T12 --> T17
-    T13 --> T17
-    T14 --> T17
-    T17 --> T18
-    T14 --> T18
-    T16 --> T18
-    T12 --> T18
-    T17 --> T19
-    T15 --> T19
-    T16 --> T19
-    T18 --> T19
-    T01 --> T20
-    T19 --> T21
-    T09 --> T21
-    T20 --> T21
-    T03 -. related .- T20
-    T09 -. related .- T10
-    T09 -. related .- T19
-    T13 -. related .- T14
-    T15 -. related .- T18
-    T19 -. related .- T20
-```
+The same command with a `.mmd` suffix writes the raw Mermaid source instead (for tools that read plain Mermaid). Do not paste a second copy of the graph into this or any other file.
 
 No stream starts until Gate 1 is met. Database-dependent backend work starts only after Gate 2. Cross-stream integration starts only after each stream has a reviewed contract and a narrow test.
 
@@ -177,10 +83,10 @@ No stream starts until Gate 1 is met. Database-dependent backend work starts onl
 
 **Gate 1 exit:** By end of Sun Sep 6 — contract agreed, GitHub rules active, decisions written, README points to planned artifacts, graphify ignore policy tested.
 
-The Gate 1 meeting note must also contain the first requirements checkpoint against `docs/Raw_Requirements.txt`.
+The Gate 1 meeting note must also contain the first requirements checkpoint against `docs/Raw_Requirements.md`.
 
 ### Gate 2: Paired scaffold and executable contracts (compressed)
-**September 5-8 | Person 1 + Person 2 pair; Persons 3 + 4 review**
+**September 5-8 | Person 3 + Person 4 pair (scaffold); Persons 1 + 2 review**
 
 5. **04** - Create `database/schema.dbml`, the Prisma schema, migration strategy, fictional seed data, and the Mermaid data-model diagram. Keep all four representations aligned.
 6. **05, 06, 07, 08, 09, 10** - Build one monorepo scaffold, strict TypeScript, lint/format, Playwright runner and fixtures, CI, environment examples, and local commands.
@@ -189,7 +95,7 @@ The Gate 1 meeting note must also contain the first requirements checkpoint agai
 
 **Gate 2 exit:** By end of Tue Sep 8 — clean checkout installs, lint/typecheck/build pass, frontend and backend both start, database migration/seed works, README setup steps work for one teammate.
 
-⚠️ **This gate is compressed.** Person 1 + Person 2 must pair hard over the weekend. The goal is to have features start by Wed Sep 9.
+⚠️ **This gate is compressed.** Person 3 + Person 4 must pair hard over the weekend. The goal is to have features start by Wed Sep 9.
 
 Run a second raw-requirements checkpoint at this gate and remove or re-plan anything that does not support the required demo.
 
@@ -216,7 +122,7 @@ Every stream follows the same small loop: write acceptance cases, implement the 
 
 **Gate 4 exit:** the vertical flow works on a clean database with two server processes, and integration bugs have owners in the board.
 
-Compare the working vertical flow line by line with `docs/Raw_Requirements.txt` before declaring this gate complete.
+Compare the working vertical flow line by line with `docs/Raw_Requirements.md` before declaring this gate complete.
 
 ### Gate 5: Evidence, regression, and delivery
 **September 24-October 1 | Team**
@@ -238,9 +144,11 @@ Protect these first: five-role login, patient search, journal view, server-side 
 
 ## Required Artifact Locations
 
+- `gruppkontrakt.md` (root)
 - `README.md`
+- `docs/logbooks/*.csv` (per-member daily loggbok)
 - `database/schema.dbml`
-- `docs/diagrams/*.mmd`
+- `docs/diagrams/*.mmd` (raw Mermaid; the dependency graph renders via `docs/diagrams/task-dependencies.md`)
 - `docs/meetings/*.md`
 - `graphify-out/graph.html`
 - `graphify-out/GRAPH_REPORT.md`

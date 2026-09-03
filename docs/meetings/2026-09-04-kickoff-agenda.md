@@ -21,7 +21,7 @@ This is a git-first project. Come to the meeting having already:
  git clone https://github.com/matdevstamp/inl-3-awesome-journal.git
 cd inl-3-awesome-journal
 ls docs/draft_tasks/          # see the 21 planned tasks
-cat docs/Raw_Requirements.txt # the actual assignment
+cat docs/Raw_Requirements.md # the actual assignment
 cat docs/PROJECT_PLAN.md      # the timeline and gates
 
 # Install toolchain
@@ -58,7 +58,7 @@ Open `docs/team-availability.md` and mark each day:
 
 ### 4. Read these files
 
-- `docs/Raw_Requirements.txt` — the actual assignment, scope authority
+- `docs/Raw_Requirements.md` — the actual assignment, scope authority
 - `docs/PROJECT_PLAN.md` — timeline, gates, dependency flow
 - `docs/draft_tasks/` — browse the 21 planned tasks
 - `docs/meetings/2026-09-04-kickoff-agenda.md` — this file
@@ -165,35 +165,43 @@ Confirm everyone understands:
 
 ## 3. Roles & Streams (10 min)
 
-Map real people to the four streams. **Tentative — adjust based on interest/skill.**
+Map real people to the streams. **Tentative — adjust based on interest/skill.** The four Person roles follow the example split in `docs/Raw_Requirements.md`:
 
-| Stream | What it covers | Owner |
+| Person | Area (Raw Requirements example) | Streams |
+|--------|-------------------------------|---------|
+| Person 1 | Crypto & liggare — `Block`/`Blockchain` classes, key signing, Merkle tree, verification | D (chain core) |
+| Person 2 | P2P-nätverk — server sync, audit-block distribution, longest-chain rule, Socket.IO | D (P2P/realtime) |
+| Person 3 | Express API & middleware — routes, `auditLogger`, backend, databases | A/B/C (backend) |
+| Person 4 | Front end — login, journal search/view, live access-log view, verification badge | A/B/C (frontend) |
+
+| Stream | What it covers | Owner (Person + name) |
 |--------|---------------|-------|
 | **A — Identity** | Auth, login, roles, session management | TBD |
 | **B — Patient access** | Patient search, journal view, role-based display | TBD |
 | **C — Notes & records** | Medical notes, visibility control, CRUD | TBD |
-| **D — Audit & P2P** | Blockchain access logs, two servers, Socket.IO | TBD |
+| **D — Audit & P2P** | Blockchain access logs, two servers, Socket.IO | TBD (split: chain/P2P) |
 
-**Who does frontend scaffold (Vite + Tailwind + components)?** → pairs with backend person
+**Who does frontend scaffold (Vite + Tailwind + components)?** → Person 4, pairing with Person 3 (backend)
 
 **→ Record final mapping here:**
 
-| GitHub username | Real name | Stream | Role |
-|----------------|-----------|--------|------|
-| Kassim10 | Kassim Segerberg | | |
-| rcilomba | Ramadan | | |
-| umoraghad0-del | Najma Hasan | | |
-| matdevstamp | Matias Marti | — | Lead |
+| GitHub username | Real name | Person | Stream | Role |
+|----------------|-----------|--------|--------|------|
+| Kassim10 | Kassim Segerberg | | | |
+| rcilomba | Ramadan | | | |
+| umoraghad0-del | Najma Hasan | | | |
+| matdevstamp | Matias Marti | | — | Lead |
 
 ---
 
-## 4. Group Contract & Availability (10 min)
+## 4. Group Contract, Logbook & Availability (10 min)
 
 **First:** Everyone confirms their availability in `docs/team-availability.md`.
 
 **Then** agree on:
 
 - [ ] Meeting schedule: **when** and **how often**? (minimum 2x/week required)
+- [ ] Logbook format: per-member CSV in `docs/logbooks/` (default, see `docs/logbooks/README.md`) or external Excel/Sheets (then needs an owner other than Matias)
 - [ ] Communication channel: Microsoft Teams ✓
 - [ ] Definition of done: PR merged + test passes + meeting note updated?
 - [ ] Branch protection: enforce PR reviews on `main`?
@@ -225,7 +233,7 @@ These are due by **Saturday Sep 5**:
 
 ## 6. First Requirements Checkpoint (5 min)
 
-Open `docs/Raw_Requirements.txt` together. For each section, mark:
+Open `docs/Raw_Requirements.md` together. For each section, mark:
 
 | Requirement | Status | Notes |
 |-------------|--------|-------|
@@ -267,7 +275,7 @@ Agree on this workflow before feature work starts:
 |---|---|---|---|
 | Confirm the CSV fields and privacy rule | Team | Sep 4 | 01, 19 |
 | Review the first raw report workflow with a fictional example | Lead | Sep 4 | 19 |
-| Decide where Playwright reproduction tests live | Person 2 | Sep 5 | 09 |
+| Decide where Playwright reproduction tests live | Person 4 | Sep 5 | 09 |
 
 ---
 

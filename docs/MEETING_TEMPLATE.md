@@ -10,7 +10,7 @@
 ## Agenda
 
 1. Check the previous action items.
-2. Review the relevant section of `docs/Raw_Requirements.txt`.
+2. Review the relevant section of `docs/Raw_Requirements.md`.
 3. Discuss progress, decisions, blockers, and risks.
 4. Assign next actions with one owner and a due date each.
 5. Read back decisions and confirm the next meeting.
