@@ -93,6 +93,56 @@ GATE_TAG_TO_NAME = {
 }
 GATE_ORDER = ["1-Decisions", "2-Scaffold", "3-Features", "4-Integration", "5-Delivery"]
 
+# ── Status colors & progress (shared by graph + gantt) ────────
+# Mermaid 11 classDef syntax: a space between the class name and the styles
+# (`classDef name,fill:...` no longer parses and shows "Parse error").
+_STATUS_STYLES = {
+    "done": "fill:#dcedc8,stroke:#558b2f,color:#1b5e20",
+    "doing": "fill:#dbe9fb,stroke:#1565c0,color:#0d47a1",
+    "todo": "fill:#ffffff,stroke:#b0bec5,color:#546e7a,stroke-dasharray:5 4",
+}
+_DONE_STATUS = {"DONE", "COMPLETE", "COMPLETED"}
+_DOING_STATUS = {"DOING", "IN PROGRESS", "IN-PROGRESS", "INPROGRESS", "WIP", "ACTIVE", "STARTED"}
+_BOX_RE = re.compile(r"(?m)^\s*-\s*\[(.)\]")
+
+
+def _status_class(status):
+    """Map a raw task status to one of done | doing | todo."""
+    raw = (status or "").strip().upper()
+    if raw in _DONE_STATUS:
+        return "done"
+    if raw in _DOING_STATUS:
+        return "doing"
+    return "todo"
+
+
+def _checkbox_counts(text):
+    """Count checked vs total '- [x]' boxes in a task file."""
+    boxes = _BOX_RE.findall(text or "")
+    checked = sum(1 for mark in boxes if mark.lower() == "x")
+    return checked, len(boxes)
+
+
+def _task_text(task):
+    """Safely read a task file's text (missing fixture paths -> empty)."""
+    try:
+        return task.path.read_text(encoding="utf-8")
+    except (OSError, ValueError):
+        return ""
+
+
+def _task_label(task, text):
+    """Node/task label: '01 Title (50% · 3/6 · doing)' or '01 Title ✓' when done."""
+    title = task.title.replace('"', "'").strip()
+    status = _status_class(task.status)
+    if status == "done":
+        return f"{task.key} {title} ✓"
+    checked, total = _checkbox_counts(text)
+    if total:
+        pct = round(100 * checked / total)
+        return f"{task.key} {title} ({pct}% · {checked}/{total} · {status})"
+    return f"{task.key} {title} (0/0 · {status})"
+
 
 def parse_task_refs(value):
     """Extract ``(key, filename)`` pairs from a Dependencies/Related metadata value.
@@ -182,14 +232,38 @@ def task_gantt_mermaid(tasks):
             continue
         lines.append(f"    section Gate {gate}")
         for key, title, _g, start, end, status in gate_rows:
-            safe = title.replace('"', "'").replace(":", "-")
             if start is None or end is None:
-                lines.append(f"    {key} {safe} : skipped, 0d")
+                # Undated tasks cannot be drawn (mermaid gantt has no 'skipped'
+                # state; `: skipped, 0d` is a hard render error). They are listed
+                # under the chart via gantt_unscheduled() instead.
                 continue
-            state = "done" if status.upper() in {"DONE", "COMPLETE", "COMPLETED"} else "active"
+            task = by_key[key]
+            # Unquoted gantt task names split on ':', so colons are sanitized.
+            label = _task_label(task, _task_text(task)).replace(":", "-")
+            state = "done" if _status_class(status) == "done" else "active"
             duration = max(1, (end - start).days + 1)
-            lines.append(f"    {key} {safe} : {state}, {start.isoformat()}, {duration}d")
+            lines.append(f"    {label} : {state}, {start.isoformat()}, {duration}d")
     return "\n".join(lines) + "\n"
+
+
+def gantt_unscheduled(tasks):
+    """Keys of tasks with no usable end date (own Deadline or a dependent's).
+
+    These cannot appear as gantt bars; callers list them under the chart.
+    """
+    by_key = {task.key: task for task in tasks}
+    unscheduled = []
+    for task in tasks:
+        end = task.deadline
+        if end is None:
+            dependent_deadlines = [
+                dep.deadline for dep in by_key.values()
+                if task.key in {k for k, _fn in parse_task_refs(dep.dependencies)}
+            ]
+            end = min(dependent_deadlines) if dependent_deadlines else None
+        if end is None:
+            unscheduled.append(task.key)
+    return unscheduled
 
 
 def task_issue_stamp(path):
@@ -255,12 +329,13 @@ def task_graph_mermaid(tasks):
         "flowchart TD",
         "    %% Solid arrow A --> B: B depends on A (blocked by A)",
         "    %% Dotted line A -. related .- B: A and B are related",
+        "    %% Colors: green done · blue in progress · dashed gray todo (not started)",
     ]
     gate_groups = {gate: [] for gate in GATE_ORDER}
     ungated = []
     for task in tasks:
-        label = task.title.replace('"', "'")
-        node = f'    T{task.key}["{task.key} {label}"]'
+        label = _task_label(task, _task_text(task))
+        node = f'    T{task.key}["{label}"]'
         gate = next(
             (GATE_TAG_TO_NAME[tag] for tag in task.tags if tag.lower().strip() in GATE_TAG_TO_NAME),
             None,
@@ -283,6 +358,12 @@ def task_graph_mermaid(tasks):
         lines.append(f"    T{source} --> T{target}")
     for source, target in sorted(related):
         lines.append(f"    T{source} -. related .- T{target}")
+    # Status classes (mermaid 11 syntax) + per-node assignment.
+    for status in ("done", "doing", "todo"):
+        lines.append(f"    classDef {status} {_STATUS_STYLES[status]}")
+    for task in tasks:
+        status = _status_class(task.status)
+        lines.append(f"    class T{task.key} {status};")
     return "\n".join(lines) + "\n"
 
 

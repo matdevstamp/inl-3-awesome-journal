@@ -25,11 +25,13 @@ from ..planner import (
     Task,
     draft_task_clean_body,
     draft_task_to_project_fields,
+    gantt_unscheduled,
     load_tasks,
     parse_task_refs,
     read_task,
     resolve_issue_stamps,
     schedule_warnings,
+    task_gantt_mermaid,
     task_graph_mermaid,
     task_issue_stamp,
     task_line,
@@ -767,7 +769,8 @@ class TestTaskGraphMermaid(unittest.TestCase):
             ),
         ]
         graph = task_graph_mermaid(tasks)
-        self.assertIn('T01["01 Contract"]', graph)
+        # Node labels carry checkbox progress + status (fixture path is missing -> 0/0).
+        self.assertIn('T01["01 Contract (0/0 · todo)"]', graph)
         self.assertIn("T01 --> T02", graph)
         self.assertIn("T01 -. related .- T03", graph)
 
@@ -800,6 +803,98 @@ class TestTaskGraphMermaid(unittest.TestCase):
         graph = task_graph_mermaid(tasks)
         self.assertIn('subgraph decisions["Gate 1-Decisions"]', graph)
         self.assertIn('subgraph features["Gate 3-Features"]', graph)
+
+    def test_status_colors_and_done_check(self):
+        tasks = [
+            _make_task(key="01", title="Prereq done", status="DONE"),
+            _make_task(key="02", title="Working now", status="IN PROGRESS"),
+            _make_task(key="03", title="Later task", status="TODO"),
+        ]
+        graph = task_graph_mermaid(tasks)
+        self.assertIn('T01["01 Prereq done ✓"]', graph)
+        self.assertIn('T02["02 Working now (0/0 · doing)"]', graph)
+        self.assertIn('T03["03 Later task (0/0 · todo)"]', graph)
+        self.assertIn("class T01 done;", graph)
+        self.assertIn("class T02 doing;", graph)
+        self.assertIn("class T03 todo;", graph)
+
+    def test_classdef_uses_mermaid_11_space_syntax(self):
+        graph = task_graph_mermaid([_make_task(key="01", title="X")])
+        self.assertIn("classDef done fill:#dcedc8,stroke:#558b2f,color:#1b5e20", graph)
+        self.assertIn("classDef doing fill:#dbe9fb,stroke:#1565c0,color:#0d47a1", graph)
+        self.assertIn("classDef todo fill:#ffffff,stroke:#b0bec5", graph)
+        # The legacy `classDef name,fill:…` form must never come back (parse error).
+        self.assertNotIn("classDef done,", graph)
+        self.assertNotIn("classDef doing,", graph)
+        self.assertNotIn("classDef todo,", graph)
+
+    def test_progress_counts_checkboxes_from_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "01-progress.md"
+            path.write_text(
+                "# Task: Progress\n\n## Tasks\n- [x] a\n- [x] b\n- [ ] c\n- [ ] d\n"
+            )
+            task = _make_task(key="01", title="Progress", path=path)
+            graph = task_graph_mermaid([task])
+        self.assertIn('T01["01 Progress (50% · 2/4 · todo)"]', graph)
+
+
+# ── Planner: task_gantt_mermaid ─────────────────────────────────────────────
+
+
+class TestTaskGanttMermaid(unittest.TestCase):
+    def test_gate_sections_and_done_state(self):
+        tasks = [
+            _make_task(
+                key="01",
+                title="Contract",
+                status="DONE",
+                deadline=date(2026, 9, 10),
+                effort="2h",
+                tags=("gate:1-decisions",),
+            ),
+            _make_task(
+                key="02",
+                title="DB choice",
+                deadline=date(2026, 9, 12),
+                effort="4h",
+                tags=("gate:1-decisions",),
+            ),
+        ]
+        chart = task_gantt_mermaid(tasks)
+        self.assertIn("section Gate 1-Decisions", chart)
+        # Done task: ✓ label + mermaid done state.
+        self.assertIn("01 Contract ✓ : done, 2026-09-10, 1d", chart)
+        # Open task: same label design with progress + status; effort 4h -> 1 day.
+        self.assertIn("02 DB choice (0/0 · todo) : active, 2026-09-12, 1d", chart)
+
+    def test_undated_task_omitted_from_chart(self):
+        """Undated tasks must not produce `: skipped, 0d` rows (mermaid render error)."""
+        tasks = [
+            _make_task(key="04", title="Dated anchor", deadline=date(2026, 9, 12), effort="2h"),
+            _make_task(key="05", title="No deadline", deadline=None, effort="3h"),
+        ]
+        chart = task_gantt_mermaid(tasks)
+        self.assertNotIn("skipped", chart)
+        self.assertIn("04 Dated anchor (0/0 · todo) : active, 2026-09-12, 1d", chart)
+        # … and the unscheduled helper reports it for the doc note.
+        self.assertEqual(gantt_unscheduled(tasks), ["05"])
+
+    def test_no_dates_short_circuit(self):
+        task = _make_task(key="05", title="No deadline", deadline=None)
+        chart = task_gantt_mermaid([task])
+        self.assertTrue(chart.startswith("gantt"))
+        self.assertIn("no dates", chart)
+        self.assertEqual(gantt_unscheduled([task]), ["05"])
+
+    def test_colon_in_title_sanitized_for_gantt(self):
+        task = _make_task(
+            key="07", title="Flow: decide next", deadline=date(2026, 9, 12), effort="2h"
+        )
+        chart = task_gantt_mermaid([task])
+        # Unquoted gantt labels split on ':' — the date parser must see only one.
+        self.assertIn("07 Flow- decide next (0/0 · todo) : active, 2026-09-12, 1d", chart)
+        self.assertNotIn("Flow: decide", chart)
 
 
 if __name__ == "__main__":

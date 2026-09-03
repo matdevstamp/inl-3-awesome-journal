@@ -12,6 +12,7 @@ from .planner import (
     ROLE_TO_USER,
     draft_task_clean_body,
     draft_task_to_project_fields,
+    gantt_unscheduled,
     load_tasks,
     read_task,
     resolve_issue_stamps,
@@ -45,6 +46,39 @@ OBSOLETE_CUSTOM_FIELD_LABELS = (
     *["P0-critical", "P1-high", "P2-medium", "P3-low"],
     *(f"status:{name}" for name in ("todo", "in-progress", "blocked", "review", "done")),
 )
+
+# Legend blocks rendered above the diagrams in the generated markdown docs.
+GRAPH_LEGEND = """## Legend
+
+| Symbol | Meaning |
+|---|---|
+| `A --> B` (solid arrow) | B depends on A — B is **blocked by** A |
+| `A -. related .- B` (dotted line) | A and B are **related** (soft link, not a dependency) |
+| 🟢 green node | task **done** (marked ✓) |
+| 🔵 blue node | **in progress** |
+| ⬜ dashed-gray node | **todo** — not started |
+| `(50% · 3/6 · doing)` | checkbox progress: 3 of 6 task boxes ticked, then the status |
+| `(0/0 · todo)` | no checkboxes written yet — the checklist itself is still to be made |
+
+Nodes are grouped into **Gate** subgraphs when tagged (`gate:1-decisions` …
+`gate:5-delivery`). Tick `- [x]` boxes in the draft task files as the work
+happens, then regenerate this diagram to update the percentages.
+"""
+
+GANTT_LEGEND = """## Legend
+
+| Bar | Meaning |
+|---|---|
+| `✓` task | **done** — rendered in the mermaid `done` style |
+| plain task | **active** — scheduled work (or in progress) |
+| `(50% · 3/6 · doing)` | checkbox progress + status, same format as the dependency graph |
+
+Same design as the dependency graph: every task ends on its deadline (or on the
+earliest deadline of the tasks that depend on it); duration comes from the
+Estimated Effort. Tasks are grouped into Gate sections. Tasks with no usable
+date cannot be drawn as a bar — they are listed under the chart until they get
+a **Deadline**. (Mermaid gantt has no 'skipped' row state.)
+"""
 
 
 def build_parser():
@@ -291,6 +325,7 @@ def main():
                     if output_path.suffix.lower() == ".md":
                         # Markdown output renders the diagram on GitHub; do not hand-edit.
                         title = "Task Dependency Graph" if args.plan_command == "graph" else "Task Timeline (Gantt)"
+                        legend = GRAPH_LEGEND if args.plan_command == "graph" else GANTT_LEGEND
                         content = (
                             f"# {title}\n\n"
                             "_Auto-generated from the draft tasks in `docs/draft_tasks/`. "
@@ -300,10 +335,19 @@ def main():
                             "python3 -m project_management plan "
                             f"{args.plan_command} --output {output_path}\n"
                             "```\n\n"
-                            "```mermaid\n"
+                            f"{legend}"
+                            "\n```mermaid\n"
                             f"{mermaid}"
                             "```\n"
                         )
+                        if args.plan_command == "gantt":
+                            unscheduled = gantt_unscheduled(tasks)
+                            if unscheduled:
+                                content += (
+                                    "\n_Not scheduled yet (no **Deadline** — add one to draw a bar): "
+                                    + ", ".join(f"`{key}`" for key in unscheduled)
+                                    + "_\n"
+                                )
                         output_path.write_text(content, encoding="utf-8")
                     else:
                         output_path.write_text(mermaid, encoding="utf-8")

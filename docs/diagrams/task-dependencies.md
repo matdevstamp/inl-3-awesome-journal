@@ -8,40 +8,57 @@ Regenerate whenever task metadata changes:
 python3 -m project_management plan graph --output docs/diagrams/task-dependencies.md
 ```
 
+## Legend
+
+| Symbol | Meaning |
+|---|---|
+| `A --> B` (solid arrow) | B depends on A — B is **blocked by** A |
+| `A -. related .- B` (dotted line) | A and B are **related** (soft link, not a dependency) |
+| 🟢 green node | task **done** (marked ✓) |
+| 🔵 blue node | **in progress** |
+| ⬜ dashed-gray node | **todo** — not started |
+| `(50% · 3/6 · doing)` | checkbox progress: 3 of 6 task boxes ticked, then the status |
+| `(0/0 · todo)` | no checkboxes written yet — the checklist itself is still to be made |
+
+Nodes are grouped into **Gate** subgraphs when tagged (`gate:1-decisions` …
+`gate:5-delivery`). Tick `- [x]` boxes in the draft task files as the work
+happens, then regenerate this diagram to update the percentages.
+
 ```mermaid
 flowchart TD
     %% Solid arrow A --> B: B depends on A (blocked by A)
     %% Dotted line A -. related .- B: A and B are related
+    %% Colors: green done · blue in progress · dashed gray todo (not started)
     subgraph decisions["Gate 1-Decisions"]
-    T01["01 Project Setup & Group Contract"]
-    T02["02 Database Choice Discussion"]
-    T03["03 Graphify Architecture Artifacts"]
+    T01["01 Project Setup & Group Contract (0% · 0/26 · todo)"]
+    T02["02 Database Choice Discussion (0% · 0/15 · todo)"]
+    T03["03 Graphify Architecture Artifacts (0% · 0/7 · todo)"]
     end
     subgraph scaffold["Gate 2-Scaffold"]
-    T04["04 Database Design & Setup"]
-    T05["05 Vite + Tailwind CSS + shadcn/ui Setup"]
-    T06["06 Backend Project Setup"]
-    T07["07 TypeScript Strict Configuration"]
-    T08["08 ESLint + Prettier Configuration"]
-    T09["09 Playwright E2E Testing"]
-    T10["10 GitHub Actions CI/CD Workflow"]
+    T04["04 Database Design & Setup (0% · 0/18 · todo)"]
+    T05["05 Vite + Tailwind CSS + shadcn/ui Setup (0% · 0/21 · todo)"]
+    T06["06 Backend Project Setup (0% · 0/28 · todo)"]
+    T07["07 TypeScript Strict Configuration (0% · 0/21 · todo)"]
+    T08["08 ESLint + Prettier Configuration (0% · 0/22 · todo)"]
+    T09["09 Playwright E2E Testing (0% · 0/27 · todo)"]
+    T10["10 GitHub Actions CI/CD Workflow (0% · 0/32 · todo)"]
     end
     subgraph features["Gate 3-Features"]
-    T11["11 Backend API & Authentication"]
-    T12["12 Frontend UI Development"]
-    T13["13 Patient View & Search"]
-    T14["14 Medical Notes with Visibility Control"]
-    T15["15 Blockchain Access Logging"]
-    T16["16 P2P Network Implementation"]
+    T11["11 Backend API & Authentication (0% · 0/24 · todo)"]
+    T12["12 Frontend UI Development (0% · 0/30 · todo)"]
+    T13["13 Patient View & Search (0% · 0/25 · todo)"]
+    T14["14 Medical Notes with Visibility Control (0% · 0/23 · todo)"]
+    T15["15 Blockchain Access Logging (0% · 0/23 · todo)"]
+    T16["16 P2P Network Implementation (0% · 0/24 · todo)"]
     end
     subgraph integration["Gate 4-Integration"]
-    T17["17 User Roles & Access Control"]
-    T18["18 Socket.io Broadcasting"]
+    T17["17 User Roles & Access Control (0% · 0/20 · todo)"]
+    T18["18 Socket.io Broadcasting (0% · 0/24 · todo)"]
     end
     subgraph delivery["Gate 5-Delivery"]
-    T19["19 Testing & Quality Assurance"]
-    T20["20 Documentation & README"]
-    T21["21 Presentation Preparation"]
+    T19["19 Testing & Quality Assurance (0% · 0/27 · todo)"]
+    T20["20 Documentation & README (0% · 0/34 · todo)"]
+    T21["21 Presentation Preparation (0% · 0/23 · todo)"]
     end
     T01 --> T02
     T01 --> T03
@@ -104,4 +121,28 @@ flowchart TD
     T13 -. related .- T14
     T15 -. related .- T18
     T19 -. related .- T20
+    classDef done fill:#dcedc8,stroke:#558b2f,color:#1b5e20
+    classDef doing fill:#dbe9fb,stroke:#1565c0,color:#0d47a1
+    classDef todo fill:#ffffff,stroke:#b0bec5,color:#546e7a,stroke-dasharray:5 4
+    class T01 todo;
+    class T02 todo;
+    class T03 todo;
+    class T04 todo;
+    class T05 todo;
+    class T06 todo;
+    class T07 todo;
+    class T08 todo;
+    class T09 todo;
+    class T10 todo;
+    class T11 todo;
+    class T12 todo;
+    class T13 todo;
+    class T14 todo;
+    class T15 todo;
+    class T16 todo;
+    class T17 todo;
+    class T18 todo;
+    class T19 todo;
+    class T20 todo;
+    class T21 todo;
 ```
