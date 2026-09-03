@@ -16,6 +16,7 @@ from .planner import (
     read_task,
     resolve_issue_stamps,
     schedule_warnings,
+    task_gantt_mermaid,
     task_graph_mermaid,
     task_issue_stamp,
     task_line,
@@ -70,6 +71,9 @@ def build_parser():
     graph = plan_commands.add_parser("graph", help="Print a Mermaid graph of task relationships.")
     graph.add_argument("--directory", default="docs/draft_tasks")
     graph.add_argument("--output", help="Write the diagram to this file instead of stdout.")
+    gantt = plan_commands.add_parser("gantt", help="Print a Mermaid Gantt chart of the timeline.")
+    gantt.add_argument("--directory", default="docs/draft_tasks")
+    gantt.add_argument("--output", help="Write the diagram to this file instead of stdout.")
 
     deps = commands.add_parser(
         "deps", help="Synchronize issue relationships (blocked by / related) on GitHub."
@@ -277,20 +281,24 @@ def main():
     try:
         if args.command == "plan":
             tasks = load_tasks(args.directory)
-            if args.plan_command == "graph":
-                mermaid = task_graph_mermaid(tasks)
+            if args.plan_command in ("graph", "gantt"):
+                if args.plan_command == "graph":
+                    mermaid = task_graph_mermaid(tasks)
+                else:
+                    mermaid = task_gantt_mermaid(tasks)
                 if args.output:
                     output_path = Path(args.output)
                     if output_path.suffix.lower() == ".md":
                         # Markdown output renders the diagram on GitHub; do not hand-edit.
+                        title = "Task Dependency Graph" if args.plan_command == "graph" else "Task Timeline (Gantt)"
                         content = (
-                            "# Task Dependency Graph\n\n"
+                            f"# {title}\n\n"
                             "_Auto-generated from the draft tasks in `docs/draft_tasks/`. "
                             "Do not edit by hand._\n\n"
                             "Regenerate whenever task metadata changes:\n\n"
                             "```bash\n"
-                            "python3 -m project_management plan graph --output "
-                            f"{output_path}\n"
+                            "python3 -m project_management plan "
+                            f"{args.plan_command} --output {output_path}\n"
                             "```\n\n"
                             "```mermaid\n"
                             f"{mermaid}"

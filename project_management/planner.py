@@ -102,6 +102,96 @@ def parse_task_refs(value):
     return [(match.group(1), match.group(0)) for match in _REF_TOKEN.finditer(value or "")]
 
 
+def task_gantt_mermaid(tasks):
+    """Build a Mermaid Gantt chart from task deadlines, effort, and dependencies.
+
+    Scheduling: every task ends on its deadline (or on the earliest deadline of
+    the tasks that depend on it); duration comes from Estimated Effort; start is
+    end minus duration. Tasks are grouped into gate sections.
+    """
+    import datetime as _dt
+
+    def _effort_days(effort):
+        """Map an effort string to calendar days (rounded up)."""
+        effort = effort.strip().lower()
+        match = re.search(r"(\d+)", effort)
+        if not match:
+            return 2
+        num = float(match.group(1))
+        if "day" in effort:
+            return max(1, int(num))
+        if "week" in effort:
+            return max(1, int(num * 5))
+        return max(1, int(num / 6.0) + 1)  # hours -> ~6h work days
+
+    by_key = {task.key: task for task in tasks}
+
+    # Section per gate, in the canonical order.
+    gate_tasks = {gate: [] for gate in GATE_ORDER}
+    other = []
+    for task in tasks:
+        gate = next(
+            (GATE_TAG_TO_NAME[tag] for tag in task.tags if tag.lower().strip() in GATE_TAG_TO_NAME),
+            None,
+        )
+        (gate_tasks[gate] if gate else other).append(task)
+
+    def _deadline(task):
+        """A task's due date: its own deadline, or the earliest deadline of its dependents."""
+        if task.deadline:
+            return task.deadline
+        dependent_deadlines = [
+            dep.deadline for dep in by_key.values() if task.key in {
+                k for k, _fn in parse_task_refs(dep.dependencies)
+            }
+        ]
+        return min(dependent_deadlines) if dependent_deadlines else None
+
+    # Compute start/end dates.
+    rows = []  # (key, title, gate, start, end, status)
+    for task in tasks:
+        end = _deadline(task)
+        days = _effort_days(task.effort)
+        gate = next(
+            (GATE_TAG_TO_NAME[tag] for tag in task.tags if tag.lower().strip() in GATE_TAG_TO_NAME),
+            "Other",
+        )
+        if end:
+            start = end - _dt.timedelta(days=days - 1)
+        else:
+            start = None
+        rows.append((task.key, task.title, gate, start, end, task.status))
+
+    # Earliest start -> chart range.
+    dated = [r for r in rows if r[3]]
+    if not dated:
+        return "gantt\n    title Task Timeline (no dates)\n"
+    min_start = min(r[3] for r in dated)
+    max_end = max(r[4] for r in dated)
+
+    lines = [
+        "gantt",
+        "    title Project Timeline",
+        "    dateFormat  YYYY-MM-DD",
+        "    axisFormat  %b %d",
+        "",
+    ]
+    for gate in GATE_ORDER + ["Other"]:
+        gate_rows = [r for r in rows if r[2] == gate]
+        if not gate_rows:
+            continue
+        lines.append(f"    section Gate {gate}")
+        for key, title, _g, start, end, status in gate_rows:
+            safe = title.replace('"', "'").replace(":", "-")
+            if start is None or end is None:
+                lines.append(f"    {key} {safe} : skipped, 0d")
+                continue
+            state = "done" if status.upper() in {"DONE", "COMPLETE", "COMPLETED"} else "active"
+            duration = max(1, (end - start).days + 1)
+            lines.append(f"    {key} {safe} : {state}, {start.isoformat()}, {duration}d")
+    return "\n".join(lines) + "\n"
+
+
 def task_issue_stamp(path):
     """Return the GitHub issue number stamped on a draft file, or None."""
     match = _ISSUE_STAMP.search(path.read_text(encoding="utf-8"))
