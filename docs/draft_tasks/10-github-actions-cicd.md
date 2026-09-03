@@ -7,6 +7,7 @@
 - **Assignee:** TBD
 - **Tags:** ci/cd, github-actions, automation, required, gate:2-scaffold
 - **Dependencies:** 05-vite-tailwind-shadcn.md, 08-eslint-prettier-config.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
+- **Related:** 09-playwright-e2e-testing.md
 - **Estimated Effort:** 3h
 
 ## Requirements

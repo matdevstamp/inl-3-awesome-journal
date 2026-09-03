@@ -2,6 +2,7 @@ import argparse
 import contextlib
 import json
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 from .bug_reports import load_reports, promote_report, triage_report
@@ -13,10 +14,22 @@ from .planner import (
     draft_task_to_project_fields,
     load_tasks,
     read_task,
+    resolve_issue_stamps,
     schedule_warnings,
+    task_graph_mermaid,
+    task_issue_stamp,
     task_line,
     task_state,
+    update_related_line,
     update_task_reference,
+)
+from .reporting import (
+    build_report,
+    diff_reports,
+    load_snapshot,
+    save_snapshot,
+    snapshot_for_report,
+    write_report_xlsx,
 )
 
 LABELS = (
@@ -43,15 +56,44 @@ def build_parser():
 
     plan = commands.add_parser("plan", help="Review the local project plan.")
     plan_commands = plan.add_subparsers(dest="plan_command", required=True)
-    plan_show = plan_commands.add_parser(
-        "show", help="Show tasks, deadlines, and assignments."
-    )
+    plan_show = plan_commands.add_parser("show", help="Show tasks, deadlines, and assignments.")
     plan_show.add_argument("--directory", default="docs/draft_tasks")
     plan_show.add_argument("--only", choices=("unassigned", "overdue", "planned", "done"))
-    kickoff = plan_commands.add_parser("kickoff", help="Show the recommended four-person task split.")
+    kickoff = plan_commands.add_parser(
+        "kickoff", help="Show the recommended four-person task split."
+    )
     kickoff.add_argument("--directory", default="docs/draft_tasks")
-    check = plan_commands.add_parser("check", help="Warn about schedule collisions and dependency problems.")
+    check = plan_commands.add_parser(
+        "check", help="Warn about schedule collisions and dependency problems."
+    )
     check.add_argument("--directory", default="docs/draft_tasks")
+    graph = plan_commands.add_parser("graph", help="Print a Mermaid graph of task relationships.")
+    graph.add_argument("--directory", default="docs/draft_tasks")
+    graph.add_argument("--output", help="Write the diagram to this file instead of stdout.")
+
+    deps = commands.add_parser(
+        "deps", help="Synchronize issue relationships (blocked by / related) on GitHub."
+    )
+    deps_commands = deps.add_subparsers(dest="deps_command", required=True)
+    deps_sync = deps_commands.add_parser(
+        "sync",
+        help="Apply draft dependencies/related to GitHub issues (idempotent, creates no issues).",
+    )
+    deps_sync.add_argument("--draft-directory", default="docs/draft_tasks")
+    deps_sync.add_argument(
+        "--dry-run", action="store_true", help="Show what would change without writing."
+    )
+
+    report = commands.add_parser(
+        "report", help="Stakeholder reports that merge GitHub state with the local plan."
+    )
+    report_commands = report.add_subparsers(dest="report_command", required=True)
+    report_export = report_commands.add_parser(
+        "export",
+        help="Export an .xlsx stakeholder workbook (Overview, Changelog, Tasks, Questions).",
+    )
+    report_export.add_argument("--output", default="stakeholder-report.xlsx")
+    report_export.add_argument("--draft-directory", default="docs/draft_tasks")
 
     bug = commands.add_parser("bug", help="Review and promote raw bug reports.")
     bug_commands = bug.add_subparsers(dest="bug_command", required=True)
@@ -60,10 +102,25 @@ def build_parser():
     bug_list.add_argument("--status", dest="bug_status")
     triage = bug_commands.add_parser("triage", help="Set a report's lead triage status.")
     triage.add_argument("report_id")
-    triage.add_argument("--status", required=True, choices=("untriaged", "accepted", "duplicate", "not-reproducible", "expected-behavior", "in-progress", "verified", "closed"))
+    triage.add_argument(
+        "--status",
+        required=True,
+        choices=(
+            "untriaged",
+            "accepted",
+            "duplicate",
+            "not-reproducible",
+            "expected-behavior",
+            "in-progress",
+            "verified",
+            "closed",
+        ),
+    )
     triage.add_argument("--lead-owner")
     triage.add_argument("--csv", default="docs/bug-reports.csv")
-    promote = bug_commands.add_parser("promote", help="Convert an accepted report into a stamped draft task.")
+    promote = bug_commands.add_parser(
+        "promote", help="Convert an accepted report into a stamped draft task."
+    )
     promote.add_argument("report_id")
     promote.add_argument("--csv", default="docs/bug-reports.csv")
     promote.add_argument("--draft-directory", default="docs/draft_tasks")
@@ -106,6 +163,22 @@ def build_parser():
     task_create.add_argument("--assignee")
     task_create.add_argument("--deadline", help="ISO date, recorded in the issue body.")
     task_create.add_argument(
+        "--depends-on",
+        action="append",
+        dest="depends_on",
+        default=[],
+        type=int,
+        help="Issue number this task is blocked by (may be repeated).",
+    )
+    task_create.add_argument(
+        "--related-to",
+        action="append",
+        dest="related_to",
+        default=[],
+        type=int,
+        help="Issue number this task is related to (may be repeated); recorded in the issue body.",
+    )
+    task_create.add_argument(
         "--draft",
         help="Path to a draft task markdown file. On success the file is stamped with the GitHub issue reference.",
     )
@@ -145,11 +218,73 @@ def status_report(client, state):
     return {"repository": client.repository, "issues": issues, "count": len(issues)}
 
 
+def deps_sync(client, draft_directory, dry_run=False):
+    """Apply draft Dependencies/Related metadata to stamped GitHub issues.
+
+    Idempotent and additive: only missing 'blocked by' relationships are
+    created and the Related line is only added to an issue body when absent.
+    No issues are created.
+
+    Returns a summary dict for reporting.
+    """
+    results = []
+    linked = 0
+    related_updated = 0
+    for task in load_tasks(draft_directory):
+        issue_number = task_issue_stamp(task.path)
+        if issue_number is None:
+            continue
+        entry = {
+            "issue": issue_number,
+            "title": task.title,
+            "blocked_by": [],
+            "related": [],
+            "skipped": [],
+        }
+        dep_numbers, dep_unresolved = resolve_issue_stamps(task.path, task.dependencies)
+        rel_numbers, rel_unresolved = resolve_issue_stamps(task.path, ", ".join(task.related))
+        entry["skipped"] = dep_unresolved + rel_unresolved
+
+        # Blocked by: add only relationships that are missing.
+        existing = {dep["number"] for dep in client.list_dependencies(issue_number)}
+        for dep_number in dict.fromkeys(dep_numbers):
+            if dep_number in existing:
+                continue
+            if not dry_run:
+                blocking = client.issue(dep_number)
+                client.add_dependency(issue_number, blocking["id"])
+            entry["blocked_by"].append(dep_number)
+            linked += 1
+
+        # Related: GitHub has no native relationship type, so record it as a
+        # ``**Related:**`` line in the issue body (idempotent).
+        related_numbers = list(dict.fromkeys(rel_numbers))
+        if related_numbers:
+            body = client.issue(issue_number).get("body") or ""
+            if update_related_line(body, related_numbers) != body:
+                if not dry_run:
+                    client.update_issue(
+                        issue_number, body=update_related_line(body, related_numbers)
+                    )
+                entry["related"] = related_numbers
+                related_updated += 1
+        results.append(entry)
+    return {"results": results, "linked": linked, "related_updated": related_updated}
+
+
 def main():
     args = build_parser().parse_args()
     try:
         if args.command == "plan":
             tasks = load_tasks(args.directory)
+            if args.plan_command == "graph":
+                mermaid = task_graph_mermaid(tasks)
+                if args.output:
+                    Path(args.output).write_text(mermaid, encoding="utf-8")
+                    print(f"Wrote {args.output}")
+                else:
+                    print(mermaid, end="")
+                return
             if args.plan_command == "check":
                 warnings = schedule_warnings(tasks)
                 if args.json:
@@ -161,6 +296,7 @@ def main():
                     print("Schedule looks consistent.")
                 return
             if args.plan_command == "kickoff":
+
                 def _resolve(role_name):
                     """Map a placeholder like 'Person 1' to a real GitHub username."""
                     if ROLE_TO_USER.get(role_name):
@@ -174,13 +310,19 @@ def main():
                         "deadline": task.deadline.isoformat() if task.deadline else None,
                         "assignee": _resolve(KICKOFF_ASSIGNMENTS.get(task.key, task.assignee)),
                         "dependencies": task.dependencies,
+                        "related": list(task.related),
                     }
                     for task in tasks
                 ]
-                output(assignments if args.json else [
-                    f"{item['key']} | {item['deadline'] or 'no deadline'} | {item['assignee']:20} | {item['title']}"
-                    for item in assignments
-                ], args.json)
+                output(
+                    assignments
+                    if args.json
+                    else [
+                        f"{item['key']} | {item['deadline'] or 'no deadline'} | {item['assignee']:20} | {item['title']}"
+                        for item in assignments
+                    ],
+                    args.json,
+                )
                 return
             if args.only:
                 tasks = tuple(task for task in tasks if task_state(task) == args.only)
@@ -194,6 +336,7 @@ def main():
                             "status": task.status,
                             "assignee": task.assignee,
                             "dependencies": task.dependencies,
+                            "related": list(task.related),
                             "effort": task.effort,
                         }
                         for task in tasks
@@ -210,12 +353,16 @@ def main():
             if args.bug_command == "list":
                 reports = load_reports(args.csv)
                 if args.bug_status:
-                    reports = tuple(report for report in reports if report.status == args.bug_status)
+                    reports = tuple(
+                        report for report in reports if report.status == args.bug_status
+                    )
                 if args.json:
                     output([report.values for report in reports], True)
                 else:
                     for report in reports:
-                        print(f"{report.report_id} | {report.status:16} | {report.values.get('summary', '')}")
+                        print(
+                            f"{report.report_id} | {report.status:16} | {report.values.get('summary', '')}"
+                        )
                 return
             if args.bug_command == "triage":
                 triage_report(args.csv, args.report_id, args.status, args.lead_owner)
@@ -230,6 +377,53 @@ def main():
                 output(f"Created stamped draft task: {draft_path}")
                 return
 
+        if args.command == "report":
+            # Reports are useful even without GitHub access, so auth is optional here.
+            github, repository = {}, ""
+            try:
+                client = GitHubClient()
+                repository = client.repository
+                for issue in client.issues("all"):
+                    if "pull_request" in issue:
+                        continue
+                    github[issue["number"]] = {
+                        "state": issue.get("state", "open"),
+                        "url": issue.get("html_url", ""),
+                    }
+            except GitHubError as exc:
+                print(
+                    f"Warning: GitHub unreachable ({exc}); exporting the planned view.",
+                    file=sys.stderr,
+                )
+            report_data = build_report(args.draft_directory, github)
+            generated_at = datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
+            if args.json:
+                output(report_data, True)
+                return
+            snapshot_path = Path(args.output).with_suffix(".snapshot.json")
+            previous = load_snapshot(snapshot_path)
+            entries = diff_reports(previous, report_data)
+            baseline = previous.get("generated_at") if previous else None
+            path = write_report_xlsx(
+                args.output,
+                report_data,
+                generated_at=generated_at,
+                repository=repository,
+                changelog={"baseline": baseline, "entries": entries},
+            )
+            save_snapshot(snapshot_path, snapshot_for_report(report_data, generated_at, repository))
+            print(f"Wrote {path}")
+            summary = report_data["summary"]
+            print(
+                f"{summary['tasks']} tasks: {summary['planned']} planned, "
+                f"{summary['open']} open, {summary['closed']} closed"
+            )
+            if baseline:
+                print(f"Changelog: {len(entries)} change(s) since {baseline}")
+            else:
+                print("Changelog: no previous snapshot; baseline established")
+            return
+
         client = GitHubClient()
         if args.command == "status":
             report = status_report(client, args.state)
@@ -241,10 +435,20 @@ def main():
                     print(issue_line(issue))
         elif args.command == "issue":
             if args.issue_command == "list":
-                issues = [issue for issue in client.issues(args.state) if "pull_request" not in issue]
+                issues = [
+                    issue for issue in client.issues(args.state) if "pull_request" not in issue
+                ]
                 output(issues if args.json else [issue_line(issue) for issue in issues], args.json)
             elif args.issue_command == "view":
-                output(client.issue(args.number), args.json)
+                issue = client.issue(args.number)
+                dependencies = client.list_dependencies(args.number)
+                if args.json:
+                    issue["blocked_by"] = dependencies
+                    output(issue, True)
+                else:
+                    output(issue, args.json)
+                    for dep in dependencies:
+                        print(f"Blocked by #{dep['number']} {dep['title']}")
             elif args.issue_command == "create":
                 body = args.body
                 if args.deadline:
@@ -264,29 +468,80 @@ def main():
             elif args.issue_command == "comment":
                 output(client.comment(args.number, args.body), args.json)
         elif args.command == "task":
-            if args.draft:
+            draft_path = Path(args.draft) if args.draft else None
+            draft_task = None
+            if draft_path:
                 # --draft: build body from the clean draft sections, metadata goes to project fields
-                draft_path = Path(args.draft)
                 body = args.body or draft_task_clean_body(draft_path)
             else:
                 body = args.body
                 if args.deadline:
                     body = f"**Deadline:** {args.deadline}\n\n{body}".strip()
+            # Resolve relationship references from draft metadata and flags
+            dependency_numbers = list(args.depends_on)
+            related_numbers = list(args.related_to)
+            unresolved = []
+            if draft_path:
+                draft_task = read_task(draft_path)
+                metadata_deps, dep_unresolved = resolve_issue_stamps(
+                    draft_path, draft_task.dependencies
+                )
+                metadata_related, rel_unresolved = resolve_issue_stamps(
+                    draft_path, ", ".join(draft_task.related)
+                )
+                dependency_numbers.extend(metadata_deps)
+                related_numbers.extend(metadata_related)
+                unresolved = dep_unresolved + rel_unresolved
+            if related_numbers:
+                related_line = "**Related:** " + ", ".join(
+                    f"#{number}" for number in dict.fromkeys(related_numbers)
+                )
+                body = f"{body}\n\n{related_line}" if body else related_line
             issue = client.create_issue(args.title, body, args.labels, args.assignee)
             output(issue, args.json)
-            if args.draft:
+            if draft_path:
                 # Stamp the draft file with the issue reference
                 update_task_reference(draft_path, issue["number"], issue["html_url"])
                 print(f"Updated {draft_path} with issue #{issue['number']}")
                 # Stamp project custom fields from draft metadata
                 try:
-                    task = read_task(draft_path)
-                    fields = draft_task_to_project_fields(task)
+                    fields = draft_task_to_project_fields(draft_task)
                     client.stamp_project_fields(issue["number"], fields)
                     field_summary = ", ".join(f"{k}={v}" for k, v in fields.items())
                     print(f"Set project fields: {field_summary}")
                 except Exception as exc:
                     print(f"Warning: could not set project fields: {exc}")
+                if unresolved:
+                    print(
+                        "Warning: unlinked dependencies (no GitHub Issue stamp): "
+                        + ", ".join(unresolved)
+                    )
+            # Link native 'blocked by' relationships on GitHub
+            for dep_number in dict.fromkeys(dependency_numbers):
+                try:
+                    blocking = client.issue(dep_number)
+                    client.add_dependency(issue["number"], blocking["id"])
+                    print(f"Linked #{issue['number']} as blocked by #{dep_number}")
+                except GitHubError as exc:
+                    print(f"Warning: could not link dependency #{dep_number}: {exc}")
+        elif args.command == "deps":
+            summary = deps_sync(client, args.draft_directory, args.dry_run)
+            if args.json:
+                output(summary, True)
+            else:
+                for entry in summary["results"]:
+                    print(f"#{entry['issue']} {entry['title']}")
+                    if entry["blocked_by"]:
+                        print("  blocked by: " + ", ".join(f"#{n}" for n in entry["blocked_by"]))
+                    if entry["related"]:
+                        print("  related: " + ", ".join(f"#{n}" for n in entry["related"]))
+                    if entry["skipped"]:
+                        print("  skipped (unstamped drafts): " + ", ".join(entry["skipped"]))
+                verb = "Would link" if args.dry_run else "Linked"
+                print(
+                    f"{verb} {summary['linked']} blocked-by relationship(s), "
+                    f"updated {summary['related_updated']} Related line(s)"
+                )
         elif args.command == "project":
             output(client.project_overview(), args.json)
         elif args.command == "pr":

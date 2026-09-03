@@ -29,7 +29,9 @@ class GitHubClient:
         try:
             result = subprocess.run(
                 ["gh", "auth", "token"],
-                capture_output=True, text=True, timeout=10,
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
             if result.returncode == 0:
                 return result.stdout.strip()
@@ -66,7 +68,9 @@ class GitHubClient:
             base_url=self.graphql_url,
         )
         if result.get("errors"):
-            messages = "; ".join(error.get("message", "Unknown error") for error in result["errors"])
+            messages = "; ".join(
+                error.get("message", "Unknown error") for error in result["errors"]
+            )
             raise GitHubError(f"GitHub GraphQL error: {messages}")
         return result.get("data", {})
 
@@ -90,6 +94,31 @@ class GitHubClient:
 
     def pull_requests(self, state="open"):
         return self.request("GET", f"/pulls?state={quote(state)}&per_page=100")
+
+    def add_dependency(self, issue_number, blocking_issue_id):
+        """Link an issue as blocked by another issue (native GitHub dependency).
+
+        ``blocking_issue_id`` is the numeric ``id`` of the blocking issue,
+        not its number. Adding an existing relationship is rejected by GitHub
+        (422), so callers should check list_dependencies() first.
+        """
+        return self.request(
+            "POST",
+            f"/issues/{issue_number}/dependencies/blocked_by",
+            {"issue_id": blocking_issue_id},
+        )
+
+    def list_dependencies(self, issue_number):
+        """Return the issues a given issue is blocked by."""
+        return self.request("GET", f"/issues/{issue_number}/dependencies/blocked_by")
+
+    def remove_dependency(self, issue_number, blocking_issue_id):
+        """Remove a 'blocked by' relationship from an issue."""
+        return self.request(
+            "DELETE",
+            f"/issues/{issue_number}/dependencies/blocked_by",
+            {"issue_id": blocking_issue_id},
+        )
 
     def create_label(self, name, color, description):
         return self.request(
@@ -171,11 +200,14 @@ class GitHubClient:
         }
         """
         owner, name = self.repository.split("/", 1)
-        data = self.graphql(query, {
-            "issue_number": issue_number,
-            "repo_name": name,
-            "owner": owner,
-        })
+        data = self.graphql(
+            query,
+            {
+                "issue_number": issue_number,
+                "repo_name": name,
+                "owner": owner,
+            },
+        )
         items = data.get("repository", {}).get("issue", {}).get("projectItems", {}).get("nodes", [])
         for item in items:
             if item["project"]["id"] == project_id:
@@ -196,12 +228,15 @@ class GitHubClient:
             }
         }
         """
-        return self.graphql(mutation, {
-            "project_id": project_id,
-            "item_id": item_id,
-            "field_id": field_id,
-            "option_id": option_id,
-        })
+        return self.graphql(
+            mutation,
+            {
+                "project_id": project_id,
+                "item_id": item_id,
+                "field_id": field_id,
+                "option_id": option_id,
+            },
+        )
 
     def set_project_number(self, project_id, item_id, field_id, number_value):
         """Set a number project field value."""
@@ -217,12 +252,15 @@ class GitHubClient:
             }
         }
         """
-        return self.graphql(mutation, {
-            "project_id": project_id,
-            "item_id": item_id,
-            "field_id": field_id,
-            "number": float(number_value),
-        })
+        return self.graphql(
+            mutation,
+            {
+                "project_id": project_id,
+                "item_id": item_id,
+                "field_id": field_id,
+                "number": float(number_value),
+            },
+        )
 
     def set_project_date(self, project_id, item_id, field_id, date_str):
         """Set a date project field value (YYYY-MM-DD)."""
@@ -238,12 +276,15 @@ class GitHubClient:
             }
         }
         """
-        return self.graphql(mutation, {
-            "project_id": project_id,
-            "item_id": item_id,
-            "field_id": field_id,
-            "date": date_str,
-        })
+        return self.graphql(
+            mutation,
+            {
+                "project_id": project_id,
+                "item_id": item_id,
+                "field_id": field_id,
+                "date": date_str,
+            },
+        )
 
     # Field names that accept date values (not single-select)
     _DATE_FIELDS: ClassVar[set[str]] = {"Start date", "Target date"}
@@ -270,8 +311,7 @@ class GitHubClient:
         item_id = self._get_project_item_id(project_id, issue_number)
         if not item_id:
             raise GitHubError(
-                f"Issue #{issue_number} is not in the project. "
-                "Add it to the project board first."
+                f"Issue #{issue_number} is not in the project. Add it to the project board first."
             )
         # Fetch field IDs and option IDs
         query = """
@@ -298,10 +338,7 @@ class GitHubClient:
         for field in data["node"]["fields"]["nodes"]:
             field_map[field["name"]] = {
                 "id": field["id"],
-                "options": {
-                    opt["name"]: opt["id"]
-                    for opt in field.get("options", [])
-                },
+                "options": {opt["name"]: opt["id"] for opt in field.get("options", [])},
             }
         for field_name, value in fields_dict.items():
             if field_name not in field_map:
@@ -318,6 +355,8 @@ class GitHubClient:
                         f"Valid options: {', '.join(field_info['options'].keys())}"
                     )
                 self.set_project_single_select(
-                    project_id, item_id,
-                    field_info["id"], field_info["options"][value],
+                    project_id,
+                    item_id,
+                    field_info["id"],
+                    field_info["options"][value],
                 )

@@ -7,6 +7,7 @@
 - **Assignee:** TBD
 - **Tags:** testing, e2e, playwright, required, gate:2-scaffold
 - **Dependencies:** 05-vite-tailwind-shadcn.md, 06-backend-project-setup.md, 07-typescript-strict-config.md, 08-eslint-prettier-config.md
+- **Related:** 10-github-actions-cicd.md, 19-testing.md
 - **Estimated Effort:** 8h
 
 ## Requirements

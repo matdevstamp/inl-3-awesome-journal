@@ -2,9 +2,8 @@ import csv
 import os
 import tempfile
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-
 
 CSV_FIELDS = (
     "report_id",
@@ -69,14 +68,16 @@ def promote_report(csv_path, report_id, draft_directory, assignee, deadline):
     if report.values.get("privacy_checked", "").lower() != "yes":
         raise ValueError(f"Bug report {report_id} must pass the privacy check before promotion.")
     if report.values.get("draft_task"):
-        raise ValueError(f"Bug report {report_id} already has draft task {report.values['draft_task']}.")
+        raise ValueError(
+            f"Bug report {report_id} already has draft task {report.values['draft_task']}."
+        )
 
     safe_id = report_id.lower().replace(" ", "-")
     draft_path = Path(draft_directory) / f"bug-{safe_id}.md"
     draft_path.parent.mkdir(parents=True, exist_ok=True)
     if draft_path.exists():
         raise ValueError(f"Draft task already exists: {draft_path}")
-    created_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    created_at = datetime.now(UTC).replace(microsecond=0).isoformat()
     values = report.values
     title = values.get("summary") or f"Resolve {report_id}"
     body = f"""# Task: Bug fix - {title}
@@ -84,12 +85,12 @@ def promote_report(csv_path, report_id, draft_directory, assignee, deadline):
 ## Metadata
 - **Source bug report:** {report_id}
 - **Source file:** {csv_path}
-- **Reported at:** {values.get('reported_at', '')}
+- **Reported at:** {values.get("reported_at", "")}
 - **Created from report at:** {created_at}
-- **Priority:** {values.get('severity', 'TBD')}
-- **Deadline:** {deadline or 'TBD'}
+- **Priority:** {values.get("severity", "TBD")}
+- **Deadline:** {deadline or "TBD"}
 - **Status:** TODO
-- **Assignee:** {assignee or 'TBD'}
+- **Assignee:** {assignee or "TBD"}
 - **Tags:** bug, regression, e2e
 - **Dependencies:** None
 - **Estimated Effort:** TBD
@@ -103,13 +104,13 @@ def promote_report(csv_path, report_id, draft_directory, assignee, deadline):
 
 ## Reproduction
 
-**Steps:** {values.get('steps_to_reproduce', 'Record sanitized reproduction steps.')}
+**Steps:** {values.get("steps_to_reproduce", "Record sanitized reproduction steps.")}
 
-**Expected:** {values.get('expected_behavior', 'Document the expected behavior.')}
+**Expected:** {values.get("expected_behavior", "Document the expected behavior.")}
 
-**Actual:** {values.get('actual_behavior', 'Document the observed behavior.')}
+**Actual:** {values.get("actual_behavior", "Document the observed behavior.")}
 
-**Environment:** {values.get('environment', 'Record the relevant local or CI environment.')}
+**Environment:** {values.get("environment", "Record the relevant local or CI environment.")}
 
 ## Tasks
 

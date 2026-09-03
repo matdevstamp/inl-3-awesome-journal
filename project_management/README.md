@@ -62,6 +62,16 @@ These commands read the draft task files in `docs/draft_tasks/` and give you a q
 | `python3 -m project_management plan show --only unassigned` | Filters to tasks with no assignee |
 | `python3 -m project_management plan kickoff` | Shows the recommended 4-person task split |
 | `python3 -m project_management plan check` | Warns about deadline collisions and broken dependencies |
+| `python3 -m project_management plan graph` | Prints a Mermaid graph of task dependencies and relations |
+| `python3 -m project_management plan graph --output docs/diagrams/task-dependencies.mmd` | Writes the graph to a file |
+
+### Issue Relationships (Dependencies & Related)
+
+| Command | What it does |
+|---------|-------------|
+| `python3 -m project_management deps sync` | Applies draft `Dependencies:`/`Related:` metadata to stamped GitHub issues as native "blocked by" links and `**Related:**` body lines (idempotent — creates no issues) |
+| `python3 -m project_management deps sync --dry-run` | Shows what `deps sync` would change without writing |
+| `python3 -m project_management task create --title "X" --depends-on 4 --related-to 7` | Creates an issue and links it as blocked by #4, with #7 in the Related line |
 
 ### Labels
 
@@ -91,6 +101,23 @@ The typical flow when turning a planned task into real work:
    - `Gate` — from `gate:` tag
    - `Stream` — from `stream:` tag
    - `Status` — left blank (kanban columns handle workflow; Status is for exceptions only: Blocked / Stuck / Needs review)
+   - **Dependencies** — each `Dependencies:` draft reference with a stamped issue becomes a native GitHub "blocked by" relationship
+   - **Related** — `Related:` draft references are listed as a `**Related:**` line in the issue body (GitHub has no native "related" type)
+
+## Relationships Workflow
+
+Draft tasks carry two relationship metadata lines:
+
+- `- **Dependencies:** 04-database-design.md, 11-backend-api-auth.md` — hard prerequisites. When the draft is created as an issue (or via `deps sync`), each resolved reference is linked as a native **blocked by** relationship, so GitHub shows the dependency in the issue sidebar and a "Blocked" marker on the board.
+- `- **Related:** 14-medical-notes.md` — parallel/cross-cutting tasks that are reviewed together but do not block each other. These become a `**Related:** #N` line in the issue body (GitHub offers no API for a related relationship).
+
+References are resolved to issue numbers through the `- **GitHub Issue:** #N` stamp on the referenced draft. Unstamped drafts (future work not yet on GitHub) are reported as skipped. Re-running `deps sync` only adds missing links, so it is safe to run after every issue creation round.
+
+To see the whole relationship map as a Mermaid diagram (regenerate after any metadata change):
+
+```bash
+python3 -m project_management plan graph --output docs/diagrams/task-dependencies.mmd
+```
 
 ---
 

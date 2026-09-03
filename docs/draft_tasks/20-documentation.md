@@ -6,7 +6,8 @@
 - **Status:** TODO
 - **Assignee:** TBD
 - **Tags:** documentation, readme, required, gate:5-delivery
-- **Dependencies:** 01-project-setup-group-contract.md; final update depends on all implementation and testing tasks
+- **Dependencies:** 01-project-setup-group-contract.md
+- **Related:** 03-graphify-architecture-artifacts.md, 19-testing.md
 - **Estimated Effort:** 4h
 
 ## Requirements

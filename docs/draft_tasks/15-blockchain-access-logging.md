@@ -7,6 +7,7 @@
 - **Assignee:** TBD
 - **Tags:** blockchain, logging, gdpr, required, gate:3-features, stream:D-audit
 - **Dependencies:** 04-database-design.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
+- **Related:** 18-socketio-broadcasting.md
 - **Estimated Effort:** 8h
 
 ## Requirements

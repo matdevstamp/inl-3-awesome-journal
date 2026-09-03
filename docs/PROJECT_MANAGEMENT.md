@@ -31,6 +31,14 @@ For the Friday kickoff, review the complete deadline plan and recommended split:
 python3 -m project_management plan show
 python3 -m project_management plan kickoff
 python3 -m project_management plan check
+python3 -m project_management plan graph  # Mermaid diagram of dependencies and relations
+```
+
+Draft `Dependencies:` references become native GitHub "blocked by" relationships and `Related:` references become a `**Related:**` body line. Sync existing issues idempotently (no new issues are created) with:
+
+```bash
+python3 -m project_management deps sync          # apply missing relationships
+python3 -m project_management deps sync --dry-run  # preview first
 ```
 
 Status and priority belong in GitHub Projects custom fields. They are intentionally not duplicated as issue labels.

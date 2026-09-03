@@ -14,6 +14,7 @@ class Task:
     assignee: str
     tags: tuple[str, ...]
     dependencies: str
+    related: tuple[str, ...]
     effort: str
     path: Path
 
@@ -67,8 +68,129 @@ _METADATA = {
     "assignee": re.compile(r"^- \*\*Assignee:\*\*\s*(.+)$", re.MULTILINE),
     "tags": re.compile(r"^- \*\*Tags:\*\*\s*(.+)$", re.MULTILINE),
     "dependencies": re.compile(r"^- \*\*Dependencies:\*\*\s*(.+)$", re.MULTILINE),
+    "related": re.compile(r"^- \*\*Related:\*\*\s*(.+)$", re.MULTILINE),
     "effort": re.compile(r"^- \*\*Estimated Effort:\*\*\s*(.+)$", re.MULTILINE),
 }
+
+# A reference to another draft task file, e.g. ``01-project-setup-group-contract.md``.
+# Tolerates surrounding prose such as ``01-x.md; final update depends on ...``.
+_REF_TOKEN = re.compile(r"\b(\d{2})-[a-z0-9-]+\.md\b")
+
+# The ``- **GitHub Issue:** #N`` stamp written by update_task_reference().
+_ISSUE_STAMP = re.compile(r"^- \*\*GitHub Issue:\*\*\s*#(\d+)", re.MULTILINE)
+
+_RELATED_LINE = re.compile(r"^(\*\*Related:\*\*.*)$", re.MULTILINE)
+
+GATE_TAG_TO_NAME = {
+    "gate:1-decisions": "1-Decisions",
+    "gate:2-scaffold": "2-Scaffold",
+    "gate:3-features": "3-Features",
+    "gate:4-integration": "4-Integration",
+    "gate:5-delivery": "5-Delivery",
+}
+GATE_ORDER = ["1-Decisions", "2-Scaffold", "3-Features", "4-Integration", "5-Delivery"]
+
+
+def parse_task_refs(value):
+    """Extract ``(key, filename)`` pairs from a Dependencies/Related metadata value.
+
+    Non-file prose (e.g. "final update depends on all tasks") is ignored.
+    """
+    return [(match.group(1), match.group(0)) for match in _REF_TOKEN.finditer(value or "")]
+
+
+def task_issue_stamp(path):
+    """Return the GitHub issue number stamped on a draft file, or None."""
+    match = _ISSUE_STAMP.search(path.read_text(encoding="utf-8"))
+    return int(match.group(1)) if match else None
+
+
+def resolve_issue_stamps(draft_path, value):
+    """Resolve draft file references to stamped GitHub issue numbers.
+
+    Returns ``(issue_numbers, unresolved)`` where ``unresolved`` lists the
+    references whose draft file is missing or has no ``GitHub Issue`` stamp.
+    """
+    numbers, unresolved = [], []
+    directory = Path(draft_path).parent
+    for _key, filename in parse_task_refs(value):
+        dep_path = directory / filename
+        match = None
+        if dep_path.exists():
+            match = _ISSUE_STAMP.search(dep_path.read_text(encoding="utf-8"))
+        if match:
+            numbers.append(int(match.group(1)))
+        else:
+            unresolved.append(filename)
+    return numbers, unresolved
+
+
+def update_related_line(body, related_numbers):
+    """Return ``body`` with the ``**Related:**`` line set to the given issue numbers.
+
+    Replaces an existing Related line in place, so the operation is idempotent.
+    """
+    line = "**Related:** " + ", ".join(f"#{number}" for number in related_numbers)
+    if _RELATED_LINE.search(body):
+        return _RELATED_LINE.sub(line, body)
+    if body.strip():
+        return f"{body.rstrip()}\n\n{line}\n"
+    return line
+
+
+def task_graph_mermaid(tasks):
+    """Build a Mermaid flowchart of task dependencies and related tasks.
+
+    Solid arrow ``A --> B`` means B depends on A (B is blocked by A).
+    Dotted line ``A -. related .- B`` means the tasks are related.
+    Nodes are grouped into GitHub Project gate subgraphs when tagged.
+    """
+    by_key = {task.key: task for task in tasks}
+    edges, seen_edges, related = [], set(), set()
+    for task in tasks:
+        for key, _filename in parse_task_refs(task.dependencies):
+            if key in by_key and key != task.key and (key, task.key) not in seen_edges:
+                seen_edges.add((key, task.key))
+                edges.append((key, task.key))
+        for key, _filename in parse_task_refs(", ".join(task.related)):
+            if key in by_key and key != task.key:
+                pair = tuple(sorted((key, task.key)))
+                if (key, task.key) not in seen_edges and (task.key, key) not in seen_edges:
+                    related.add(pair)
+
+    lines = [
+        "flowchart TD",
+        "    %% Solid arrow A --> B: B depends on A (blocked by A)",
+        "    %% Dotted line A -. related .- B: A and B are related",
+    ]
+    gate_groups = {gate: [] for gate in GATE_ORDER}
+    ungated = []
+    for task in tasks:
+        label = task.title.replace('"', "'")
+        node = f'    T{task.key}["{task.key} {label}"]'
+        gate = next(
+            (GATE_TAG_TO_NAME[tag] for tag in task.tags if tag.lower().strip() in GATE_TAG_TO_NAME),
+            None,
+        )
+        if gate:
+            gate_groups[gate].append(node)
+        else:
+            ungated.append(node)
+    for gate in GATE_ORDER:
+        if gate_groups[gate]:
+            slug = gate.split("-", 1)[1].lower()
+            lines.append(f'    subgraph {slug}["Gate {gate}"]')
+            lines.extend(gate_groups[gate])
+            lines.append("    end")
+    if ungated:
+        lines.append('    subgraph other["Other"]')
+        lines.extend(ungated)
+        lines.append("    end")
+    for source, target in edges:
+        lines.append(f"    T{source} --> T{target}")
+    for source, target in sorted(related):
+        lines.append(f"    T{source} -. related .- T{target}")
+    return "\n".join(lines) + "\n"
 
 
 def _metadata(text, name, default=""):
@@ -86,6 +208,7 @@ def read_task(path):
     deadline_match = re.search(r"\d{4}-\d{2}-\d{2}", deadline_text)
     deadline = date.fromisoformat(deadline_match.group(0)) if deadline_match else None
     tags = tuple(tag.strip() for tag in _metadata(text, "tags").split(",") if tag.strip())
+    related = tuple(ref.strip() for ref in _metadata(text, "related").split(",") if ref.strip())
     return Task(
         key=key,
         title=title_match.group(1).strip(),
@@ -94,6 +217,7 @@ def read_task(path):
         assignee=_metadata(text, "assignee", "TBD"),
         tags=tags,
         dependencies=_metadata(text, "dependencies", "None"),
+        related=related,
         effort=_metadata(text, "effort", "unspecified"),
         path=path,
     )
@@ -116,7 +240,9 @@ def task_state(task, today=None):
 
 def task_line(task, today=None):
     deadline = task.deadline.isoformat() if task.deadline else "no deadline"
-    return f"{task.key} | {deadline} | {task_state(task, today):9} | {task.assignee:12} | {task.title}"
+    return (
+        f"{task.key} | {deadline} | {task_state(task, today):9} | {task.assignee:12} | {task.title}"
+    )
 
 
 def schedule_warnings(tasks):
@@ -131,10 +257,9 @@ def schedule_warnings(tasks):
             names = ", ".join(f"{task.key} {task.title}" for task in grouped)
             warnings.append(f"Duplicate deadline {deadline}: {names}")
     for task in tasks:
-        if not task.deadline or task.dependencies.lower() == "none":
+        if not task.deadline:
             continue
-        for dependency in task.dependencies.split(","):
-            dependency_key = Path(dependency.strip()).stem.split("-", 1)[0]
+        for dependency_key, _filename in parse_task_refs(task.dependencies):
             prerequisite = by_key.get(dependency_key)
             if prerequisite and prerequisite.deadline and prerequisite.deadline > task.deadline:
                 warnings.append(
@@ -183,17 +308,32 @@ def draft_task_to_project_fields(task):
     """
     fields = {}
     # Priority: map from effort or default to P0
-    effort_map = {"unspecified": "P0", "1h": "P0", "2h": "P0", "3h": "P1",
-                  "4h": "P1", "6h": "P1", "8h": "P2"}
+    effort_map = {
+        "unspecified": "P0",
+        "1h": "P0",
+        "2h": "P0",
+        "3h": "P1",
+        "4h": "P1",
+        "6h": "P1",
+        "8h": "P2",
+    }
     fields["Priority"] = effort_map.get(task.effort.lower(), "P0")
     # Status: NOT set automatically — the kanban columns handle workflow.
     # Only set manually when something is stuck or needs attention.
     # Size: map from effort
-    size_map = {"unspecified": "M", "1h": "XS", "2h": "S", "3h": "S",
-                "4h": "M", "6h": "M", "8h": "L"}
+    size_map = {
+        "unspecified": "M",
+        "1h": "XS",
+        "2h": "S",
+        "3h": "S",
+        "4h": "M",
+        "6h": "M",
+        "8h": "L",
+    }
     fields["Size"] = size_map.get(task.effort.lower(), "M")
     # Estimate: extract numeric hours from effort string
     import re as _re
+
     hours_match = _re.search(r"(\d+)", task.effort)
     if hours_match:
         fields["Estimate"] = hours_match.group(1)
@@ -201,15 +341,6 @@ def draft_task_to_project_fields(task):
     if task.deadline:
         fields["Target date"] = task.deadline.isoformat()
     # Gate and Stream: extract from tags
-    gate_map = {
-        "gate:1-decisions": "1-Decisions",
-        "gate:2-scaffold": "2-Scaffold",
-        "gate:3-features": "3-Features",
-        "gate:4-integration": "4-Integration",
-        "gate:5-delivery": "5-Delivery",
-    }
-    # Also match mixed-case variants from draft task tags
-    gate_map.update({k.upper(): v for k, v in list(gate_map.items())})
     stream_map = {
         "stream:a-identity": "A-Identity",
         "stream:b-patient": "B-Patient",
@@ -218,8 +349,8 @@ def draft_task_to_project_fields(task):
     }
     for tag in task.tags:
         tag_lower = tag.lower().strip()
-        if tag_lower in gate_map:
-            fields["Gate"] = gate_map[tag_lower]
+        if tag_lower in GATE_TAG_TO_NAME:
+            fields["Gate"] = GATE_TAG_TO_NAME[tag_lower]
         if tag_lower in stream_map:
             fields["Stream"] = stream_map[tag_lower]
     return fields

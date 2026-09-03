@@ -59,24 +59,108 @@ The default rotation is alphabetical by person each week: the next person facili
 
 ## Dependency Gates
 
+Regenerate this diagram any time task metadata changes:
+
+```bash
+python3 -m project_management plan graph --output docs/diagrams/task-dependencies.mmd
+```
+
 ```mermaid
 flowchart TD
-    A[01 Contract and repository rules] --> B[02 Database decision]
-    A --> C[03 Graphify and architecture artifacts]
-    B --> C
-    B --> D[04 DBML and Prisma schema]
-    C --> D
-    A --> E[20 Initial README and meeting workflow]
-    A --> F[05-10 Scaffold, Playwright, and CI]
-    D --> F
-    F --> G[Four feature streams]
-    G --> H[17 Authorization integration]
-    G --> I[18 Real-time integration]
-    H --> J[19 Test matrix]
-    I --> J
-    J --> K[09 Playwright demo flows]
-    K --> L[20 Final README and evidence]
-    L --> M[21 Presentation and submission]
+    %% Solid arrow A --> B: B depends on A (blocked by A)
+    %% Dotted line A -. related .- B: A and B are related
+    subgraph decisions["Gate 1-Decisions"]
+    T01["01 Project Setup & Group Contract"]
+    T02["02 Database Choice Discussion"]
+    T03["03 Graphify Architecture Artifacts"]
+    end
+    subgraph scaffold["Gate 2-Scaffold"]
+    T04["04 Database Design & Setup"]
+    T05["05 Vite + Tailwind CSS + shadcn/ui Setup"]
+    T06["06 Backend Project Setup"]
+    T07["07 TypeScript Strict Configuration"]
+    T08["08 ESLint + Prettier Configuration"]
+    T09["09 Playwright E2E Testing"]
+    T10["10 GitHub Actions CI/CD Workflow"]
+    end
+    subgraph features["Gate 3-Features"]
+    T11["11 Backend API & Authentication"]
+    T12["12 Frontend UI Development"]
+    T13["13 Patient View & Search"]
+    T14["14 Medical Notes with Visibility Control"]
+    T15["15 Blockchain Access Logging"]
+    T16["16 P2P Network Implementation"]
+    end
+    subgraph integration["Gate 4-Integration"]
+    T17["17 User Roles & Access Control"]
+    T18["18 Socket.io Broadcasting"]
+    end
+    subgraph delivery["Gate 5-Delivery"]
+    T19["19 Testing & Quality Assurance"]
+    T20["20 Documentation & README"]
+    T21["21 Presentation Preparation"]
+    end
+    T01 --> T02
+    T01 --> T03
+    T02 --> T03
+    T01 --> T04
+    T02 --> T04
+    T03 --> T04
+    T01 --> T05
+    T03 --> T05
+    T04 --> T06
+    T05 --> T06
+    T05 --> T07
+    T06 --> T07
+    T05 --> T08
+    T07 --> T08
+    T05 --> T09
+    T06 --> T09
+    T07 --> T09
+    T08 --> T09
+    T05 --> T10
+    T08 --> T10
+    T07 --> T10
+    T06 --> T10
+    T04 --> T11
+    T07 --> T11
+    T06 --> T11
+    T05 --> T12
+    T07 --> T12
+    T06 --> T12
+    T04 --> T13
+    T11 --> T13
+    T12 --> T13
+    T04 --> T14
+    T11 --> T14
+    T12 --> T14
+    T04 --> T15
+    T07 --> T15
+    T06 --> T15
+    T15 --> T16
+    T06 --> T16
+    T11 --> T17
+    T12 --> T17
+    T13 --> T17
+    T14 --> T17
+    T17 --> T18
+    T14 --> T18
+    T16 --> T18
+    T12 --> T18
+    T17 --> T19
+    T15 --> T19
+    T16 --> T19
+    T18 --> T19
+    T01 --> T20
+    T19 --> T21
+    T09 --> T21
+    T20 --> T21
+    T03 -. related .- T20
+    T09 -. related .- T10
+    T09 -. related .- T19
+    T13 -. related .- T14
+    T15 -. related .- T18
+    T19 -. related .- T20
 ```
 
 No stream starts until Gate 1 is met. Database-dependent backend work starts only after Gate 2. Cross-stream integration starts only after each stream has a reviewed contract and a narrow test.

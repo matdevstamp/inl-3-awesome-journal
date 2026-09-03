@@ -7,6 +7,7 @@
 - **Assignee:** TBD
 - **Tags:** testing, quality, required, gate:5-delivery
 - **Dependencies:** 17-user-roles-access-control.md, 15-blockchain-access-logging.md, 16-p2p-network.md, 18-socketio-broadcasting.md
+- **Related:** 09-playwright-e2e-testing.md, 20-documentation.md
 - **Estimated Effort:** 8h
 
 ## Requirements

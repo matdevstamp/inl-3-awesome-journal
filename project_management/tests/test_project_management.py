@@ -26,14 +26,20 @@ from ..planner import (
     draft_task_clean_body,
     draft_task_to_project_fields,
     load_tasks,
+    parse_task_refs,
     read_task,
+    resolve_issue_stamps,
     schedule_warnings,
+    task_graph_mermaid,
+    task_issue_stamp,
     task_line,
     task_state,
+    update_related_line,
     update_task_reference,
 )
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
+
 
 def _make_task(**overrides):
     """Build a Task with sensible defaults, overriding only what you need."""
@@ -45,6 +51,7 @@ def _make_task(**overrides):
         assignee="TBD",
         tags=("type:feature",),
         dependencies="None",
+        related=(),
         effort="2h",
         path=Path("/fake/01-test.md"),
     )
@@ -62,6 +69,7 @@ SAMPLE_DRAFT = """\
 - **Assignee:** Person 1
 - **Tags:** type:feature, gate:3-features, stream:A-identity
 - **Dependencies:** 01-project-setup-group-contract.md
+- **Related:** 02-database-choice-discussion.md
 - **Estimated Effort:** 6h
 
 ## Requirements
@@ -88,6 +96,7 @@ Some design notes here.
 
 
 # ── Planner: read_task ───────────────────────────────────────────────────────
+
 
 class TestReadTask(unittest.TestCase):
     """Tests for read_task() — parsing markdown draft files."""
@@ -125,6 +134,12 @@ class TestReadTask(unittest.TestCase):
             with self.assertRaises(ValueError):
                 read_task(path)
 
+    def test_parses_related_metadata(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._write_draft(tmp, "01-sample.md", SAMPLE_DRAFT)
+            task = read_task(path)
+        self.assertEqual(task.related, ("02-database-choice-discussion.md",))
+
     def test_defaults_for_missing_metadata(self):
         content = "# Task: Minimal\n\n## Requirements\n- stuff\n"
         with tempfile.TemporaryDirectory() as tmp:
@@ -136,10 +151,12 @@ class TestReadTask(unittest.TestCase):
         self.assertEqual(task.assignee, "TBD")
         self.assertEqual(task.tags, ())
         self.assertEqual(task.dependencies, "None")
+        self.assertEqual(task.related, ())
         self.assertEqual(task.effort, "unspecified")
 
 
 # ── Planner: load_tasks ──────────────────────────────────────────────────────
+
 
 class TestLoadTasks(unittest.TestCase):
     def test_loads_all_draft_tasks(self):
@@ -158,6 +175,7 @@ class TestLoadTasks(unittest.TestCase):
 
 
 # ── Planner: task_state ──────────────────────────────────────────────────────
+
 
 class TestTaskState(unittest.TestCase):
     def test_done_status(self):
@@ -191,10 +209,12 @@ class TestTaskState(unittest.TestCase):
 
 # ── Planner: task_line ───────────────────────────────────────────────────────
 
+
 class TestTaskLine(unittest.TestCase):
     def test_format_includes_key_deadline_state_assignee_title(self):
-        task = _make_task(key="05", deadline=date(2026, 9, 6), assignee="Person 2",
-                          title="Vite Setup")
+        task = _make_task(
+            key="05", deadline=date(2026, 9, 6), assignee="Person 2", title="Vite Setup"
+        )
         line = task_line(task, today=date(2026, 9, 4))
         self.assertIn("05", line)
         self.assertIn("2026-09-06", line)
@@ -209,6 +229,7 @@ class TestTaskLine(unittest.TestCase):
 
 
 # ── Planner: schedule_warnings ───────────────────────────────────────────────
+
 
 class TestScheduleWarnings(unittest.TestCase):
     def test_duplicate_deadline(self):
@@ -232,8 +253,9 @@ class TestScheduleWarnings(unittest.TestCase):
         """Task 02 depends on 01, but 02 is due before 01."""
         tasks = [
             _make_task(key="01", deadline=date(2026, 9, 10), title="Prereq"),
-            _make_task(key="02", deadline=date(2026, 9, 5),
-                       dependencies="01-prereq.md", title="Dependent"),
+            _make_task(
+                key="02", deadline=date(2026, 9, 5), dependencies="01-prereq.md", title="Dependent"
+            ),
         ]
         warnings = schedule_warnings(tasks)
         deadline_warnings = [w for w in warnings if "violation" in w.lower()]
@@ -242,14 +264,16 @@ class TestScheduleWarnings(unittest.TestCase):
     def test_no_violation_when_order_correct(self):
         tasks = [
             _make_task(key="01", deadline=date(2026, 9, 4), title="Prereq"),
-            _make_task(key="02", deadline=date(2026, 9, 10),
-                       dependencies="01-prereq.md", title="Dependent"),
+            _make_task(
+                key="02", deadline=date(2026, 9, 10), dependencies="01-prereq.md", title="Dependent"
+            ),
         ]
         warnings = schedule_warnings(tasks)
         self.assertEqual(len(warnings), 0)
 
 
 # ── Planner: update_task_reference ───────────────────────────────────────────
+
 
 class TestUpdateTaskReference(unittest.TestCase):
     def _write_draft(self, tmp, content):
@@ -306,10 +330,10 @@ class TestUpdateTaskReference(unittest.TestCase):
 
 # ── Planner: draft_task_to_project_fields ────────────────────────────────────
 
+
 class TestDraftTaskToProjectFields(unittest.TestCase):
     def test_basic_fields(self):
-        task = _make_task(effort="2h", deadline=date(2026, 9, 5),
-                          tags=("type:feature",))
+        task = _make_task(effort="2h", deadline=date(2026, 9, 5), tags=("type:feature",))
         fields = draft_task_to_project_fields(task)
         self.assertEqual(fields["Priority"], "P0")
         self.assertEqual(fields["Size"], "S")
@@ -330,12 +354,13 @@ class TestDraftTaskToProjectFields(unittest.TestCase):
         for effort, exp_priority, exp_size, exp_estimate in cases:
             task = _make_task(effort=effort)
             fields = draft_task_to_project_fields(task)
-            self.assertEqual(fields["Priority"], exp_priority,
-                             f"Priority wrong for effort={effort}")
-            self.assertEqual(fields["Size"], exp_size,
-                             f"Size wrong for effort={effort}")
-            self.assertEqual(fields["Estimate"], exp_estimate,
-                             f"Estimate wrong for effort={effort}")
+            self.assertEqual(
+                fields["Priority"], exp_priority, f"Priority wrong for effort={effort}"
+            )
+            self.assertEqual(fields["Size"], exp_size, f"Size wrong for effort={effort}")
+            self.assertEqual(
+                fields["Estimate"], exp_estimate, f"Estimate wrong for effort={effort}"
+            )
 
     def test_gate_from_tags(self):
         task = _make_task(tags=("type:feature", "gate:3-features"))
@@ -359,6 +384,7 @@ class TestDraftTaskToProjectFields(unittest.TestCase):
 
 
 # ── Planner: draft_task_clean_body ───────────────────────────────────────────
+
 
 class TestDraftTaskCleanBody(unittest.TestCase):
     def test_strips_metadata_section(self):
@@ -404,14 +430,19 @@ class TestDraftTaskCleanBody(unittest.TestCase):
 
 # ── CLI: status_report ──────────────────────────────────────────────────────
 
+
 class TestStatusReport(unittest.TestCase):
     def test_excludes_pull_requests(self):
         client = MagicMock()
         client.repository = "test/repo"
         client.issues.return_value = [
             {"number": 1, "title": "Issue", "state": "open"},
-            {"number": 2, "title": "PR", "state": "open",
-             "pull_request": {"url": "https://api.github.com/pulls/2"}},
+            {
+                "number": 2,
+                "title": "PR",
+                "state": "open",
+                "pull_request": {"url": "https://api.github.com/pulls/2"},
+            },
         ]
         report = status_report(client, "open")
         self.assertEqual(report["count"], 1)
@@ -426,6 +457,7 @@ class TestStatusReport(unittest.TestCase):
 
 
 # ── CLI: issue_line ─────────────────────────────────────────────────────────
+
 
 class TestIssueLine(unittest.TestCase):
     def test_format_with_labels(self):
@@ -458,6 +490,7 @@ class TestIssueLine(unittest.TestCase):
 
 # ── CLI: output ─────────────────────────────────────────────────────────────
 
+
 class TestOutput(unittest.TestCase):
     def test_json_output(self):
         data = {"key": "value"}
@@ -477,6 +510,7 @@ class TestOutput(unittest.TestCase):
 
 # ── CLI: build_parser ───────────────────────────────────────────────────────
 
+
 class TestBuildParser(unittest.TestCase):
     def test_status_command(self):
         parser = build_parser()
@@ -492,21 +526,32 @@ class TestBuildParser(unittest.TestCase):
 
     def test_task_create_with_draft(self):
         parser = build_parser()
-        args = parser.parse_args([
-            "task", "create",
-            "--title", "Test",
-            "--draft", "docs/draft_tasks/01-test.md",
-        ])
+        args = parser.parse_args(
+            [
+                "task",
+                "create",
+                "--title",
+                "Test",
+                "--draft",
+                "docs/draft_tasks/01-test.md",
+            ]
+        )
         self.assertEqual(args.draft, "docs/draft_tasks/01-test.md")
 
     def test_issue_create_with_labels(self):
         parser = build_parser()
-        args = parser.parse_args([
-            "issue", "create",
-            "--title", "Bug",
-            "--label", "type:bug",
-            "--label", "gate:1-decisions",
-        ])
+        args = parser.parse_args(
+            [
+                "issue",
+                "create",
+                "--title",
+                "Bug",
+                "--label",
+                "type:bug",
+                "--label",
+                "gate:1-decisions",
+            ]
+        )
         self.assertEqual(args.labels, ["type:bug", "gate:1-decisions"])
 
     def test_json_flag(self):
@@ -516,6 +561,7 @@ class TestBuildParser(unittest.TestCase):
 
 
 # ── GitHub: GitHubClient ─────────────────────────────────────────────────────
+
 
 class TestGitHubClient(unittest.TestCase):
     @patch.dict("os.environ", {"GITHUB_TOKEN": "test-token", "GITHUB_REPOSITORY": "test/repo"})
@@ -573,9 +619,13 @@ class TestGitHubClient(unittest.TestCase):
     @patch("project_management.github.urlopen")
     def test_request_raises_on_http_error(self, mock_urlopen):
         from urllib.error import HTTPError
+
         mock_urlopen.side_effect = HTTPError(
-            url="https://api.github.com", code=404,
-            msg="Not Found", hdrs=None, fp=MagicMock(read=MagicMock(return_value=b'{"message":"not found"}'))
+            url="https://api.github.com",
+            code=404,
+            msg="Not Found",
+            hdrs=None,
+            fp=MagicMock(read=MagicMock(return_value=b'{"message":"not found"}')),
         )
         client = GitHubClient()
         with self.assertRaises(GitHubError) as ctx:
@@ -586,9 +636,9 @@ class TestGitHubClient(unittest.TestCase):
     @patch("project_management.github.urlopen")
     def test_graphql_extracts_errors(self, mock_urlopen):
         mock_response = MagicMock()
-        mock_response.read.return_value = json.dumps({
-            "errors": [{"message": "Something went wrong"}]
-        }).encode()
+        mock_response.read.return_value = json.dumps(
+            {"errors": [{"message": "Something went wrong"}]}
+        ).encode()
         mock_response.__enter__ = lambda s: s
         mock_response.__exit__ = MagicMock(return_value=False)
         mock_urlopen.return_value = mock_response
@@ -600,6 +650,7 @@ class TestGitHubClient(unittest.TestCase):
 
 
 # ── GitHub: label helpers ────────────────────────────────────────────────────
+
 
 class TestLabelHelpers(unittest.TestCase):
     def test_obsolete_labels_include_priority_and_status(self):
@@ -615,16 +666,140 @@ class TestLabelHelpers(unittest.TestCase):
 
 # ── Planner: constants ──────────────────────────────────────────────────────
 
+
 class TestConstants(unittest.TestCase):
     def test_kickoff_assignments_covers_all_tasks(self):
         for i in range(1, 22):
             key = f"{i:02d}"
-            self.assertIn(key, KICKOFF_ASSIGNMENTS,
-                          f"Task {key} missing from KICKOFF_ASSIGNMENTS")
+            self.assertIn(key, KICKOFF_ASSIGNMENTS, f"Task {key} missing from KICKOFF_ASSIGNMENTS")
 
     def test_team_members_has_all_users(self):
         expected = {"matdevstamp", "Kassim10", "rcilomba", "umoraghad0-del"}
         self.assertEqual(set(TEAM_MEMBERS.keys()), expected)
+
+
+# ── Planner: task refs and issue stamps ─────────────────────────────────────
+
+
+class TestTaskRefsAndStamps(unittest.TestCase):
+    def _write(self, tmp, name, content):
+        path = Path(tmp) / name
+        path.write_text(content, encoding="utf-8")
+        return path
+
+    def test_parse_task_refs_extracts_files_and_keys(self):
+        refs = parse_task_refs(
+            "01-project-setup-group-contract.md, 02-db.md; final update depends on all tasks 03-x.md"
+        )
+        self.assertEqual(
+            refs,
+            [
+                ("01", "01-project-setup-group-contract.md"),
+                ("02", "02-db.md"),
+                ("03", "03-x.md"),
+            ],
+        )
+
+    def test_parse_task_refs_none_or_empty(self):
+        self.assertEqual(parse_task_refs("None"), [])
+        self.assertEqual(parse_task_refs(""), [])
+
+    def test_resolve_issue_stamps_reads_sibling_stamps(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            prereq = self._write(
+                tmp,
+                "01-prereq.md",
+                "# Task: Prereq\n## Metadata\n- **GitHub Issue:** #1 (url)\n",
+            )
+            dependent = self._write(tmp, "02-dependent.md", "# Task: Dependent\n")
+            numbers, unresolved = resolve_issue_stamps(dependent, "01-prereq.md")
+            self.assertEqual(numbers, [1])
+            self.assertEqual(unresolved, [])
+            # Missing / unstamped references land in unresolved
+            numbers, unresolved = resolve_issue_stamps(dependent, "01-prereq.md, 99-missing.md")
+            self.assertEqual(numbers, [1])
+            self.assertEqual(unresolved, ["99-missing.md"])
+            numbers, unresolved = resolve_issue_stamps(prereq, "None")
+            self.assertEqual((numbers, unresolved), ([], []))
+            # Dependency file exists but has no stamp yet
+            numbers, unresolved = resolve_issue_stamps(prereq, "02-dependent.md")
+            self.assertEqual(numbers, [])
+            self.assertEqual(unresolved, ["02-dependent.md"])
+
+    def test_task_issue_stamp(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            stamped = self._write(tmp, "01-a.md", "# Task: A\n- **GitHub Issue:** #7 (url)\n")
+            plain = self._write(tmp, "02-b.md", "# Task: B\n")
+            self.assertEqual(task_issue_stamp(stamped), 7)
+            self.assertIsNone(task_issue_stamp(plain))
+
+    def test_update_related_line_appends_and_replaces(self):
+        body = "## Requirements\n- do stuff\n"
+        updated = update_related_line(body, [2, 3])
+        self.assertIn("**Related:** #2, #3", updated)
+        # Idempotent: second call yields the same body
+        self.assertEqual(update_related_line(updated, [2, 3]), updated)
+        # Replaces an existing line
+        replaced = update_related_line("**Related:** #9\n\nBody text", [4])
+        self.assertIn("**Related:** #4", replaced)
+        self.assertNotIn("#9", replaced)
+        self.assertIn("Body text", replaced)
+
+
+# ── Planner: task_graph_mermaid ──────────────────────────────────────────────
+
+
+class TestTaskGraphMermaid(unittest.TestCase):
+    def test_dependency_arrow_and_related_dotted(self):
+        tasks = [
+            _make_task(key="01", title="Contract", tags=("gate:1-decisions",)),
+            _make_task(
+                key="02",
+                title="DB choice",
+                tags=("gate:1-decisions",),
+                dependencies="01-project-setup-group-contract.md",
+            ),
+            _make_task(
+                key="03",
+                title="Artifacts",
+                tags=("gate:1-decisions",),
+                related=("01-project-setup-group-contract.md",),
+            ),
+        ]
+        graph = task_graph_mermaid(tasks)
+        self.assertIn('T01["01 Contract"]', graph)
+        self.assertIn("T01 --> T02", graph)
+        self.assertIn("T01 -. related .- T03", graph)
+
+    def test_related_edge_skipped_when_already_dependency(self):
+        tasks = [
+            _make_task(key="01", title="Prereq"),
+            _make_task(key="02", title="Dependent", dependencies="01-x.md", related=("01-x.md",)),
+        ]
+        graph = task_graph_mermaid(tasks)
+        self.assertIn("T01 --> T02", graph)
+        self.assertNotIn("T01 -. related .- T02", graph)
+
+    def test_prose_in_dependencies_is_ignored(self):
+        tasks = [
+            _make_task(key="01", title="Contract"),
+            _make_task(
+                key="20",
+                title="Docs",
+                dependencies="01-x.md; final update depends on all implementation tasks",
+            ),
+        ]
+        graph = task_graph_mermaid(tasks)
+        self.assertIn("T01 --> T20", graph)
+
+    def test_gate_subgraphs(self):
+        tasks = [
+            _make_task(key="01", title="Contract", tags=("gate:1-decisions",)),
+            _make_task(key="12", title="Frontend UI", tags=("gate:3-features",)),
+        ]
+        graph = task_graph_mermaid(tasks)
+        self.assertIn('subgraph decisions["Gate 1-Decisions"]', graph)
+        self.assertIn('subgraph features["Gate 3-Features"]', graph)
 
 
 if __name__ == "__main__":
