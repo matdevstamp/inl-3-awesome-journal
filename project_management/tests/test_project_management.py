@@ -19,6 +19,7 @@ from ..cli import (
     status_report,
 )
 from ..github import GitHubClient, GitHubError
+from ..mermaid_validate import validate_mermaid
 from ..planner import (
     KICKOFF_ASSIGNMENTS,
     TEAM_MEMBERS,
@@ -895,6 +896,58 @@ class TestTaskGanttMermaid(unittest.TestCase):
         # Unquoted gantt labels split on ':' — the date parser must see only one.
         self.assertIn("07 Flow- decide next (0/0 · todo) : active, 2026-09-12, 1d", chart)
         self.assertNotIn("Flow: decide", chart)
+
+
+# ── Planner: mermaid validation ─────────────────────────────────────────────
+
+
+class TestMermaidValidation(unittest.TestCase):
+    """Generated diagrams must pass the structural validator before being written."""
+
+    def _tasks(self):
+        return [
+            _make_task(key="01", title="Contract", deadline=date(2026, 9, 10), effort="2h",
+                       tags=("gate:1-decisions",)),
+            _make_task(key="02", title="DB choice", deadline=date(2026, 9, 12), effort="4h",
+                       tags=("gate:1-decisions",), dependencies="01-x.md"),
+        ]
+
+    def test_generated_graph_and_gantt_pass(self):
+        tasks = self._tasks()
+        self.assertEqual(validate_mermaid(task_graph_mermaid(tasks)), [])
+        self.assertEqual(validate_mermaid(task_gantt_mermaid(tasks)), [])
+
+    def test_skipped_gantt_rows_rejected(self):
+        code = "gantt\n    dateFormat  YYYY-MM-DD\n    Undated : skipped, 0d\n"
+        errors = validate_mermaid(code, "gantt")
+        self.assertTrue(any("malformed" in e or "skipped" in e for e in errors))
+
+    def test_colon_in_unquoted_gantt_label_rejected(self):
+        code = "gantt\n    dateFormat  YYYY-MM-DD\n    Flow: x : active, 2026-09-01, 2d\n"
+        errors = validate_mermaid(code, "gantt")
+        self.assertTrue(any("colon inside unquoted" in e for e in errors))
+
+    def test_legacy_classdef_comma_rejected(self):
+        code = (
+            "flowchart TD\n"
+            "    classDef done,fill:#dcedc8,stroke:#558b2f\n"
+            '    A["x"]\n    class A done;\n'
+        )
+        errors = validate_mermaid(code, "flowchart")
+        self.assertTrue(any("classDef" in e and "legacy" in e for e in errors))
+
+    def test_wellformed_charts_accepted(self):
+        gantt = (
+            "gantt\n    title T\n    dateFormat  YYYY-MM-DD\n"
+            "    section Gate\n    Task A (0/0 · todo) : active, 2026-09-01, 2d\n"
+        )
+        self.assertEqual(validate_mermaid(gantt, "gantt"), [])
+        flow = (
+            "flowchart TD\n    %% comment with: colon and -->\n"
+            '    A["Task A (0/0 · todo)"]\n    classDef todo fill:#ffffff\n'
+            "    A --> B\n    class A todo;\n"
+        )
+        self.assertEqual(validate_mermaid(flow, "flowchart"), [])
 
 
 if __name__ == "__main__":

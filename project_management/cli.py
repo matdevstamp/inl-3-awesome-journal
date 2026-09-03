@@ -7,6 +7,7 @@ from pathlib import Path
 
 from .bug_reports import load_reports, promote_report, triage_report
 from .github import GitHubClient, GitHubError
+from .mermaid_validate import validate_mermaid
 from .planner import (
     KICKOFF_ASSIGNMENTS,
     ROLE_TO_USER,
@@ -320,6 +321,12 @@ def main():
                     mermaid = task_graph_mermaid(tasks)
                 else:
                     mermaid = task_gantt_mermaid(tasks)
+                errors = validate_mermaid(mermaid)
+                if errors:
+                    raise ValueError(
+                        "Mermaid validation failed; nothing written:\n- "
+                        + "\n- ".join(errors)
+                    )
                 if args.output:
                     output_path = Path(args.output)
                     if output_path.suffix.lower() == ".md":
