@@ -102,7 +102,7 @@ _STATUS_STYLES = {
     "todo": "fill:#ffffff,stroke:#b0bec5,color:#546e7a,stroke-dasharray:5 4",
 }
 _DONE_STATUS = {"DONE", "COMPLETE", "COMPLETED"}
-_DOING_STATUS = {"DOING", "IN PROGRESS", "IN-PROGRESS", "INPROGRESS", "WIP", "ACTIVE", "STARTED"}
+_DOING_STATUS = {"DOING", "IN PROGRESS", "IN-PROGRESS", "INPROGRESS", "WIP", "ACTIVE", "STARTED", "IN REVIEW", "IN-REVIEW", "INREVIEW", "REVIEW", "REVIEWING"}
 _BOX_RE = re.compile(r"(?m)^\s*-\s*\[(.)\]")
 
 

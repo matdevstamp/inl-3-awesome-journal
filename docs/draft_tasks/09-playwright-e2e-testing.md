@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P1 - High
 - **Deadline:** 2026-09-07 (runner and fixtures), 2026-09-29 (critical flows)
-- **Status:** TODO
+- **Status:** In review
 - **Assignee:** matdevstamp
 - **Tags:** testing, e2e, playwright, required, gate:2-scaffold
 - **Dependencies:** 05-nextjs-tailwind-shadcn.md, 06-backend-project-setup.md, 07-typescript-strict-config.md, 08-eslint-prettier-config.md

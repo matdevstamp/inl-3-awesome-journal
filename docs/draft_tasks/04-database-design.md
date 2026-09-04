@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-07
-- **Status:** TODO
+- **Status:** In review
 - **Assignee:** matdevstamp
 - **Tags:** database, backend, required, gate:2-scaffold
 - **Dependencies:** 01-project-setup-group-contract.md, 02-database-choice-discussion.md, 03-graphify-architecture-artifacts.md
