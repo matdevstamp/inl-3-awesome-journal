@@ -73,9 +73,9 @@ Example: `ALL` = free all day, `AM+PM` = morning and afternoon, `EVE` = only eve
 
 | Name | GitHub | Wed 30 | Thu 1 | Fri 2 ⚠️ |
 |------|--------|--------|-------|----------|
-| Kassim | Kassim10 | | | |
-| Ramadan | rcilomba | | | |
-| Najma | umoraghad0-del | | | |
+| Kassim | Kassim10 | | | **DEADLINE 11:00** |
+| Ramadan | rcilomba | | | **DEADLINE 11:00** |
+| Najma | umoraghad0-del | | | **DEADLINE 11:00** |
 | Matias | matdevstamp | 17–17:30 + 19–21 | 17–17:30 + 19–21 | **DEADLINE 11:00** |
 
 ---
