@@ -36,8 +36,8 @@ gantt
     04 Database Design & Setup (20% · 4/20 · todo) : active, 2026-09-07, 1d
     05 Next.js + Tailwind CSS + shadcn/ui Setup (0% · 0/21 · todo) : active, 2026-09-07, 1d
     06 Backend Project Setup (Next.js Route Handlers & Services) (9% · 2/23 · todo) : active, 2026-09-08, 1d
-    07 TypeScript Strict Configuration (0% · 0/22 · todo) : active, 2026-09-08, 1d
-    08 ESLint + Prettier Configuration (0% · 0/22 · todo) : active, 2026-09-08, 1d
+    07 TypeScript Strict Configuration (36% · 8/22 · todo) : active, 2026-09-08, 1d
+    08 ESLint + Prettier Configuration (32% · 7/22 · todo) : active, 2026-09-08, 1d
     09 Playwright E2E Testing (0% · 0/27 · todo) : active, 2026-09-07, 2d
     10 GitHub Actions CI/CD Workflow (0% · 0/33 · todo) : active, 2026-09-08, 1d
     section Gate 3-Features
