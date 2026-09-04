@@ -41,7 +41,7 @@ Vi avviker från exempelfördelningen Person 1–4 i `docs/Raw_Requirements.md` 
 - Kassim: ____
 - Ramadan: ____
 - Najma: ____
-- Matias: ____
+- Matias: Otydlig ansvarsfördelning (diffust ägande → saker faller mellan stolorna); allt skjuts till sista dagen → panik i slutet
 
 ## 4. Mötestider & format
 
@@ -101,13 +101,14 @@ Vi för en **loggbok per person** för dagliga standups och mötesdeltagande (se
 - Kassim: ____
 - Ramadan: ____
 - Najma: ____
-- Matias: ____
+- Matias: Slutförare — fokuserar och kör klart under stress
 
 ## 11. Övriga förväntningar & konsekvenser
 
-- Hur aktiv ska man vara? ____
-- Konsekvenser om någon inte dyker upp/gör sitt: ____ kontaktförsök, svarstid: ____, därefter kontakt med läraren.
-- Vad är du bra på / sämre på? Vad vill du träna extra på (HTML/CSS/git/projektledning/…)? ____
+- Hur aktiv ska man vara? Meddela förhinder i förväg på Teams; aktiv på möten och i loggboken (förslag från lead, bekräftas vid signering)
+- Konsekvenser om någon inte dyker upp/gör sitt: mjukare linje (förslag från lead) — först ett snack i gruppen, läraren kontaktas först vid upprepad frånvaro/uteblivet arbete.
+- Vad är du bra på / sämre på? Vad vill du träna extra på (HTML/CSS/git/projektledning/…)?
+  - Matias: Bra på kod; vill träna på PM/facilitering/koordinering
 
 ## 12. Övrigt
 
