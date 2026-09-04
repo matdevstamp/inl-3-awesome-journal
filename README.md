@@ -120,7 +120,18 @@ Grunddatan är fiktiv (GDPR: inga journaler på blockkedjan, bara access-loggar)
 - [Tillgänglighet & mötestider](docs/team-availability.md)
 - [Loggböcker](docs/logbooks/) — en CSV per person
 - [Bug reports](docs/bug-reports.csv) + [bug-arbetsflöde](docs/BUG_REPORTING.md)
+- [Arkitektur-review (graphify)](docs/ARCHITECTURE_REVIEW.md) — 2026-09-04
 - [Diagram](docs/diagrams/) — se nedan
+
+### Graphify-artefakter (auto-genererade, commitas)
+
+- [Interaktiv graf](graphify-out/graph.html) — öppna i webbläsaren
+- [GRAPH_REPORT.md](graphify-out/GRAPH_REPORT.md) — rapport med communities/god nodes
+
+Graphify-körningen görs med `graphifyy` 0.9.47 (strukturell AST-extrahering;
+dokument/semantisk lager kräver en Gemini-nyckel). Bara `graph.html` +
+`GRAPH_REPORT.md` commitas — `graph.json`, cache och mellanfiler ignoreras
+(se `.gitignore`). Körs om före inlämning (se [ARKITEKTUR-REVIEW](docs/ARCHITECTURE_REVIEW.md)).
 
 ### Diagram
 

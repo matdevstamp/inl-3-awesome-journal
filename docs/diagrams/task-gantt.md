@@ -31,7 +31,7 @@ gantt
     section Gate 1-Decisions
     01 Project Setup & Group Contract (23% · 6/26 · todo) : active, 2026-09-04, 1d
     02 Database Choice Discussion (27% · 4/15 · todo) : active, 2026-09-04, 1d
-    03 Graphify Architecture Artifacts (0% · 0/7 · todo) : active, 2026-09-07, 1d
+    03 Graphify Architecture Artifacts (100% · 7/7 · todo) : active, 2026-09-07, 1d
     section Gate 2-Scaffold
     04 Database Design & Setup (50% · 10/20 · todo) : active, 2026-09-07, 1d
     05 Next.js + Tailwind CSS + shadcn/ui Setup (0% · 0/21 · todo) : active, 2026-09-07, 1d

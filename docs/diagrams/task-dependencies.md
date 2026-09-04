@@ -32,7 +32,7 @@ flowchart TD
     subgraph decisions["Gate 1-Decisions"]
     T01["01 Project Setup & Group Contract (23% · 6/26 · todo)"]
     T02["02 Database Choice Discussion (27% · 4/15 · todo)"]
-    T03["03 Graphify Architecture Artifacts (0% · 0/7 · todo)"]
+    T03["03 Graphify Architecture Artifacts (100% · 7/7 · todo)"]
     end
     subgraph scaffold["Gate 2-Scaffold"]
     T04["04 Database Design & Setup (50% · 10/20 · todo)"]
