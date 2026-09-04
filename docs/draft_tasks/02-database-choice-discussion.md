@@ -119,8 +119,8 @@ DATABASE_URL="postgresql://user:password@localhost:5432/healthaccess"
 - [ ] Present SQLite vs PostgreSQL comparison
 - [ ] Discuss P2P requirements and database implications
 - [x] Make final decision as a team (PostgreSQL dev + prod, kickoff 2026-09-04)
-- [ ] Document decision in README
-- [ ] Update task files with chosen database
+- [x] Document decision in README (stack + PostgreSQL under “Stack”, root README)
+- [x] Update task files with chosen database (draft tasks 04–06, 11–16 reference PostgreSQL)
 
 ## Done Criteria
 

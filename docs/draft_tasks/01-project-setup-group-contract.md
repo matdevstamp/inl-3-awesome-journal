@@ -54,7 +54,7 @@ The contract should cover:
 - [ ] Write gruppkontrakt.md using provided template
 - [ ] Add the per-member loggbok files under `docs/logbooks/` (or the format the group decides at kickoff)
 - [ ] Record branch rule (app code via PR + 1 review; docs/ + Python tooling push direct) and apply the GitHub ruleset later with task 10
-- [ ] Create README.md with initial project description
+- [x] Create README.md with initial project description
 - [ ] Set up project board (GitHub Projects or similar)
 - [ ] Establish meeting schedule (min 2 standups/week)
 - [ ] Assign the first meeting facilitator and note-taker; define a rotation for later meetings

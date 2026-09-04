@@ -29,8 +29,8 @@ gantt
     axisFormat  %b %d
 
     section Gate 1-Decisions
-    01 Project Setup & Group Contract (19% · 5/26 · todo) : active, 2026-09-04, 1d
-    02 Database Choice Discussion (13% · 2/15 · todo) : active, 2026-09-04, 1d
+    01 Project Setup & Group Contract (23% · 6/26 · todo) : active, 2026-09-04, 1d
+    02 Database Choice Discussion (27% · 4/15 · todo) : active, 2026-09-04, 1d
     03 Graphify Architecture Artifacts (0% · 0/7 · todo) : active, 2026-09-07, 1d
     section Gate 2-Scaffold
     04 Database Design & Setup (20% · 4/20 · todo) : active, 2026-09-07, 1d
@@ -52,6 +52,6 @@ gantt
     18 Socket.io Broadcasting (0% · 0/24 · todo) : active, 2026-09-21, 1d
     section Gate 5-Delivery
     19 Testing & Quality Assurance (0% · 0/27 · todo) : active, 2026-09-22, 2d
-    20 Documentation & README (6% · 2/34 · todo) : active, 2026-09-24, 1d
+    20 Documentation & README (9% · 3/34 · todo) : active, 2026-09-24, 1d
     21 Presentation Preparation (0% · 0/23 · todo) : active, 2026-09-28, 2d
 ```

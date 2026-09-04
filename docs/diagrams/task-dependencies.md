@@ -30,8 +30,8 @@ flowchart TD
     %% Dotted line A -. related .- B: A and B are related
     %% Colors: green done · blue in progress · dashed gray todo (not started)
     subgraph decisions["Gate 1-Decisions"]
-    T01["01 Project Setup & Group Contract (19% · 5/26 · todo)"]
-    T02["02 Database Choice Discussion (13% · 2/15 · todo)"]
+    T01["01 Project Setup & Group Contract (23% · 6/26 · todo)"]
+    T02["02 Database Choice Discussion (27% · 4/15 · todo)"]
     T03["03 Graphify Architecture Artifacts (0% · 0/7 · todo)"]
     end
     subgraph scaffold["Gate 2-Scaffold"]
@@ -57,7 +57,7 @@ flowchart TD
     end
     subgraph delivery["Gate 5-Delivery"]
     T19["19 Testing & Quality Assurance (0% · 0/27 · todo)"]
-    T20["20 Documentation & README (6% · 2/34 · todo)"]
+    T20["20 Documentation & README (9% · 3/34 · todo)"]
     T21["21 Presentation Preparation (0% · 0/23 · todo)"]
     end
     T01 --> T02

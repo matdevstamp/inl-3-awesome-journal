@@ -139,7 +139,7 @@ If React Query is selected, document the typed client setup, query-key conventio
 
 ## Tasks
 
-- [ ] Write an initial README before feature work: purpose, scope, architecture, local setup placeholder, and team
+- [x] Write an initial README before feature work: purpose, scope, architecture, local setup placeholder, and team (initial slice 2026-09-04)
 - [ ] Add installation, environment variables, database migration/seed, and two-server startup instructions
 - [ ] Add database structure, generated data-model diagram link, and migration/seed regeneration instructions (including: `data-model.md` is emitted by the `generator erd` block in `prisma/schema.prisma`, so `npx prisma generate` refreshes it), plus the privacy boundary
 - [ ] Add API and Mermaid diagram links, graphify report link, screenshots, and demo script
