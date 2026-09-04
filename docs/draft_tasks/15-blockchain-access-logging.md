@@ -4,9 +4,10 @@
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-14
 - **Status:** TODO
-- **Assignee:** TBD
+- **Assignee:** umoraghad0-del (huvudansvar, Stream D)
 - **Tags:** blockchain, logging, gdpr, required, gate:3-features, stream:D-audit
 - **Dependencies:** 04-database-design.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
+- **GitHub Issue:** #17 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/17)
 - **Related:** 18-socketio-broadcasting.md
 - **Estimated Effort:** 8h
 

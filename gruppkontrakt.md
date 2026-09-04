@@ -1,6 +1,6 @@
 # Gruppkontrakt — Inl 3 Grupparbete (HealthAccess)
 
-> **Status:** v0.3 — signerat av Matias fre 4 sep (omfattar kickoff-besluten: roller, branch-regel, PR-granskning, schema); övriga signerar senast lör 5 sep. Najma (`umoraghad0-del`) var inte på kickoffet — hennes roll/ansvar läggs till när hon själv deklarerar fokus.
+> **Status:** v0.4 — signerat av Matias fre 4 sep (omfattar kickoff-besluten: roller, branch-regel, PR-granskning, schema); övriga signerar senast lör 5 sep. Najma (`umoraghad0-del`) var inte på kickoffet och har deklarerat sitt fokus i efterhand (5 sep): **huvudansvar för blockchain/access-logging (Stream D, task 15)** + pair-programmering på P2P (16) och Socket.IO (18). Ramadan behåller task 12 (Frontend UI).
 > Mall: [Gruppkontrakt mall](https://gist.github.com/postmodernistx/6afcbe224bce912a6da1a86b8b94adbc) · Scope: [`docs/Raw_Requirements.md`](docs/Raw_Requirements.md)
 
 ## Team
@@ -10,7 +10,7 @@
 | Matias Marti | `matdevstamp` | Koordinator / Lead (fokus på Gate 1–2) |
 | Kassim Segerberg | `Kassim10` | Backend (API-routes, DB/Prisma, middleware); stream D chain core öppen |
 | Ramadan | `rcilomba` | UI / Frontend (all UI, stream D-vyn TBD) |
-| Najma Hasan | `umoraghad0-del` | Pair programming — deklarerar eget fokus senare |
+| Najma Hasan | `umoraghad0-del` | Blockchain/access-logging (Stream D huvudansvar, task 15); pair på P2P (16) & Socket.IO (18) |
 
 ## 1. Projekt & ambitionsnivå
 
@@ -21,18 +21,18 @@ Vi bygger HealthAccess: ett system där medicinska journaler ligger i en SQL-dat
 
 ## 2. Roller & ansvarsområden
 
-Vi avviker från exempelfördelningen Person 1–4 i `docs/Raw_Requirements.md` — vi delar i stället på backend/UI/koordinering (beslut på kickoff 4 sep, se `docs/meetings/2026-09-04-kickoff-agenda.md`). Stream D (chain core + P2P) är ännu inte fördelad.
+Vi avviker från exempelfördelningen Person 1–4 i `docs/Raw_Requirements.md` — vi delar i stället på backend/UI/koordinering (beslut på kickoff 4 sep, se `docs/meetings/2026-09-04-kickoff-agenda.md`). Stream D (chain core + P2P) tilldelades Najma 5 sep (se statusraden ovan).
 
 | Person | Ansvarsområde | Streams |
 |---|---|---|
-| Kassim Segerberg (`Kassim10`) | Backend: Next.js API-routes, databas & Prisma, middleware, `auditLogger` | A/B/C (backend), D chain core öppen |
-| Ramadan (`rcilomba`) | Frontend/UI: inloggning, journal-sök/-vy, live access-log-vy, verifikationsbadge | A/B/C (frontend), D-vy TBD |
+| Kassim Segerberg (`Kassim10`) | Backend: Next.js API-routes, databas & Prisma, middleware, `auditLogger` | A/B/C (backend) |
+| Ramadan (`rcilomba`) | Frontend/UI: task 12 (inloggning, dashboard-shell, access-denied), journal-sök/-vy, live access-log-vy, verifikationsbadge | A/B/C (frontend), D-vy |
 | Matias Marti (`matdevstamp`) | Koordinator/Lead: möten, PR-review, unblocking, Gate 1–2 | — |
-| Najma Hasan (`umoraghad0-del`) | Pair programming; deklarerar eget fokus senare | öppen |
+| Najma Hasan (`umoraghad0-del`) | Blockchain/access-logging (chain core, task 15); pair på P2P (16) & Socket.IO (18) | D (chain core + P2P) |
 
 - **Scrum master:** TBD (vi kan rotera)
 - **Lead:** Matias Marti (`matdevstamp`)
-- **Backup/review:** backend ↔ UI-par (Kassim ↔ Ramadan); Najma fyller på där det behövs. Matias PR:er granskas av den som har mest koll på området.
+- **Backup/review:** backend ↔ UI-par (Kassim ↔ Ramadan); Matias PR:er granskas av den som har mest koll på området. Stream D-kod (blockchain/P2P/Socket.IO) granskas av Najma tillsammans med backend (Kassim).
 
 ## 3. Tidigare grupparbeteserfarenheter
 
@@ -45,7 +45,7 @@ Vi avviker från exempelfördelningen Person 1–4 i `docs/Raw_Requirements.md` 
 
 ## 4. Mötestider & format
 
-Planera in (fyll i tider på kickoffet):
+Planera in (fyll i tider på kickoffet — låst när alla fyllt i [`docs/team-availability.md`](docs/team-availability.md)):
 
 - **Daily standup varje vardag** — samma tid om möjligt: kl. ____
 - **Backlog refining** varje vecka (~1 h): ____

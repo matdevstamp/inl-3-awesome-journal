@@ -23,7 +23,7 @@ loggar i efterhand (GDPR-kravet om att patienter ska kunna se vem som har
 | Matias Marti | [`matdevstamp`](https://github.com/matdevstamp) | Koordinator/Lead, Gate 2-setup, docs |
 | Kassim Segerberg | [`Kassim10`](https://github.com/Kassim10) | Backend (Next.js-routes, DB/Prisma, auth, `auditLogger`) |
 | Ramadan | [`rcilomba`](https://github.com/rcilomba) | UI/Frontend (alla vyer, shadcn/ui) |
-| Najma Hasan | [`umoraghad0-del`](https://github.com/umoraghad0-del) | Pair programming — deklarerar fokus senare |
+| Najma Hasan | [`umoraghad0-del`](https://github.com/umoraghad0-del) | Blockchain/access-logging (Stream D, task 15); pair P2P (16) & Socket.IO (18) |
 
 ## Stack
 

@@ -7,6 +7,7 @@
 - **Assignee:** Kassim10
 - **Tags:** backend, api, auth, required, gate:3-features, stream:A-identity
 - **Dependencies:** 04-database-design.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
+- **GitHub Issue:** #13 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/13)
 - **Estimated Effort:** 8h
 
 ## Requirements
