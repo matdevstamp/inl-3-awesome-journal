@@ -30,3 +30,6 @@ yarn-error.log*
 .vercel
 *.pem
 .DS_Store
+playwright-report/
+test-results/
+blob-report/

@@ -40,7 +40,7 @@ flowchart TD
     T06["06 Backend Project Setup (Next.js Route Handlers & Services) (48% · 11/23 · todo)"]
     T07["07 TypeScript Strict Configuration (41% · 9/22 · todo)"]
     T08["08 ESLint + Prettier Configuration (32% · 7/22 · todo)"]
-    T09["09 Playwright E2E Testing (0% · 0/27 · todo)"]
+    T09["09 Playwright E2E Testing (11% · 3/27 · todo)"]
     T10["10 GitHub Actions CI/CD Workflow (0% · 0/33 · todo)"]
     end
     subgraph features["Gate 3-Features"]

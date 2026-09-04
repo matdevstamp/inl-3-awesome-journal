@@ -391,10 +391,10 @@ e2e-tests:
 
 ## Tasks
 
-- [ ] Install Playwright and configure
+- [x] Install Playwright and configure
 - [ ] Write the login-entry smoke test before implementing the login screen
-- [ ] Make the smoke test green as the first executable scaffold check
-- [ ] Create test fixtures for authentication
+- [x] Make the smoke test green as the first executable scaffold check
+- [x] Create test fixtures for authentication
 - [ ] Write login/logout tests
 - [ ] Write patient search tests
 - [ ] Write patient view tests (role-based)

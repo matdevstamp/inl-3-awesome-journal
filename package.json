@@ -16,7 +16,10 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "postinstall": "prisma generate",
-    "dev:server2": "next dev -p 3002"
+    "dev:server2": "next dev -p 3002",
+    "test": "playwright test",
+    "test:e2e": "playwright test",
+    "test:install": "playwright install chromium"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
@@ -38,6 +41,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
