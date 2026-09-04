@@ -4,8 +4,11 @@ import { execSync } from "node:child_process";
  * 1. Make sure the shared Postgres is up, migrated and seeded before the
  *    web servers boot (local runs only — CI provisions via the workflow's
  *    postgres service and its own env).
- * 2. Build the app once; the web servers below run `next start` from that
- *    build output, because Next 16 only allows one `next dev` per project.
+ *
+ * NOTE: the production build must exist BEFORE Playwright boots the web
+ * servers (they run `next start`). Playwright runs webServer tasks before
+ * globalSetup, so the build happens in the CI workflow (and locally via
+ * `npm run build`) — not here.
  */
 export default function globalSetup(): void {
   const commands: string[] = [];
@@ -13,7 +16,6 @@ export default function globalSetup(): void {
   if (!process.env.CI && !process.env.DATABASE_URL) {
     commands.push("npm run db:up && npm run db:deploy && npm run db:seed");
   }
-  commands.push("npm run build");
 
   for (const command of commands) {
     try {

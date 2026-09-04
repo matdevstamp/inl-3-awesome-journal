@@ -91,6 +91,10 @@ jobs:
         run: |
           npm run db:deploy
           npm run db:seed
+      # Playwright boots `next start` webServers before globalSetup runs,
+      # so the production build must exist before `npm run test`.
+      - name: Build app for production
+        run: npm run build
       - name: Run e2e tests (both servers)
         run: npm run test
       - name: Upload Playwright report on failure
