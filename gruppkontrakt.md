@@ -5,12 +5,12 @@
 
 ## Team
 
-| Namn | GitHub | Roll |
-|---|---|---|
-| Matias Marti | `matdevstamp` | Koordinator / Lead (fokus på Gate 1–2) |
-| Kassim Segerberg | `Kassim10` | Backend (API-routes, DB/Prisma, middleware); stream D chain core öppen |
-| Ramadan | `rcilomba` | UI / Frontend (all UI, stream D-vyn TBD) |
-| Najma Hasan | `umoraghad0-del` | Pair programming — deklarerar eget fokus senare |
+| Namn             | GitHub           | Roll                                                                   |
+| ---------------- | ---------------- | ---------------------------------------------------------------------- |
+| Matias Marti     | `matdevstamp`    | Koordinator / Lead (fokus på Gate 1–2)                                 |
+| Kassim Segerberg | `Kassim10`       | Backend (API-routes, DB/Prisma, middleware); stream D chain core öppen |
+| Ramadan Cilomba  | `rcilomba`       | UI / Frontend (all UI, stream D-vyn TBD)                               |
+| Najma Hasan      | `umoraghad0-del` | Pair programming — deklarerar eget fokus senare                        |
 
 ## 1. Projekt & ambitionsnivå
 
@@ -23,12 +23,12 @@ Vi bygger HealthAccess: ett system där medicinska journaler ligger i en SQL-dat
 
 Vi avviker från exempelfördelningen Person 1–4 i `docs/Raw_Requirements.md` — vi delar i stället på backend/UI/koordinering (beslut på kickoff 4 sep, se `docs/meetings/2026-09-04-kickoff-agenda.md`). Stream D (chain core + P2P) är ännu inte fördelad.
 
-| Person | Ansvarsområde | Streams |
-|---|---|---|
-| Kassim Segerberg (`Kassim10`) | Backend: Next.js API-routes, databas & Prisma, middleware, `auditLogger` | A/B/C (backend), D chain core öppen |
-| Ramadan (`rcilomba`) | Frontend/UI: inloggning, journal-sök/-vy, live access-log-vy, verifikationsbadge | A/B/C (frontend), D-vy TBD |
-| Matias Marti (`matdevstamp`) | Koordinator/Lead: möten, PR-review, unblocking, Gate 1–2 | — |
-| Najma Hasan (`umoraghad0-del`) | Pair programming; deklarerar eget fokus senare | öppen |
+| Person                         | Ansvarsområde                                                                    | Streams                             |
+| ------------------------------ | -------------------------------------------------------------------------------- | ----------------------------------- |
+| Kassim Segerberg (`Kassim10`)  | Backend: Next.js API-routes, databas & Prisma, middleware, `auditLogger`         | A/B/C (backend), D chain core öppen |
+| Ramadan (`rcilomba`)           | Frontend/UI: inloggning, journal-sök/-vy, live access-log-vy, verifikationsbadge | A/B/C (frontend), D-vy TBD          |
+| Matias Marti (`matdevstamp`)   | Koordinator/Lead: möten, PR-review, unblocking, Gate 1–2                         | —                                   |
+| Najma Hasan (`umoraghad0-del`) | Pair programming; deklarerar eget fokus senare                                   | öppen                               |
 
 - **Scrum master:** TBD (vi kan rotera)
 - **Lead:** Matias Marti (`matdevstamp`)
@@ -38,19 +38,19 @@ Vi avviker från exempelfördelningen Person 1–4 i `docs/Raw_Requirements.md` 
 
 > Fyll i på kickoffet. Top 3 sämsta erfarenheter + negativa förväntningar, per person.
 
-- Kassim: ____
-- Ramadan: ____
-- Najma: ____
+- Kassim: \_\_\_\_
+- Ramadan: Otydlig kommunikation och att saker skjuts upp till sista stund.
+- Najma: \_\_\_\_
 - Matias: Otydlig ansvarsfördelning (diffust ägande → saker faller mellan stolorna); allt skjuts till sista dagen → panik i slutet
 
 ## 4. Mötestider & format
 
 Planera in (fyll i tider på kickoffet):
 
-- **Daily standup varje vardag** — samma tid om möjligt: kl. ____
-- **Backlog refining** varje vecka (~1 h): ____
-- **Sprint planning** varje vecka (~1–2 h): ____
-- **Retrospektiv** varje vecka (~1 h): ____
+- **Daily standup varje vardag** — samma tid om möjligt: kl. \_\_\_\_
+- **Backlog refining** varje vecka (~1 h): \_\_\_\_
+- **Sprint planning** varje vecka (~1–2 h): \_\_\_\_
+- **Retrospektiv** varje vecka (~1 h): \_\_\_\_
 - Mötesanteckningar hamnar i `docs/meetings/` med [`docs/MEETING_TEMPLATE.md`](docs/MEETING_TEMPLATE.md), samma dag.
 - Facilitator/timekeeper/note-taker roterar (alfabetisk ordning per vecka som default).
 - Varje möte innehåller en requirements checkpoint mot `docs/Raw_Requirements.md`.
@@ -69,7 +69,7 @@ Planera in (fyll i tider på kickoffet):
 Vi för en **loggbok per person** för dagliga standups och mötesdeltagande (se [`docs/logbooks/README.md`](docs/logbooks/README.md)).
 
 - **Default (förslag):** en CSV per person i `docs/logbooks/` — incheckad i repot.
-- **Beslut på kickoff:** CSV (repo) **eller** Excel/Sheets externt. Väljer vi externt krävs en **ägare som inte är Matias**: ____
+- **Beslut på kickoff:** CSV (repo) **eller** Excel/Sheets externt. Väljer vi externt krävs en **ägare som inte är Matias**: \_\_\_\_
 - Antecknare för veckans möten dokumenterar daily/standup i repot (rotera gärna).
 
 ## 7. Uppgiftsfördelning & arbetsflöde
@@ -83,24 +83,24 @@ Vi för en **loggbok per person** för dagliga standups och mötesdeltagande (se
 
 ## 8. Kodstandard
 
-- **Commits:** ____ (förslag: Conventional Commits)
+- **Commits:** \_\_\_\_ (förslag: Conventional Commits)
 - **Lint/format:** ESLint + Prettier (se draft tasks 07–08)
-- **Språk i kod (identifierare, kommentarer):** ____
+- **Språk i kod (identifierare, kommentarer):** \_\_\_\_
 - **Branch protection:** enforce PR reviews på `main` för app-kod; allt under `docs/` + `project_management/` får pushas direkt
 
 ## 9. Feedback & återkoppling
 
 - Code reviews görs på PR:er, tidsfrist: **ingen fast tidsgräns** — granskaren svarar så snart som möjligt
-- Feedback på design/UI: ____
-- Tidsfrist för återkoppling på det någon gjort: ____
+- Feedback på design/UI: \_\_\_\_
+- Tidsfrist för återkoppling på det någon gjort: \_\_\_\_
 
 ## 10. Personlighetstyp, stress & roller
 
 > Fyll i på kickoffet — hur reagerar du vid stress? Vilken roll tar du oftast (ledare, planerare, expert, slutförare, granskare, …)?
 
-- Kassim: ____
-- Ramadan: ____
-- Najma: ____
+- Kassim: \_\_\_\_
+- Ramadan: Jobbar bäst med tydliga tasks och exempel. Vid stress vill jag prioritera MVP och få hjälp att bryta ner problem.
+- Najma: \_\_\_\_
 - Matias: Slutförare — fokuserar och kör klart under stress
 
 ## 11. Övriga förväntningar & konsekvenser
@@ -109,6 +109,7 @@ Vi för en **loggbok per person** för dagliga standups och mötesdeltagande (se
 - Konsekvenser om någon inte dyker upp/gör sitt: mjukare linje (förslag från lead) — först ett snack i gruppen, läraren kontaktas först vid upprepad frånvaro/uteblivet arbete.
 - Vad är du bra på / sämre på? Vad vill du träna extra på (HTML/CSS/git/projektledning/…)?
   - Matias: Bra på kod; vill träna på PM/facilitering/koordinering
+  - Ramadan: Vill fokusera på frontend/UI och bli bättre på React, Git workflow och koppling mellan frontend och backend.
 
 ## 12. Övrigt
 
@@ -118,9 +119,9 @@ Vi för en **loggbok per person** för dagliga standups och mötesdeltagande (se
 
 Vi har läst och godkänner gruppkontraktet:
 
-| Namn | GitHub | Datum | Signatur |
-|---|---|---|---|
-| Matias Marti | `matdevstamp` | 2026-09-04 | ✅ (v0.3) |
-| Kassim Segerberg | `Kassim10` | senast 2026-09-05 | |
-| Ramadan | `rcilomba` | senast 2026-09-05 | |
-| Najma Hasan | `umoraghad0-del` | senast 2026-09-05 | |
+| Namn             | GitHub           | Datum             | Signatur         |
+| ---------------- | ---------------- | ----------------- | ---------------- |
+| Matias Marti     | `matdevstamp`    | 2026-09-04        | ✅ (v0.3)        |
+| Kassim Segerberg | `Kassim10`       | senast 2026-09-05 |                  |
+| Ramadan Cilomba  | `rcilomba`       | 2026-09-05        | Godkänner (v0.3) |
+| Najma Hasan      | `umoraghad0-del` | senast 2026-09-05 |                  |
