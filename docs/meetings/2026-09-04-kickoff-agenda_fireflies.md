@@ -1,5 +1,24 @@
 https://app.fireflies.ai/view/01M1J0DQKCMG91MWXB6SAAQYMR
 
+---
+
+## ⚠️ Reconciliation with the actual kickoff decisions
+
+This file is a **raw Fireflies AI transcription summary** and contains errors and claims that contradict what the team actually decided. Source of truth: [`2026-09-04-kickoff-agenda.md`](2026-09-04-kickoff-agenda.md), [`docs/PROJECT_PLAN.md`](../PROJECT_PLAN.md), and [`gruppkontrakt.md`](../../gruppkontrakt.md). The transcript is kept only as an archive; do not use it to override decisions.
+
+| Claim in the transcript | Actual decision | Where recorded |
+|---|---|---|
+| “React + Next.js front end paired with **Express backend**” / “Backend services will run on Express servers” | No separate Express backend — **fullstack Next.js** (UI + route handlers in one app), one server per node (3001/3002) | agenda “Decisions Made Today”; PROJECT_PLAN Gate 2 |
+| “Blockchain … for **contract signing**” / “blockchain legal institute framework” / “immutable records of group contract signing” | Only **access logs** go on the blockchain; medical records and the group contract are never stored on-chain (GDPR) | agenda; PROJECT_PLAN; draft task 04 |
+| “**Local storage** used to cache user data” | Not adopted — patient/medical data stays in PostgreSQL; no client-side caching of patient data was decided | agenda; PROJECT_PLAN |
+| “Matias Marti mentioned **hiring today** … new hires” | Transcription noise — the team is fixed: Kassim, Ramadan, Matias, Najma | gruppkontrakt §Team |
+| “**Nicolas** … main debugging lead for privacy and blockchain issues” | Nicolas is not a team member (likely course staff) — **clarify before acting on this** | open question |
+| “**dog three**” compliance check; “**Oxoiler** tools”; “**Canary** coding agent environment” | Garbled transcription — no such tooling or process was decided | — |
+| “Fireflies … task drafting and promoting items into actionable tickets” | Task drafting/promotion lives in the repo tooling (`project_management/` CLI); Fireflies is only a transcript archive | `project_management/README.md` |
+
+Per-person action items listed below map to draft tasks 01–21 (owners: `matdevstamp`, `Kassim10`, `rcilomba`) — see the draft-task metadata and the agenda’s action-item table.
+
+---
 
 Notes
 Product Development and Technical Architecture
