@@ -17,6 +17,14 @@ const eslintConfig = defineConfig([
     "prisma/**/*.js",
   ]),
   {
+    files: ["e2e/**"],
+    rules: {
+      // Playwright fixture callbacks are named `use` by convention; this is
+      // test-runner code, not React, so the hook rules don't apply here.
+      "react-hooks/rules-of-hooks": "off",
+    },
+  },
+  {
     rules: {
       // Task 07: keep `any` out of the codebase (warn so builds are never blocked).
       "@typescript-eslint/no-explicit-any": "warn",

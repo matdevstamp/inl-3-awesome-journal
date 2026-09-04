@@ -14,7 +14,7 @@ export interface LoginAs {
 }
 
 export const test = base.extend<LoginAs>({
-  loginAs: async ({ page }, useFixture) => {
+  loginAs: async ({ page }, use) => {
     const loginAs = async (role: TestRole) => {
       await page.goto("/login");
       await page.fill('[name="username"]', `${role}_test`);
@@ -23,7 +23,7 @@ export const test = base.extend<LoginAs>({
       await page.waitForURL(role === "patient" ? "/my-records" : "/dashboard");
       return page;
     };
-    await useFixture(loginAs);
+    await use(loginAs);
   },
 });
 
