@@ -212,14 +212,14 @@ Closes #[issue number]
 
 ## Tasks
 
-- [ ] Create .github/workflows directory
-- [ ] Create PR validation workflow (lint, typecheck, test, build) for the single Next.js app
-- [ ] Add the Playwright E2E job (task 09) with the PostgreSQL service
-- [ ] Apply the GitHub ruleset on `main` (PR + 1 review; status checks)
-- [ ] Create PR template
-- [ ] Add status badges to README
+- [x] Create .github/workflows directory
+- [x] Create PR validation workflow (lint, typecheck, test, build) for the single Next.js app
+- [x] Add the Playwright E2E job (task 09) with the PostgreSQL service
+- [x] Apply the GitHub ruleset on `main` (PR + 1 review; status checks)
+- [x] Create PR template
+- [x] Add status badges to README
 - [ ] Test workflows on a real PR
-- [ ] Document workflow in README
+- [x] Document workflow in README
 
 ## Done Criteria
 

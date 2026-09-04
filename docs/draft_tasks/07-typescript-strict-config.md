@@ -234,7 +234,7 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
 - [x] Update the typed fetch client for safety
 - [x] Fix any TypeScript errors in existing code
 - [x] Add no-explicit-any rule to ESLint
-- [ ] Document TypeScript conventions
+- [x] Document TypeScript conventions
 - [ ] Train team on strict TypeScript
 
 ## Done Criteria

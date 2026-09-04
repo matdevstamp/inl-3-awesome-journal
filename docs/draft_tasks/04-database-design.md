@@ -154,7 +154,7 @@ CREATE INDEX idx_access_logs_patient ON access_logs(patient_id);
 - [x] Add appropriate indexes for search performance
 - [x] Create seed data script with test users and patients
 - [x] Add the `generator erd` block (above) to `prisma/schema.prisma` so `npx prisma generate` emits `docs/diagrams/data-model.md`
-- [ ] Document database structure in README (link diagram + migrations)
+- [x] Document database structure in README (link diagram + migrations)
 - [ ] Test CRUD operations for all entities
 - [x] Verify GDPR compliance (no medical records on blockchain)
 
