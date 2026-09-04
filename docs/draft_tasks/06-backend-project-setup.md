@@ -4,9 +4,10 @@
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-08
 - **Status:** TODO
-- **Assignee:** matdevstamp (pairs: Kassim10)
+- **Assignee:** matdevstamp
 - **Tags:** backend, nodejs, api, required, gate:2-scaffold
 - **Dependencies:** 04-database-design.md, 05-nextjs-tailwind-shadcn.md
+- **GitHub Issue:** #7 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/7)
 - **Estimated Effort:** 4h
 
 ## Requirements

@@ -4,9 +4,10 @@
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-08
 - **Status:** TODO
-- **Assignee:** matdevstamp (pairs: Kassim10)
+- **Assignee:** matdevstamp
 - **Tags:** typescript, type-safety, required, gate:2-scaffold
 - **Dependencies:** 05-nextjs-tailwind-shadcn.md, 06-backend-project-setup.md
+- **GitHub Issue:** #8 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/8)
 - **Estimated Effort:** 2h
 
 ## Requirements

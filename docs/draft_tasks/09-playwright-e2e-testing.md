@@ -4,9 +4,10 @@
 - **Priority:** P1 - High
 - **Deadline:** 2026-09-08 (runner and fixtures), 2026-09-29 (critical flows)
 - **Status:** TODO
-- **Assignee:** matdevstamp (pairs: rcilomba)
+- **Assignee:** matdevstamp
 - **Tags:** testing, e2e, playwright, required, gate:2-scaffold
 - **Dependencies:** 05-nextjs-tailwind-shadcn.md, 06-backend-project-setup.md, 07-typescript-strict-config.md, 08-eslint-prettier-config.md
+- **GitHub Issue:** #10 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/10)
 - **Related:** 10-github-actions-cicd.md, 19-testing.md
 - **Estimated Effort:** 8h
 

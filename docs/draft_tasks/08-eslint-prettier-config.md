@@ -7,6 +7,7 @@
 - **Assignee:** matdevstamp
 - **Tags:** tooling, linting, code-quality, required, gate:2-scaffold
 - **Dependencies:** 05-nextjs-tailwind-shadcn.md, 07-typescript-strict-config.md
+- **GitHub Issue:** #9 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/9)
 - **Estimated Effort:** 2h
 
 ## Requirements

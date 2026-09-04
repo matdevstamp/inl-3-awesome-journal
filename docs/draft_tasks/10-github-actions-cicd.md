@@ -7,6 +7,7 @@
 - **Assignee:** matdevstamp
 - **Tags:** ci/cd, github-actions, automation, required, gate:2-scaffold
 - **Dependencies:** 05-nextjs-tailwind-shadcn.md, 08-eslint-prettier-config.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
+- **GitHub Issue:** #11 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/11)
 - **Related:** 09-playwright-e2e-testing.md
 - **Estimated Effort:** 3h
 
