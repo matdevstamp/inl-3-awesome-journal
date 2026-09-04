@@ -20,9 +20,7 @@ export const metadata: Metadata = {
   description: "Secure cross-organization access to patient health records",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: ReactNode }>) {
+export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html
       lang="en"

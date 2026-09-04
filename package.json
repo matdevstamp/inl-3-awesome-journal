@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "check": "npm run lint && npm run typecheck && npm run format:check",
+    "fix": "npm run format && npm run lint -- --fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,mjs,cjs,css,json}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,mjs,cjs,css,json}\"",
     "db:up": "bash scripts/db-up.sh",
