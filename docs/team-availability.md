@@ -40,9 +40,9 @@ Example: `ALL` = free all day, `AM+PM` = morning and afternoon, `EVE` = only eve
 
 | Name | GitHub | Wed 9 | Thu 10 | Fri 11 | Sat 12 | Sun 13 | Mon 14 | Tue 15 |
 |------|--------|-------|--------|--------|--------|--------|--------|--------|
-| Kassim | Kassim10 | | | **DEADLINE 11:00** | | | | |
-| Ramadan | rcilomba | | | **DEADLINE 11:00** | | | | |
-| Najma | umoraghad0-del | | | **DEADLINE 11:00** | | | | |
+| Kassim | Kassim10 | | | | | | | |
+| Ramadan | rcilomba | | | | | | | |
+| Najma | umoraghad0-del | | | | | | | |
 | Matias | matdevstamp | 17–17:30 + 19–21 | 17–17:30 + 19–21 | 17–17:30 + 19–21 | | | | |
 
 **Stream owners start their feature branches.**
