@@ -1,6 +1,6 @@
 # Gruppkontrakt — Inl 3 Grupparbete (HealthAccess)
 
-> **Status:** v0.2 — signerat av Matias fre 4 sep på kickoffet; övriga signerar senast lör 5 sep. Najma (`umoraghad0-del`) var inte på kickoffet — hennes roll/ansvar läggs till när hon själv deklarerar fokus.
+> **Status:** v0.3 — signerat av Matias fre 4 sep (omfattar kickoff-besluten: roller, branch-regel, PR-granskning, schema); övriga signerar senast lör 5 sep. Najma (`umoraghad0-del`) var inte på kickoffet — hennes roll/ansvar läggs till när hon själv deklarerar fokus.
 > Mall: [Gruppkontrakt mall](https://gist.github.com/postmodernistx/6afcbe224bce912a6da1a86b8b94adbc) · Scope: [`docs/Raw_Requirements.md`](docs/Raw_Requirements.md)
 
 ## Team
@@ -119,7 +119,7 @@ Vi har läst och godkänner gruppkontraktet:
 
 | Namn | GitHub | Datum | Signatur |
 |---|---|---|---|
-| Matias Marti | `matdevstamp` | 2026-09-04 | ✅ |
+| Matias Marti | `matdevstamp` | 2026-09-04 | ✅ (v0.3) |
 | Kassim Segerberg | `Kassim10` | senast 2026-09-05 | |
 | Ramadan | `rcilomba` | senast 2026-09-05 | |
 | Najma Hasan | `umoraghad0-del` | senast 2026-09-05 | |
