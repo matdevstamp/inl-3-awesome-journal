@@ -2,7 +2,7 @@
 
 ## Metadata
 - **Priority:** P1 - High
-- **Deadline:** 2026-09-08 (runner and fixtures), 2026-09-29 (critical flows)
+- **Deadline:** 2026-09-07 (runner and fixtures), 2026-09-29 (critical flows)
 - **Status:** TODO
 - **Assignee:** matdevstamp
 - **Tags:** testing, e2e, playwright, required, gate:2-scaffold

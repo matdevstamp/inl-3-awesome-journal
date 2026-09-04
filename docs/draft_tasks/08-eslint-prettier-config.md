@@ -2,7 +2,7 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-08
+- **Deadline:** 2026-09-07
 - **Status:** TODO
 - **Assignee:** matdevstamp
 - **Tags:** tooling, linting, code-quality, required, gate:2-scaffold
