@@ -173,16 +173,16 @@ Next.js `middleware.ts` may additionally short-circuit unauthenticated page requ
 ## Tasks
 
 - [ ] Confirm the Next.js scaffold from task 05 runs on ports 3001 and 3002
-- [ ] Add shared env helper (`src/lib/env.ts`) with `.env.example`
-- [ ] Create shared Prisma client (`src/lib/prisma.ts`)
-- [ ] Add shared API types module (`src/lib/types/api.ts`)
-- [ ] Implement JWT helpers + httpOnly cookie session (`src/lib/auth.ts`)
-- [ ] Add a per-route `getSession`/`requireRole` guard used by route handlers
-- [ ] Create stub route handlers: auth, patients, records, notes, access-log
-- [ ] Add `/api/health` route handler returning server id + timestamp
+- [x] Add shared env helper (`src/lib/env.ts`) with `.env.example`
+- [x] Create shared Prisma client (`src/lib/prisma.ts`)
+- [x] Add shared API types module (`src/lib/types/api.ts`)
+- [x] Implement JWT helpers + httpOnly cookie session (`src/lib/auth.ts`)
+- [x] Add a per-route `getSession`/`requireRole` guard used by route handlers
+- [x] Create stub route handlers: auth, patients, records, notes, access-log
+- [x] Add `/api/health` route handler returning server id + timestamp
 - [ ] Wire Socket.IO for the two servers (see tasks 16/18)
-- [ ] Add rate limiting and error handling helpers
-- [ ] Add npm scripts for dev (both ports), lint, test, db:migrate, db:seed
+- [x] Add rate limiting and error handling helpers
+- [x] Add npm scripts for dev (both ports), lint, test, db:migrate, db:seed
 - [ ] Verify both server instances start and reach `/api/health`
 
 ## Done Criteria

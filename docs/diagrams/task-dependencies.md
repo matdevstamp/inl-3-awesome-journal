@@ -35,10 +35,10 @@ flowchart TD
     T03["03 Graphify Architecture Artifacts (0% · 0/7 · todo)"]
     end
     subgraph scaffold["Gate 2-Scaffold"]
-    T04["04 Database Design & Setup (20% · 4/20 · todo)"]
+    T04["04 Database Design & Setup (45% · 9/20 · todo)"]
     T05["05 Next.js + Tailwind CSS + shadcn/ui Setup (0% · 0/21 · todo)"]
-    T06["06 Backend Project Setup (Next.js Route Handlers & Services) (9% · 2/23 · todo)"]
-    T07["07 TypeScript Strict Configuration (36% · 8/22 · todo)"]
+    T06["06 Backend Project Setup (Next.js Route Handlers & Services) (48% · 11/23 · todo)"]
+    T07["07 TypeScript Strict Configuration (41% · 9/22 · todo)"]
     T08["08 ESLint + Prettier Configuration (32% · 7/22 · todo)"]
     T09["09 Playwright E2E Testing (0% · 0/27 · todo)"]
     T10["10 GitHub Actions CI/CD Workflow (0% · 0/33 · todo)"]

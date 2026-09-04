@@ -231,7 +231,7 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
 - [x] Create shared API types module (src/lib/types/api.ts)
 - [x] Create utility types file
 - [x] Create type guard utilities
-- [ ] Update the typed fetch client for safety
+- [x] Update the typed fetch client for safety
 - [x] Fix any TypeScript errors in existing code
 - [x] Add no-explicit-any rule to ESLint
 - [ ] Document TypeScript conventions

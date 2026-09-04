@@ -1,0 +1,136 @@
+// prisma/schema.prisma — single source of truth for the data model.
+//
+// The Mermaid ER diagram in docs/diagrams/data-model.md is GENERATED from
+// this file by the `erd` generator below — never hand-edit the diagram.
+// Every `npx prisma generate` rewrites it, so it cannot drift.
+//
+// Medical records live in this SQL database ONLY. The blockchain stores
+// access-log hashes, never patient data (GDPR, kickoff decision).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "../docs/diagrams/data-model.md"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Enums ────────────────────────────────────────────────────────────────
+
+enum Role {
+  doctor
+  nurse
+  ambulance
+  patient
+  unauthorized
+}
+
+enum NoteVisibility {
+  private
+  healthcare
+  all
+}
+
+// ── Models ───────────────────────────────────────────────────────────────
+
+/// Hospitals, clinics and ambulance services that users belong to.
+model Organization {
+  id   Int    @id @default(autoincrement())
+  name String
+  type String? // hospital | clinic | ambulance service
+
+  users User[]
+  @@map("organizations")
+}
+
+model User {
+  id             Int      @id @default(autoincrement())
+  username       String   @unique
+  passwordHash   String   @map("password_hash")
+  role           Role
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId Int?     @map("organization_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  authoredRecords MedicalRecord[] @relation("record_author")
+  authoredNotes   Note[]          @relation("note_author")
+  accessLogs      AccessLog[]
+
+  @@map("users")
+}
+
+model Patient {
+  id             Int      @id @default(autoincrement())
+  personalNumber String   @unique @map("personal_number") // Swedish personnummer, 12 digits
+  firstName      String   @map("first_name")
+  lastName       String   @map("last_name")
+  dateOfBirth    DateTime @db.Date @map("date_of_birth")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  records    MedicalRecord[]
+  accessLogs AccessLog[]
+
+  @@index([lastName, firstName], map: "idx_patients_name")
+  @@map("patients")
+}
+
+/// Diagnoses, prescriptions, lab results, etc. — SQL only, never on-chain.
+model MedicalRecord {
+  id         Int      @id @default(autoincrement())
+  recordType String   @map("record_type") // diagnosis | prescription | lab_result | ...
+  content    String
+  patient    Patient  @relation(fields: [patientId], references: [id])
+  patientId  Int      @map("patient_id")
+  author     User     @relation("record_author", fields: [authorId], references: [id])
+  authorId   Int      @map("author_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  notes       Note[]
+  accessLogs  AccessLog[]
+
+  @@index([patientId], map: "idx_medical_records_patient")
+  @@map("medical_records")
+}
+
+/// Notes with visibility control attached to a record.
+model Note {
+  id         Int            @id @default(autoincrement())
+  content    String
+  visibility NoteVisibility
+  record     MedicalRecord  @relation(fields: [recordId], references: [id])
+  recordId   Int            @map("record_id")
+  author     User           @relation("note_author", fields: [authorId], references: [id])
+  authorId   Int            @map("author_id")
+  createdAt  DateTime       @default(now()) @map("created_at")
+  updatedAt  DateTime       @updatedAt @map("updated_at")
+
+  @@index([recordId], map: "idx_notes_record")
+  @@map("notes")
+}
+
+/// Audit trail of who viewed/edited what. Synced (hashes only) to the
+/// blockchain by the access-log chain in task 15.
+model AccessLog {
+  id               Int      @id @default(autoincrement())
+  action           String // view | edit | create
+  serverId         String   @map("server_id") // which of the two servers handled it
+  user             User     @relation(fields: [userId], references: [id])
+  userId           Int      @map("user_id")
+  patient          Patient  @relation(fields: [patientId], references: [id])
+  patientId        Int      @map("patient_id")
+  record           MedicalRecord? @relation(fields: [recordId], references: [id])
+  recordId         Int?     @map("record_id")
+  blockchainSynced Boolean  @default(false) @map("blockchain_synced")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@index([patientId], map: "idx_access_logs_patient")
+  @@map("access_logs")
+}
