@@ -1,24 +1,23 @@
-# Task: Backend Project Setup
+# Task: Backend Project Setup (Next.js Route Handlers & Services)
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-06
+- **Deadline:** 2026-09-08
 - **Status:** TODO
-- **Assignee:** TBD
-- **Tags:** backend, nodejs, express, required, gate:2-scaffold
-- **Dependencies:** 04-database-design.md, 05-vite-tailwind-shadcn.md
+- **Assignee:** matdevstamp (pairs: Kassim10)
+- **Tags:** backend, nodejs, api, required, gate:2-scaffold
+- **Dependencies:** 04-database-design.md, 05-nextjs-tailwind-shadcn.md
 - **Estimated Effort:** 4h
 
 ## Requirements
 
-- Node.js/Express backend with TypeScript
-- RESTful API following OpenAPI spec
-- JWT authentication
-- Database integration (PostgreSQL)
-- CORS configuration for frontend
-- Socket.io for real-time updates
+- Server-side skeleton inside the Next.js app: route handlers under `src/app/api`, shared services in `src/lib`
+- RESTful JSON endpoints called by the UI in the same app
+- JWT authentication (httpOnly cookie) shared via Next.js middleware + route handlers
+- Database integration (PostgreSQL + Prisma)
+- Socket.IO attached for real-time P2P updates between the two servers
 
-The examples below are optional starter snippets, not mandatory implementation choices. Equivalent Express, OpenAPI, validation, and documentation tooling is acceptable.
+The examples below are optional starter snippets, not mandatory implementation choices. Equivalent Next.js route handler, validation, and documentation tooling is acceptable. Express is **not** used (kickoff decision: fullstack Next.js).
 
 ## User Stories
 
@@ -30,270 +29,96 @@ The examples below are optional starter snippets, not mandatory implementation c
 ### Project Structure
 
 ```
-src/backend/
-├── src/
-│   ├── config/
-│   │   ├── database.ts      # Database connection
-│   │   ├── environment.ts   # Environment variables
-│   │   └── socket.ts        # Socket.io configuration
-│   ├── middleware/
-│   │   ├── auth.ts          # JWT authentication
-│   │   ├── errorHandler.ts  # Global error handler
-│   │   ├── rateLimiter.ts   # Rate limiting
-│   │   └── validate.ts      # Request validation
-│   ├── routes/
-│   │   ├── auth.ts          # Authentication routes
-│   │   ├── patients.ts      # Patient routes
-│   │   ├── records.ts       # Medical records routes
-│   │   ├── notes.ts         # Notes routes
-│   │   └── blockchain.ts    # Blockchain routes
-│   ├── services/
-│   │   ├── authService.ts
-│   │   ├── patientService.ts
-│   │   ├── recordService.ts
-│   │   ├── noteService.ts
-│   │   └── blockchainService.ts
-│   ├── models/
-│   │   ├── user.ts
-│   │   ├── patient.ts
-│   │   ├── medicalRecord.ts
-│   │   ├── note.ts
-│   │   └── accessLog.ts
-│   ├── utils/
-│   │   ├── errors.ts        # Custom error classes
-│   │   └── logger.ts        # Logging utility
-│   └── index.ts             # Entry point
-├── prisma/
-│   └── schema.prisma        # Database schema
+src/
+├── app/api/              # route handlers (HTTP endpoints)
+│   ├── auth/             #   login/logout/me
+│   ├── patients/         #   search + journal
+│   ├── records/          #   medical records CRUD
+│   ├── notes/            #   notes + visibility
+│   └── access-log/       #   blockchain access log
+├── lib/
+│   ├── prisma.ts         # shared Prisma client
+│   ├── auth.ts           # JWT sign/verify, cookie helpers
+│   ├── authMiddleware.ts # guard used by route handlers
+│   ├── audit.ts          # auditLogger (sign event, mine block)
+│   ├── blockchain.ts     # Block/Blockchain core
+│   ├── p2p.ts            # Socket.IO sync between servers
+│   └── env.ts            # typed environment access
+├── middleware.ts         # Next.js middleware (route protection)
+├── prisma/schema.prisma  # database schema
 ├── package.json
 ├── tsconfig.json
 └── .env.example
-```
-
-### Package.json
-
-```json
-{
-  "name": "healthaccess-backend",
-  "version": "1.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "lint": "eslint . --ignore-pattern 'node_modules'",
-    "lint:fix": "eslint . --fix --ignore-pattern 'node_modules'",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev",
-    "db:reset": "prisma migrate reset",
-    "db:seed": "tsx prisma/seed.ts"
-  },
-  "dependencies": {
-    "@prisma/client": "^6.0.0",
-    "bcryptjs": "^2.4.3",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "express-rate-limit": "^7.1.5",
-    "helmet": "^7.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "socket.io": "^4.7.2",
-    "zod": "^3.22.4"
-  },
-  "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "@types/jsonwebtoken": "^9.0.5",
-    "@types/node": "^20.10.0",
-    "eslint": "^9.17.0",
-    "@eslint/js": "^9.17.0",
-    "typescript-eslint": "^8.18.2",
-    "globals": "^15.14.0",
-    "prisma": "^6.0.0",
-    "tsx": "^4.7.0",
-    "typescript": "~5.6.2",
-    "vitest": "^2.1.8"
-  }
-}
-```
-
-### TypeScript Configuration
-
-```json
-{
-  "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2023"],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
-}
 ```
 
 ### Environment Variables
 
 ```bash
 # .env.example
-# Server
-PORT=3001
-NODE_ENV=development
+# Server identity
+SERVER_ID=hospital-s        # or ambulance-a
+PORT=3001                   # server 1; server 2 uses 3002
 
-# Database
+# Database (shared by both servers)
 DATABASE_URL="postgresql://user:password@localhost:5432/healthaccess"
 
 # JWT
 JWT_SECRET="your-secret-key-here"
 JWT_EXPIRES_IN="24h"
 
-# CORS
-CORS_ORIGIN="http://localhost:5173"
+# Peer (the other server)
+PEER_URL="http://localhost:3002"   # on server 2 this is localhost:3001
 
-# Socket.io
-SOCKET_CORS_ORIGIN="http://localhost:5173"
-
-# Rate Limiting
-RATE_LIMIT_WINDOW_MS=900000
-RATE_LIMIT_MAX_REQUESTS=100
+# Socket.IO
+SOCKET_CORS_ORIGIN="http://localhost:3001,http://localhost:3002"
 ```
 
-### Optional Scalar API Documentation Example
+### Shared Types Instead of OpenAPI Generation
 
-Scalar is an optional alternative to Swagger UI or ReDoc. It should render the existing OpenAPI document; it does not replace the OpenAPI contract.
+The UI and the API live in one TypeScript codebase, so **shared types replace the OpenAPI/generated-client pattern** (kickoff decision — no `openapi.json`/`generated.ts`). Define request/response types once, e.g. in `src/lib/types/api.ts`, and import them from both route handlers and client components. Zod schemas can double as validation and type inference (`z.infer`).
 
-```bash
-npm install @scalar/express-api-reference
+Route handlers stay the single security boundary: they authenticate, authorize, and filter every request. A React Query cache or shared type is never a security boundary.
+
+### Route Handler + Health Example
+
+Each HTTP endpoint is a route handler under `src/app/api/.../route.ts`. There is no Express app or `listen()` call — Next.js serves the app; each instance runs on its own port (`npm run dev -- -p 3001` and `-p 3002`).
+
+```typescript
+// src/app/api/health/route.ts
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  return NextResponse.json({
+    status: "ok",
+    server: process.env.SERVER_ID ?? "unknown",
+    timestamp: new Date().toISOString(),
+  });
+}
 ```
 
 ```typescript
-// Optional route after the OpenAPI document is available
-import { apiReference } from '@scalar/express-api-reference';
+// src/app/api/auth/login/route.ts (shape)
+import { NextRequest, NextResponse } from "next/server";
+import { login } from "@/lib/auth";
 
-app.get('/openapi.json', (_request, response) => {
-  response.json(openApiDocument);
-});
-
-app.use(
-  '/docs',
-  apiReference({
-    spec: { url: '/openapi.json' },
-  }),
-);
+export async function POST(request: NextRequest) {
+  const { username, password } = await request.json();
+  const { token, user } = await login(username, password);
+  if (!token) {
+    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+  }
+  const response = NextResponse.json({ user });
+  response.cookies.set("token", token, { httpOnly: true, sameSite: "lax" });
+  return response;
+}
 ```
 
-If Scalar is not selected, document the chosen API documentation UI and its URL instead.
-
-### Optional Typed Client Boundary
-
-The OpenAPI document is the API contract, and `src/frontend/src/api/generated.ts` should be the generated source of truth for frontend API types. The frontend can use those types with `openapi-fetch`, then expose calls to React Query hooks. This is an example architecture, not a requirement:
-
-```bash
-npm install openapi-fetch
-npx openapi-typescript http://localhost:3001/openapi.json -o src/api/generated.ts
-```
-
-Do not edit `generated.ts` by hand. Regenerate it whenever the OpenAPI contract changes, and make type generation part of the documented setup or CI checks.
-
-The backend remains responsible for authentication, authorization, and filtering. A React Query cache must never be treated as a security boundary.
-
-### Main Entry Point
-
-```typescript
-// src/index.ts
-import express from "express";
-import cors from "cors";
-import helmet from "helmet";
-import { createServer } from "http";
-import { Server } from "socket.io";
-import dotenv from "dotenv";
-
-import { env } from "./config/environment.js";
-import { errorHandler } from "./middleware/errorHandler.js";
-import { rateLimiter } from "./middleware/rateLimiter.js";
-import { authRoutes } from "./routes/auth.js";
-import { patientRoutes } from "./routes/patients.js";
-import { recordRoutes } from "./routes/records.js";
-import { noteRoutes } from "./routes/notes.js";
-import { blockchainRoutes } from "./routes/blockchain.js";
-
-// Load environment variables
-dotenv.config();
-
-// Create Express app
-const app = express();
-const httpServer = createServer(app);
-
-// Create Socket.io server
-export const io = new Server(httpServer, {
-  cors: {
-    origin: env.SOCKET_CORS_ORIGIN,
-    methods: ["GET", "POST"],
-  },
-});
-
-// Middleware
-app.use(helmet());
-app.use(cors({ origin: env.CORS_ORIGIN }));
-app.use(express.json());
-app.use(rateLimiter);
-
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/patients", patientRoutes);
-app.use("/api/records", recordRoutes);
-app.use("/api/notes", noteRoutes);
-app.use("/api/blockchain", blockchainRoutes);
-
-// Health check
-app.get("/health", (req, res) => {
-  res.json({ status: "ok", timestamp: new Date().toISOString() });
-});
-
-// Error handler
-app.use(errorHandler);
-
-// Start server
-httpServer.listen(env.PORT, () => {
-  console.log(`Server running on port ${env.PORT}`);
-  console.log(`Environment: ${env.NODE_ENV}`);
-});
-
-// Socket.io connection handling
-io.on("connection", (socket) => {
-  console.log(`Client connected: ${socket.id}`);
-  
-  socket.on("join_patient_room", (patientId: number) => {
-    socket.join(`patient_${patientId}`);
-    console.log(`${socket.id} joined patient_${patientId}`);
-  });
-  
-  socket.on("disconnect", () => {
-    console.log(`Client disconnected: ${socket.id}`);
-  });
-});
-
-export default app;
-```
+Error responses, rate limiting, and request validation are small shared helpers in `src/lib/` used inside route handlers (no Express middleware stack).
 
 ### Database Configuration
 
 ```typescript
-// src/config/database.ts
+// src/lib/prisma.ts
 import { PrismaClient } from "@prisma/client";
 
 declare global {
@@ -309,105 +134,76 @@ if (process.env.NODE_ENV !== "production") {
 export { prisma };
 ```
 
-### Authentication Middleware
+### Authentication Helper
+
+JWT is read from the httpOnly cookie. A small helper used inside each protected route handler replaces Express middleware:
 
 ```typescript
-// src/middleware/auth.ts
-import { Request, Response, NextFunction } from "express";
+// src/lib/auth.ts (shape)
+import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
-import { env } from "../config/environment.js";
 
-export interface AuthRequest extends Request {
-  user?: {
-    id: number;
-    username: string;
-    role: string;
-  };
+export interface SessionUser {
+  id: number;
+  username: string;
+  role: "doctor" | "nurse" | "ambulance" | "patient" | "unauthorized";
 }
 
-export function authenticate(
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
-) {
-  const authHeader = req.headers.authorization;
-  
-  if (!authHeader?.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "No token provided" });
-  }
-  
-  const token = authHeader.split(" ")[1];
-  
+export function getSession(): SessionUser | null {
+  const token = cookies().get("token")?.value;
+  if (!token) return null;
   try {
-    const decoded = jwt.verify(token, env.JWT_SECRET) as {
-      id: number;
-      username: string;
-      role: string;
-    };
-    
-    req.user = decoded;
-    next();
-  } catch (error) {
-    return res.status(401).json({ error: "Invalid token" });
+    return jwt.verify(token, process.env.JWT_SECRET!) as SessionUser;
+  } catch {
+    return null;
   }
 }
 
-export function authorize(...roles: string[]) {
-  return (req: AuthRequest, res: Response, next: NextFunction) => {
-    if (!req.user) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-    
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ error: "Insufficient permissions" });
-    }
-    
-    next();
-  };
+export function requireRole(...roles: SessionUser["role"][]) {
+  const user = getSession();
+  if (!user) throw new Error("UNAUTHENTICATED");
+  if (!roles.includes(user.role)) throw new Error("FORBIDDEN");
+  return user;
 }
 ```
 
+Next.js `middleware.ts` may additionally short-circuit unauthenticated page requests; server-side authorization still happens per route handler (never trust the client).
+
 ## Tasks
 
-- [ ] Initialize Node.js project with TypeScript
-- [ ] Install dependencies (Express, Prisma, JWT, etc.)
-- [ ] Configure TypeScript
-- [ ] Setup environment variables
-- [ ] Create database schema with Prisma
-- [ ] Setup database connection
-- [ ] Create authentication middleware
-- [ ] Create role-based authorization middleware
-- [ ] Setup CORS configuration
-- [ ] Create rate limiter
-- [ ] Create error handler middleware
-- [ ] Setup Socket.io for real-time updates
-- [ ] Create route stubs
-- [ ] Add npm scripts for dev, build, start
-- [ ] Test server startup
+- [ ] Confirm the Next.js scaffold from task 05 runs on ports 3001 and 3002
+- [ ] Add shared env helper (`src/lib/env.ts`) with `.env.example`
+- [ ] Create shared Prisma client (`src/lib/prisma.ts`)
+- [ ] Add shared API types module (`src/lib/types/api.ts`)
+- [ ] Implement JWT helpers + httpOnly cookie session (`src/lib/auth.ts`)
+- [ ] Add a per-route `getSession`/`requireRole` guard used by route handlers
+- [ ] Create stub route handlers: auth, patients, records, notes, access-log
+- [ ] Add `/api/health` route handler returning server id + timestamp
+- [ ] Wire Socket.IO for the two servers (see tasks 16/18)
+- [ ] Add rate limiting and error handling helpers
+- [ ] Add npm scripts for dev (both ports), lint, test, db:migrate, db:seed
+- [ ] Verify both server instances start and reach `/api/health`
 
 ## Done Criteria
 
-- [ ] Server starts without errors
-- [ ] Database connection works
-- [ ] Authentication middleware works
-- [ ] Authorization middleware works
-- [ ] CORS is configured
-- [ ] Rate limiting is active
-- [ ] Socket.io connection works
-- [ ] All routes are registered
-- [ ] Environment variables are loaded
+- [ ] Both servers start without errors on ports 3001/3002
+- [ ] Database connection works through Prisma
+- [ ] JWT cookie login round-trip works
+- [ ] Role guard rejects missing/forbidden sessions
+- [ ] Route handler stubs are registered under `src/app/api`
+- [ ] `/api/health` responds with the server id
+- [ ] Environment variables are loaded and validated
 - [ ] TypeScript compiles successfully
 
 ## Notes
 
-- Use `tsx` for development (fast TypeScript execution)
+- No Express — route handlers + shared libs inside the Next.js app (kickoff decision)
 - Use Prisma for database access (type-safe ORM)
 - Use Zod for request validation
-- Use helmet for security headers
 - Log all authentication attempts
 
 ## Questions to Resolve
 
-- [ ] PostgreSQL vs SQLite for development?
-- [ ] Which ORM to use? (Prisma recommended)
+- [x] PostgreSQL vs SQLite for development? → PostgreSQL (task 02 decision)
+- [x] Which ORM to use? → Prisma
 - [ ] Should we use a logger library (winston, pino)?

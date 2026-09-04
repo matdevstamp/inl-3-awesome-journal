@@ -31,9 +31,9 @@ Example: `ALL` = free all day, `AM+PM` = morning and afternoon, `EVE` = only eve
 | Kassim | Kassim10 | | | **KICKOFF** | | | | |
 | Ramadan | rcilomba | | | **KICKOFF** | | | | |
 | Najma | umoraghad0-del | | | **KICKOFF** | | | | |
-| Matias | matdevstamp | | | **KICKOFF** | | | | |
+| Matias | matdevstamp | | | **KICKOFF**, 13–15 | | | 17–17:30 + 19–21 | |
 
-**Gate 1 exit:** By end of Sun Sep 6 — contract signed, DB chosen, graphify done.
+**Gate 1 exit:** By end of Mon Sep 7 — contract signed, DB chosen, graphify done.
 **Gate 2 exit:** By end of Tue Sep 8 — scaffold working, CI green, first test red/green.
 
 ## Week 2 — Sep 9–15 (Gate 3: Features Start)
@@ -43,7 +43,7 @@ Example: `ALL` = free all day, `AM+PM` = morning and afternoon, `EVE` = only eve
 | Kassim | Kassim10 | | | **DEADLINE 11:00** | | | | |
 | Ramadan | rcilomba | | | **DEADLINE 11:00** | | | | |
 | Najma | umoraghad0-del | | | **DEADLINE 11:00** | | | | |
-| Matias | matdevstamp | | | | | | | |
+| Matias | matdevstamp | 17–17:30 + 19–21 | 17–17:30 + 19–21 | 17–17:30 + 19–21 | | | | |
 
 **Stream owners start their feature branches.**
 
@@ -54,9 +54,9 @@ Example: `ALL` = free all day, `AM+PM` = morning and afternoon, `EVE` = only eve
 | Kassim | Kassim10 | | | | | | | |
 | Ramadan | rcilomba | | | | | | | |
 | Najma | umoraghad0-del | | | | | | | |
-| Matias | matdevstamp | | | | | | | |
+| Matias | matdevstamp | 17–17:30 + 19–21 | 17–17:30 + 19–21 | 17–17:30 + 19–21 | | | | |
 
-**Gate 4 exit:** By end of Tue Sep 22 — vertical flow works on two servers.
+**Gate 4 exit:** By end of Mon Sep 21 — vertical flow works on two servers.
 
 ## Week 4 — Sep 23–29 (Gate 5: Delivery & Polish)
 
@@ -65,7 +65,7 @@ Example: `ALL` = free all day, `AM+PM` = morning and afternoon, `EVE` = only eve
 | Kassim | Kassim10 | | | | | | | |
 | Ramadan | rcilomba | | | | | | | |
 | Najma | umoraghad0-del | | | | | | | |
-| Matias | matdevstamp | | | | | | | |
+| Matias | matdevstamp | 17–17:30 + 19–21 | 17–17:30 + 19–21 | 17–17:30 + 19–21 | | | | |
 
 **Focus:** Tests, docs, screenshots, demo rehearsal.
 
@@ -76,18 +76,18 @@ Example: `ALL` = free all day, `AM+PM` = morning and afternoon, `EVE` = only eve
 | Kassim | Kassim10 | | | |
 | Ramadan | rcilomba | | | |
 | Najma | umoraghad0-del | | | |
-| Matias | matdevstamp | | | **DEADLINE 11:00** |
+| Matias | matdevstamp | 17–17:30 + 19–21 | 17–17:30 + 19–21 | **DEADLINE 11:00** |
 
 ---
 
 ## Timeline Summary
 
 ```
-Sep 2-4    ████ Gate 1: Decisions & Contract
-Sep 5-8    ████ Gate 2: Scaffold (compressed)
-Sep 9-18   ████████████ Gate 3: Features (parallel streams)
-Sep 19-22  ██████ Gate 4: Integration
-Sep 23-30  ████████ Gate 5: Delivery
+Sep 2-7    ██████ Gate 1: Decisions & Contract
+Sep 7-8    ██ Gate 2: Scaffold (compressed)
+Sep 9-16   ████████ Gate 3: Features (parallel streams)
+Sep 17-21  █████ Gate 4: Integration
+Sep 22-29  ████████ Gate 5: QA, docs & demo
 Oct 1-2    ██ Buffer + Final fixes
 Oct 2 11:00  ⚠️ DEADLINE
 ```

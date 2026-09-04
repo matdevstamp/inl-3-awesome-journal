@@ -2,7 +2,7 @@
 
 **Deadline:** Friday, October 2, 2026 at 11:00  
 **Team:** 4 developers  
-**Working rule:** no direct commits to `main`; every change goes through a pull request and review.
+**Working rule:** app code (Next.js/TS, Prisma/DB schema, config) goes to `main` only through a PR with 1 review; everything under `docs/` and the Python tooling (`project_management/`) may push directly (kickoff decision).
 
 ## North Star
 
@@ -15,7 +15,7 @@ Deliver one reliable, demonstrable flow:
 5. Notes obey private, healthcare-only, and all-users visibility rules.
 6. The patient sees their own permitted notes and the complete access-log view; unauthorized users see only an access-denied page.
 
-The project must also leave behind understandable evidence: a working README, meeting notes, a DBML schema, Mermaid diagrams, API documentation, tests, screenshots, and the two approved graphify artifacts.
+The project must also leave behind understandable evidence: a working README, meeting notes, a Prisma schema with migrations, a generated Mermaid ER diagram, API documentation, tests, screenshots, and the two approved graphify artifacts.
 
 ## Requirements Loop
 
@@ -33,16 +33,16 @@ The project must also leave behind understandable evidence: a working README, me
 
 ### Roles
 
-Use temporary labels until the group contract records real names. The split follows the example in `docs/Raw_Requirements.md` and maps onto the A–D feature streams; each person's backup/reviewer is their neighbor in the other half of the stack.
+The kickoff (2026-09-04) deviated from the example Person 1–4 split in `docs/Raw_Requirements.md` — the contract now records real roles: **backend (Kassim)**, **UI (Ramadan)**, **coordinator/lead + Gate 2 setup (Matias)**, and **floating pair programmer (Najma)**, who declares her focus later. Stream D (chain core + P2P) is still unassigned (tasks 15/16/18). The A–D feature streams remain the mapping target; backup/review pairs across backend/UI.
 
-| Person | Primary ownership (Raw Requirements example) | Backup / review |
+| Team member | Area | Streams |
 |---|---|---|
-| Person 1 | Crypto & liggare — `Block`/`Blockchain` classes, public/private-key signing, Merkle tree, verification | Person 2 |
-| Person 2 | P2P-nätverk — WebSocket server sync, audit-block distribution, longest-chain rule, Socket.IO | Person 1 |
-| Person 3 | Express API & middleware — routes, `auditLogger`, backend, databases and routing | Person 4 |
-| Person 4 | Front end — login, journal search/view, live access-log view, verification badge | Person 3 |
+| Matias (`matdevstamp`) | Coordinator/Lead; Gate 2 setup (tasks 04–10); docs | — |
+| Kassim (`Kassim10`) | Backend — route handlers, DB access, auth, auditLogger, blockchain candidate | A/B/C (backend) |
+| Ramadan (`rcilomba`) | UI — pages, components, shadcn, search/view | A/B/C (frontend) |
+| Najma (`umoraghad0-del`) | Floating pair programmer; declares own focus later | open |
 
-Person 3 and Person 4 (backend + frontend) pair-program the initial scaffold. No feature branch should create a competing root package, app shell, configuration, or directory layout.
+Gate 1 tasks (01–03) are Team-owned; the lead coordinates. Gate 2 scaffold is owned by Matias, pairing with Kassim/Ramadan where needed. No feature branch should create a competing root package, app shell, configuration, or directory layout.
 
 ### Collaboration Rules
 
@@ -74,33 +74,33 @@ No stream starts until Gate 1 is met. Database-dependent backend work starts onl
 ## Ordered Work
 
 ### Gate 1: Decisions, contract, and repository hygiene
-**September 2-4 | Team + scaffold pair**
+**September 2-7 | Team (lead coordinates)**
 
 1. **01** - Sign `gruppkontrakt.md`, agree on roles, meetings, PR review, branch rules, and definition of done.
 2. **02** - Decide PostgreSQL for the shared two-server scenario; record the rejected alternatives and local setup decision.
 3. **03** - Run graphify on the initial repository and check in only `graphify-out/graph.html` and `graphify-out/GRAPH_REPORT.md`. Create the Mermaid system-context, data-flow, and access-log sequence diagrams.
 4. **20 (initial slice)** - Create the README skeleton, project purpose, architecture links, setup placeholder, team section, and meeting-note index.
 
-**Gate 1 exit:** By end of Sun Sep 6 — contract agreed, GitHub rules active, decisions written, README points to planned artifacts, graphify ignore policy tested.
+**Gate 1 exit:** By end of Mon Sep 7 — contract agreed, GitHub rules active, decisions written, README points to planned artifacts, graphify ignore policy tested.
 
 The Gate 1 meeting note must also contain the first requirements checkpoint against `docs/Raw_Requirements.md`.
 
-### Gate 2: Paired scaffold and executable contracts (compressed)
-**September 5-8 | Person 3 + Person 4 pair (scaffold); Persons 1 + 2 review**
+### Gate 2: Scaffold and executable contracts (compressed)
+**September 7-8 | Matias leads (pairs with Kassim/Ramadan); team reviews**
 
-5. **04** - Create `database/schema.dbml`, the Prisma schema, migration strategy, fictional seed data, and the Mermaid data-model diagram. Keep all four representations aligned.
-6. **05, 06, 07, 08, 09, 10** - Build one monorepo scaffold, strict TypeScript, lint/format, Playwright runner and fixtures, CI, environment examples, and local commands.
+5. **04** - Create the Prisma schema (single source of truth), migration strategy, fictional seed data, and the generated Mermaid ER diagram as `docs/diagrams/data-model.md` (Markdown page wrapping the Mermaid block so GitHub renders it; emitted from the Prisma schema).
+6. **05, 06, 07, 08, 09, 10** - Build one Next.js fullstack app (UI + route handlers in the same app), strict TypeScript, lint/format, Playwright runner and fixtures, CI, environment examples, and local commands.
 7. **09 first test** - Before feature implementation, write the first Playwright smoke test for the login page/app shell. Run it red if the page does not exist yet, then keep it as the first green scaffold gate.
-8. Define the OpenAPI contract and generated client types before feature streams fork. Add health checks and a minimal frontend-to-backend request.
+8. Define the shared request/response types and typed fetch helpers before feature streams fork (no OpenAPI/generated-client toolchain — the UI and API share one TypeScript codebase). Add health checks and a minimal page-to-route-handler request.
 
-**Gate 2 exit:** By end of Tue Sep 8 — clean checkout installs, lint/typecheck/build pass, frontend and backend both start, database migration/seed works, README setup steps work for one teammate.
+**Gate 2 exit:** By end of Tue Sep 8 — clean checkout installs, lint/typecheck/build pass, both server instances start on ports 3001/3002, database migration/seed works, README setup steps work for one teammate.
 
-⚠️ **This gate is compressed.** Person 3 + Person 4 must pair hard over the weekend. The goal is to have features start by Wed Sep 9.
+⚠️ **This gate is compressed.** Matias leads the setup with Kassim/Ramadan pairing in; everything (04–10) lands by Tue Sep 8 so the feature streams start Wed Sep 9.
 
 Run a second raw-requirements checkpoint at this gate and remove or re-plan anything that does not support the required demo.
 
 ### Gate 3: Four parallel feature streams
-**September 9-18 | Four owners, separate files and branches**
+**September 9-16 | Four owners, separate files and branches**
 
 | Stream | Primary tasks | Contract to freeze |
 |---|---|---|
@@ -109,12 +109,12 @@ Run a second raw-requirements checkpoint at this gate and remove or re-plan anyt
 | C - Notes and records | **14**, record display and note creation | note visibility enum and filtering rules |
 | D - Audit distribution | **15**, **16**, blockchain access log and two-server P2P transport | append-only log payload, server identity, chain verification |
 
-Frontend work may use fixtures generated from the OpenAPI contract. Backend work may use seeded data. Owners do not edit another stream's files without a review note and an integration branch.
+UI work may use fixtures typed from the shared `src/lib/types/api.ts` module. Backend work may use seeded data. Owners do not edit another stream's files without a review note and an integration branch.
 
 Every stream follows the same small loop: write acceptance cases, implement the smallest behavior, run the focused test, then refactor only after it is green. The first test cases must cover the requirement's happy path and one relevant denial or error path.
 
 ### Gate 4: Authorization and real-time integration
-**September 19-23 | Team integration pairings**
+**September 17-21 | Team integration pairings**
 
 8. **17** - Centralize authorization policy and verify every route server-side; URL manipulation must never expose another patient's data.
 9. **18** - Connect Socket.IO broadcasting so a note written on server 1 appears on server 2 only for users allowed to see it.
@@ -125,13 +125,13 @@ Every stream follows the same small loop: write acceptance cases, implement the 
 Compare the working vertical flow line by line with `docs/Raw_Requirements.md` before declaring this gate complete.
 
 ### Gate 5: Evidence, regression, and delivery
-**September 24-October 1 | Team**
+**September 22-29 | Team**
 
-⚠️ **Buffer:** Oct 1-2 is for final fixes, demo rehearsal, and submission. Do not plan new features after Sep 30.
+⚠️ **Buffer:** Oct 1-2 is for final fixes and submission. Do not plan new features after Sep 24 — QA runs Sep 23-24, then docs and demo rehearsal close the gate.
 
 11. **19** - Unit/integration tests for policy, visibility, URL tampering, access-log creation, and blockchain immutability boundary.
 12. **09** - Expand the early Playwright setup into critical role-based flows and the two-server demo; capture stable screenshots.
-13. **20 (final slice)** - Complete README: prerequisites, commands, environment variables, migrations, DBML, diagrams, graphify regeneration, screenshots, API link, privacy boundary, team contributions, demo script, and meeting notes.
+13. **20 (final slice)** - Complete README: prerequisites, commands, environment variables, migrations, generated schema diagram, other diagrams, graphify regeneration, screenshots, API link, privacy boundary, team contributions, demo script, and meeting notes.
 14. **21** - Rehearse the ten-minute presentation, explain four genuine challenges and solutions, verify the public/collaborator repository requirement, and perform the final GitHub checkout test.
 
 **Submission gate:** `main` is green, the repository contains no secrets or medical data, required artifacts are linked, at least two meetings per week are documented, and the exact demo works before class.
@@ -147,16 +147,16 @@ Protect these first: five-role login, patient search, journal view, server-side 
 - `gruppkontrakt.md` (root)
 - `README.md`
 - `docs/logbooks/*.csv` (per-member daily loggbok)
-- `database/schema.dbml`
-- `docs/diagrams/*.mmd` (raw Mermaid; the dependency graph renders via `docs/diagrams/task-dependencies.md`)
+- `docs/diagrams/*.md` (Mermaid diagrams rendered as Markdown pages on GitHub: `task-dependencies.md` auto-generated from draft tasks, `data-model.md` generated from `prisma/schema.prisma`, and the architecture pages `system-context.md`, `data-flow.md`, `sequence-access-log.md` from task 03; raw `.mmd` sources may exist but are never the review copy)
 - `docs/meetings/*.md`
 - `graphify-out/graph.html`
 - `graphify-out/GRAPH_REPORT.md`
-- `src/backend/prisma/schema.prisma`
+- `prisma/schema.prisma`
 
 ## Sources Consulted
 
 - [npm workspaces documentation](https://docs.npmjs.com/cli/v11/using-npm/workspaces) - root-managed workspace commands and dependency linking.
-- [DBML documentation](https://dbml.dbdiagram.io/docs/) - tables, enums, indexes, sample records, and relationships.
+- [Prisma documentation](https://www.prisma.io/docs) - schema, migrations, and the ER-diagram generator.
+- [prisma-erd-generator](https://github.com/keonik/prisma-erd-generator) - a `generator erd` block in the Prisma schema that emits `docs/diagrams/data-model.md` (fenced Mermaid block) on every `npx prisma generate`.
 - [GitHub rulesets documentation](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) - branch and push controls for the PR-only workflow.
 - [Mermaid documentation](https://mermaid.js.org/intro/) - repository-readable diagrams and supported diagram syntax.

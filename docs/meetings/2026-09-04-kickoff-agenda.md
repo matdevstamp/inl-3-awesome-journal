@@ -8,6 +8,8 @@
 - `umoraghad0-del` — Najma Hasan
 - `matdevstamp` — Matias Marti (Lead)
 
+> **Outcome:** Kickoff held Fri Sep 4. Najma (`umoraghad0-del`) could not attend — open scopes below are pending her input. Roles/stream scopes are deliberately left loose (see Section 3).
+
 ---
 
 ## Come Prepared
@@ -94,7 +96,7 @@ Vote on each. Lead breaks ties.
 | **Vue 3** | Simpler API, good docs, lighter | Smaller ecosystem, fewer UI libraries |
 | **Svelte** | Fastest, smallest bundles, clean syntax | Smallest community |
 
-**→ Decision:** _______________
+**→ Decision:** **React** — but as part of the **Next.js fullstack** choice below, not a separate Vite SPA. Deviates from the agenda default split.
 
 ### CSS / UI Library
 | Option | Pros | Cons |
@@ -103,7 +105,7 @@ Vote on each. Lead breaks ties.
 | **Tailwind + Headless UI** | Works with React AND Vue | Less polished defaults |
 | **Plain CSS / CSS Modules** | No dependency | Slow to build UI |
 
-**→ Decision:** _______________
+**→ Decision:** **Tailwind + shadcn/ui** (pre-styled, repo-owned components on Radix; standard React/Next pairing). Ramadan owns the styling layer.
 
 ### Backend
 | Option | Pros | Cons |
@@ -111,7 +113,7 @@ Vote on each. Lead breaks ties.
 | **Express.js** (recommended) | Simple, everyone knows it, huge middleware ecosystem | Minimal structure |
 | **NestJS** | Structured, enterprise-style | Heavy overhead for a school project |
 
-**→ Decision:** _______________
+**→ Decision:** **No separate backend framework — Next.js fullstack** (API routes inside Next.js). Two fullstack servers total for the P2P demo, instead of two backends + one frontend. Express and Nest both dropped.
 
 ### Authentication
 | Option | Pros | Cons |
@@ -120,7 +122,7 @@ Vote on each. Lead breaks ties.
 | **Session cookies** | Server-side revocation, simpler mental model | Needs shared session store for P2P |
 | **Passwordless / magic link** | Modern UX | Extra email service, more complex |
 
-**→ Decision:** _______________
+**→ Decision:** **JWT in an httpOnly cookie**, routes guarded via Next.js middleware. Not Auth.js — full control over the 5-role enum, no shared session store needed for P2P.
 
 ### Database
 | Option | Pros | Cons |
@@ -129,7 +131,7 @@ Vote on each. Lead breaks ties.
 | **SQLite** | Zero setup, file-based | Can't share between two servers easily |
 | **PostgreSQL (prod) + SQLite (dev)** | Best of both | Migration differences possible |
 
-**→ Decision:** _______________
+**→ Decision:** **PostgreSQL** for dev and prod alike — two fullstack servers share it, matching the two-server P2P requirement.
 
 ### Build Tool
 | Option | Pros | Cons |
@@ -137,7 +139,7 @@ Vote on each. Lead breaks ties.
 | **Vite** (recommended) | Fast, modern, great React/Vue support | Newer, less battle-tested |
 | **Next.js** | Full-stack, SSR, great DX | Opinionated, heavier, may be overkill |
 
-**→ Decision:** _______________
+**→ Decision:** **Next.js** — merged with the backend choice: one fullstack framework per server (see Backend decision). Vite dropped; draft tasks 05/06/12 must be reconciled with this (action item).
 
 ### Blockchain Library
 | Option | Pros | Cons |
@@ -145,7 +147,7 @@ Vote on each. Lead breaks ties.
 | **Simple custom chain** (recommended) | Full control, teaches the concept, no heavy deps | Must implement hashing ourselves |
 | **Chain.js / similar** | Ready-made | Heavy, may be overkill for access logs |
 
-**→ Decision:** _______________
+**→ Decision:** **Simple custom chain** (hash-linked blocks, key signing, Merkle/verification as needed) — no external blockchain library.
 
 ---
 
@@ -158,6 +160,7 @@ Confirm everyone understands:
 - PR requires **at least 1 review** before merge
 - Meeting notes go in `docs/meetings/`
 - Task planning lives in `docs/draft_tasks/`
+- **Direct-to-main rule (decided):** everything under `docs/` (markdown, CSVs, diagrams, `.mmd`, etc.) and the Python tooling (`project_management/`) may push to `main` directly; all app code (Next.js/TS, Prisma/DB schema, config) requires a PR + 1 review
 
 **→ Confirm:** Everyone can push to the repo?
 
@@ -176,21 +179,21 @@ Map real people to the streams. **Tentative — adjust based on interest/skill.*
 
 | Stream | What it covers | Owner (Person + name) |
 |--------|---------------|-------|
-| **A — Identity** | Auth, login, roles, session management | TBD |
-| **B — Patient access** | Patient search, journal view, role-based display | TBD |
-| **C — Notes & records** | Medical notes, visibility control, CRUD | TBD |
-| **D — Audit & P2P** | Blockchain access logs, two servers, Socket.IO | TBD (split: chain/P2P) |
+| **A — Identity** | Auth, login, roles, session management | Kassim (backend) · Ramadan (frontend) |
+| **B — Patient access** | Patient search, journal view, role-based display | Kassim (backend) · Ramadan (frontend) |
+| **C — Notes & records** | Medical notes, visibility control, CRUD | Kassim (backend) · Ramadan (frontend) |
+| **D — Audit & P2P** | Blockchain access logs, two servers, Socket.IO | **Open** — chain core & P2P split TBD; Kassim may take chain core |
 
-**Who does frontend scaffold (Vite + Tailwind + components)?** → Person 4, pairing with Person 3 (backend)
+**Who does the scaffold (Next.js + Tailwind + shadcn/ui)?** → Ramadan (UI) pairing with Kassim (backend); Matias drives Gate 1–2 setup. Najma may join a pairing once she is back.
 
 **→ Record final mapping here:**
 
 | GitHub username | Real name | Person | Stream | Role |
 |----------------|-----------|--------|--------|------|
-| Kassim10 | Kassim Segerberg | | | |
-| rcilomba | Ramadan | | | |
-| umoraghad0-del | Najma Hasan | | | |
-| matdevstamp | Matias Marti | | — | Lead |
+| Kassim10 | Kassim Segerberg | — | A/B/C backend | **Backend** (API routes, DB/Prisma, middleware); stream D chain core open |
+| rcilomba | Ramadan | — | A/B/C frontend | **UI / Frontend** (all UI incl. stream D view — TBD) |
+| umoraghad0-del | Najma Hasan | — | unassigned | **Pair programming** — declares her own focus later |
+| matdevstamp | Matias Marti | — | — | **Coordinator / Lead** — heavy focus on Gates 1–2 |
 
 ---
 
@@ -200,12 +203,12 @@ Map real people to the streams. **Tentative — adjust based on interest/skill.*
 
 **Then** agree on:
 
-- [ ] Meeting schedule: **when** and **how often**? (minimum 2x/week required)
-- [ ] Logbook format: per-member CSV in `docs/logbooks/` (default, see `docs/logbooks/README.md`) or external Excel/Sheets (then needs an owner other than Matias)
-- [ ] Communication channel: Microsoft Teams ✓
-- [ ] Definition of done: PR merged + test passes + meeting note updated?
-- [ ] Branch protection: enforce PR reviews on `main`?
-- [ ] How to handle disagreements?
+- [ ] Meeting schedule: **pending** — everyone fills `docs/team-availability.md` first, then we book 2 fixed slots/week (see action items)
+- [x] Logbook format: **per-member CSV in `docs/logbooks/`** (default, in-repo)
+- [x] Communication channel: Microsoft Teams ✓
+- [ ] Definition of done: PR merged + CI green + reviewer approved + meeting note updated? (confirm)
+- [x] Branch protection: **special rule** — everything under `docs/` + Python tooling push to `main` directly; app code requires PR + 1 review
+- [ ] How to handle disagreements? (open)
 
 **→ Sign the contract today or by Saturday morning.**
 
@@ -213,14 +216,14 @@ Map real people to the streams. **Tentative — adjust based on interest/skill.*
 
 ## 5. Gate 1 Tasks — This Week (10 min)
 
-These are due by **Saturday Sep 5**:
+Gate 1 wraps **Monday Sep 7** (01–02 finish at the kickoff on Fri Sep 4; the weekend is available if we want to close earlier):
 
 | Task | Issue | Owner | Due |
 |------|-------|-------|-----|
-| Project setup & group contract | #1 | `matdevstamp` (lead) | Fri Sep 4 |
+| Project setup & group contract | #1 | Team (`matdevstamp` coordinates) | Fri Sep 4 |
 | Database choice | #2 | Team | Fri Sep 4 |
-| Graphify architecture artifacts | #3 | TBD (assign in meeting) | Sat Sep 5 |
-| Database schema design (DBML + Prisma) | #4 | TBD (assign in meeting) | Sun Sep 6 |
+| Graphify architecture artifacts | #3 | Team (`matdevstamp` coordinates) | Mon Sep 7 |
+| Database schema design (Prisma + generated Mermaid ER) | #4 | `matdevstamp` (schema/prisma setup) | Mon Sep 7 |
 
 **What "done" looks like for Gate 1:**
 - ✅ Contract signed
@@ -237,15 +240,15 @@ Open `docs/Raw_Requirements.md` together. For each section, mark:
 
 | Requirement | Status | Notes |
 |-------------|--------|-------|
-| Frontend/UI in framework | Covered? | Which framework? |
-| Login page | Covered? | Which auth method? |
-| 5 user roles | Covered? | How to seed test users? |
-| Patient view with role-based display | Covered? | |
-| Access logs on blockchain | Covered? | Which library? |
-| P2P with 2 servers + Socket.IO | Covered? | |
-| Min 2 meetings/week documented | Covered? | |
-| Group contract | Covered? | Signing today |
-| PR-only workflow | Covered? | Branch protection rules |
+| Frontend/UI in framework | Covered (planned) | Next.js (React) |
+| Login page | Covered (planned) | JWT in httpOnly cookie |
+| 5 user roles | Unclear | How to seed test users? |
+| Patient view with role-based display | Unclear | |
+| Access logs on blockchain | Covered (planned) | Simple custom chain |
+| P2P with 2 servers + Socket.IO | Covered (planned) | Two fullstack Next.js servers |
+| Min 2 meetings/week documented | Unclear | Schedule pending availability |
+| Group contract | Unclear | Signing today / Sat morning |
+| PR-only workflow | Covered (planned) | Special rule: everything in `docs/` + Python direct; app code via PR |
 
 ---
 
@@ -275,7 +278,7 @@ Agree on this workflow before feature work starts:
 |---|---|---|---|
 | Confirm the CSV fields and privacy rule | Team | Sep 4 | 01, 19 |
 | Review the first raw report workflow with a fictional example | Lead | Sep 4 | 19 |
-| Decide where Playwright reproduction tests live | Person 4 | Sep 5 | 09 |
+| Decide where Playwright reproduction tests live | `matdevstamp` (pairs: `rcilomba`) | Sep 5 | 09 |
 
 ---
 
@@ -293,10 +296,10 @@ Use the parking lot in `docs/MEETING_TEMPLATE.md` for topics that need more time
 
 ## 9. Next Steps & Close (5 min)
 
-- [ ] **Next meeting:** When? (suggest Sunday or Monday)
-- [ ] **Who facilitates next time?**
-- [ ] **Who takes notes next time?**
-- [ ] **Any blockers before we start?**
+- [ ] **Next meeting:** TBD this week — book once availability is filled (Gate 1 wraps Mon Sep 7)
+- [ ] **Who facilitates next time?** TBD
+- [ ] **Who takes notes next time?** TBD
+- [ ] **Blockers:** availability not yet filled in; Najma absent (will pair + declare focus). Draft tasks 05–14/20 were reconciled to the Next.js fullstack decision after the kickoff.
 
 ---
 
@@ -304,14 +307,24 @@ Use the parking lot in `docs/MEETING_TEMPLATE.md` for topics that need more time
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
-| Frontend framework | | |
-| CSS / UI library | | |
-| Backend framework | | |
-| Auth method | | |
-| Database | | |
-| Build tool | | |
-| Blockchain library | | |
-| Meeting schedule | | |
+| Frontend framework | React (inside Next.js) | One fullstack framework per server |
+| CSS / UI library | Tailwind + shadcn/ui | Pre-styled repo-owned components, fast UI work |
+| Backend framework | None separate — Next.js API routes | 2 fullstack servers for P2P demo, not 2 backends + 1 frontend |
+| Auth method | JWT in httpOnly cookie | Control over 5 roles; no shared session store for P2P |
+| Database | PostgreSQL (dev + prod) | Two servers share it; matches P2P requirement |
+| Build tool | Next.js | Merged with backend choice; Vite dropped |
+| Blockchain library | Simple custom chain | Teaches the concept; no heavy deps for access logs |
+| PR reviews | Nobody merges/reviews their own PR — not even the lead | Matias's code is reviewed by whoever owns the area (Kassim backend, Ramadan UI); no review time-cap |
+| Meeting schedule | Pending availability | Everyone fills `docs/team-availability.md`, then book 2x/week |
+
+## Decisions Still Open
+
+| Open decision | Owner | Due |
+|---|---|---|
+| Stream D split (chain core vs P2P) | Kassim + Matias (lead) | Before Gate 3 features start (Wed Sep 9) |
+| Najma's focus area | Najma (declares herself) | Before Gate 3 features start (Wed Sep 9) |
+| Meeting slots (2x/week) | Everyone (availability) | This week |
+| Disagreement handling | Team | Before signing |
 
 ---
 
@@ -319,6 +332,11 @@ Use the parking lot in `docs/MEETING_TEMPLATE.md` for topics that need more time
 
 | Action | Owner | Due |
 |--------|-------|-----|
-| | | |
-| | | |
-| | | |
+| Fill in `docs/team-availability.md` | Everyone (all 4) | ASAP, before next meeting |
+| Sign `gruppkontrakt.md` | Everyone | Today / Sat Sep 5 morning |
+| #3 Graphify artifacts + Mermaid diagrams | Team (`matdevstamp` coordinates) | Mon Sep 7 |
+| #4 Database schema (Prisma + generated Mermaid ER) | `matdevstamp` | Mon Sep 7 |
+| Gate 2 setup (tasks 05–10: Next.js scaffold, TS, ESLint, Playwright, CI) | `matdevstamp` (pairs where needed) | By Tue Sep 8 |
+| Feature tasks 11–14, 17 owners per stream (Kassim backend · Ramadan UI) | see draft tasks | Gate 3–4 (Sep 9–21) |
+| Declare focus area + join a pairing | Najma | Before Gate 3 features start (Wed Sep 9) |
+| Apply branch-protection ruleset in GitHub (docs/ + Python → direct; app code → PR + 1 review) | Lead (`matdevstamp`) | Later — before first app-code PR (ties into #1/#10) |

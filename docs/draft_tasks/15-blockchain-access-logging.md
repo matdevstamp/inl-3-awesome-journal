@@ -2,7 +2,7 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-16
+- **Deadline:** 2026-09-14
 - **Status:** TODO
 - **Assignee:** TBD
 - **Tags:** blockchain, logging, gdpr, required, gate:3-features, stream:D-audit

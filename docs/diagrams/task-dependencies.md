@@ -30,22 +30,22 @@ flowchart TD
     %% Dotted line A -. related .- B: A and B are related
     %% Colors: green done · blue in progress · dashed gray todo (not started)
     subgraph decisions["Gate 1-Decisions"]
-    T01["01 Project Setup & Group Contract (0% · 0/26 · todo)"]
-    T02["02 Database Choice Discussion (0% · 0/15 · todo)"]
+    T01["01 Project Setup & Group Contract (19% · 5/26 · todo)"]
+    T02["02 Database Choice Discussion (13% · 2/15 · todo)"]
     T03["03 Graphify Architecture Artifacts (0% · 0/7 · todo)"]
     end
     subgraph scaffold["Gate 2-Scaffold"]
-    T04["04 Database Design & Setup (0% · 0/18 · todo)"]
-    T05["05 Vite + Tailwind CSS + shadcn/ui Setup (0% · 0/21 · todo)"]
-    T06["06 Backend Project Setup (0% · 0/28 · todo)"]
-    T07["07 TypeScript Strict Configuration (0% · 0/21 · todo)"]
+    T04["04 Database Design & Setup (20% · 4/20 · todo)"]
+    T05["05 Next.js + Tailwind CSS + shadcn/ui Setup (0% · 0/21 · todo)"]
+    T06["06 Backend Project Setup (Next.js Route Handlers & Services) (9% · 2/23 · todo)"]
+    T07["07 TypeScript Strict Configuration (0% · 0/22 · todo)"]
     T08["08 ESLint + Prettier Configuration (0% · 0/22 · todo)"]
     T09["09 Playwright E2E Testing (0% · 0/27 · todo)"]
-    T10["10 GitHub Actions CI/CD Workflow (0% · 0/32 · todo)"]
+    T10["10 GitHub Actions CI/CD Workflow (0% · 0/33 · todo)"]
     end
     subgraph features["Gate 3-Features"]
-    T11["11 Backend API & Authentication (0% · 0/24 · todo)"]
-    T12["12 Frontend UI Development (0% · 0/30 · todo)"]
+    T11["11 Backend API & Authentication (8% · 2/24 · todo)"]
+    T12["12 Frontend UI Development (13% · 4/30 · todo)"]
     T13["13 Patient View & Search (0% · 0/25 · todo)"]
     T14["14 Medical Notes with Visibility Control (0% · 0/23 · todo)"]
     T15["15 Blockchain Access Logging (0% · 0/23 · todo)"]
@@ -57,7 +57,7 @@ flowchart TD
     end
     subgraph delivery["Gate 5-Delivery"]
     T19["19 Testing & Quality Assurance (0% · 0/27 · todo)"]
-    T20["20 Documentation & README (0% · 0/34 · todo)"]
+    T20["20 Documentation & README (6% · 2/34 · todo)"]
     T21["21 Presentation Preparation (0% · 0/23 · todo)"]
     end
     T01 --> T02

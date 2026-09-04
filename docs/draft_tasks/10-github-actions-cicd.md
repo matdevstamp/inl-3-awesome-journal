@@ -4,9 +4,9 @@
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-08
 - **Status:** TODO
-- **Assignee:** TBD
+- **Assignee:** matdevstamp
 - **Tags:** ci/cd, github-actions, automation, required, gate:2-scaffold
-- **Dependencies:** 05-vite-tailwind-shadcn.md, 08-eslint-prettier-config.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
+- **Dependencies:** 05-nextjs-tailwind-shadcn.md, 08-eslint-prettier-config.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
 - **Related:** 09-playwright-e2e-testing.md
 - **Estimated Effort:** 3h
 
@@ -15,15 +15,18 @@
 - Automated checks on pull requests
 - Linting and type checking before merge
 - Unit tests run automatically
+- Build verification
+- Apply the branch ruleset (app code via PR + 1 review; docs/ + `project_management/` push direct) — kickoff decision, enforced later
 
 ## User Stories
 
 - As a maintainer, I want every pull request checked automatically so that broken code cannot reach `main` unnoticed.
 - As a contributor, I want fast feedback on lint, types, tests, and builds so that I can repair my branch before review.
-- Build verification
-- Branch protection rules
+- As the lead, I want the GitHub ruleset to block direct pushes of app code while still allowing docs/logbook updates straight to `main`.
 
 ## Design
+
+The project is one Next.js app at the repo root (no `src/frontend` + `src/backend` split). One workflow validates the whole app; Playwright E2E runs as a second job (see task 09).
 
 ### Workflow: PR Validation
 
@@ -33,7 +36,7 @@ name: PR Validation
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [main]
 
 permissions:
   contents: read
@@ -51,20 +54,14 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
-          cache-dependency-path: |
-            src/frontend/package-lock.json
-            src/backend/package-lock.json
 
-      - name: Install frontend dependencies
-        working-directory: src/frontend
+      - name: Install dependencies
         run: npm ci
 
       - name: Run ESLint
-        working-directory: src/frontend
         run: npm run lint
 
       - name: Check Prettier formatting
-        working-directory: src/frontend
         run: npm run format:check
 
   typecheck:
@@ -79,144 +76,15 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
-          cache-dependency-path: |
-            src/frontend/package-lock.json
-            src/backend/package-lock.json
 
-      - name: Install frontend dependencies
-        working-directory: src/frontend
+      - name: Install dependencies
         run: npm ci
 
       - name: Run TypeScript check
-        working-directory: src/frontend
         run: npx tsc --noEmit
 
   test:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-    needs: [lint, typecheck]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: |
-            src/frontend/package-lock.json
-            src/backend/package-lock.json
-
-      - name: Install frontend dependencies
-        working-directory: src/frontend
-        run: npm ci
-
-      - name: Run unit tests
-        working-directory: src/frontend
-        run: npm test
-
-      - name: Upload test coverage
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: coverage-report
-          path: src/frontend/coverage/
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: [lint, typecheck, test]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: |
-            src/frontend/package-lock.json
-            src/backend/package-lock.json
-
-      - name: Install frontend dependencies
-        working-directory: src/frontend
-        run: npm ci
-
-      - name: Build frontend
-        working-directory: src/frontend
-        run: npm run build
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-build
-          path: src/frontend/dist/
-```
-
-### Workflow: Backend Validation
-
-```yaml
-# .github/workflows/backend-validation.yml
-name: Backend Validation
-
-on:
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - 'src/backend/**'
-
-permissions:
-  contents: read
-
-jobs:
-  lint:
-    name: Backend Lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: src/backend/package-lock.json
-
-      - name: Install dependencies
-        working-directory: src/backend
-        run: npm ci
-
-      - name: Run ESLint
-        working-directory: src/backend
-        run: npm run lint
-
-  typecheck:
-    name: Backend TypeScript Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: src/backend/package-lock.json
-
-      - name: Install dependencies
-        working-directory: src/backend
-        run: npm ci
-
-      - name: Run TypeScript check
-        working-directory: src/backend
-        run: npx tsc --noEmit
-
-  test:
-    name: Backend Tests
+    name: Unit & Integration Tests
     runs-on: ubuntu-latest
     needs: [lint, typecheck]
     services:
@@ -242,48 +110,67 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
-          cache-dependency-path: src/backend/package-lock.json
 
       - name: Install dependencies
-        working-directory: src/backend
         run: npm ci
 
       - name: Run migrations
-        working-directory: src/backend
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/healthaccess_test
-        run: npm run db:migrate
+        run: npx prisma migrate deploy
 
       - name: Run tests
-        working-directory: src/backend
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/healthaccess_test
           JWT_SECRET: test-secret
         run: npm test
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, test]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build the Next.js app
+        run: npm run build
 ```
 
-### Branch Protection Rules
+E2E tests run against two dev servers (ports 3001/3002) in the same or a dedicated job — see the CI snippet in task 09.
 
-```yaml
-# Branch protection settings (configure in GitHub UI or via API)
-# Settings > Branches > Add rule
+### Branch Protection Rules (deferred)
 
-Branch name pattern: main
-Settings:
-  - ✅ Require pull request reviews before merging
-    - Required approving reviews: 1
-    - Dismiss stale pull request approvals when new commits are pushed
-  - ✅ Require status checks to pass before merging
-    - Required checks:
-      - lint
-      - typecheck
-      - test
-      - build
-  - ✅ Require branches to be up to date before merging
-  - ✅ Require conversation resolution before merging
-  - ✅ Require linear history (squash merging)
-  - ❌ Allow force pushes (disabled)
-  - ❌ Allow deletions (disabled)
+The kickoff agreed a special rule but deferred the GitHub ruleset config ("apply later, before the first app-code PR"). When applied, configure a ruleset on `main` (Settings > Rules > Rulesets):
+
+```text
+Ruleset name: main
+Enforcement: Active
+Target branches: main
+Rules:
+  - ✅ Require a pull request before merging
+    - Required approvals: 1
+    - Dismiss stale approvals on new pushes
+  - ✅ Require status checks to pass
+    - Checks: lint, typecheck, test, build
+  - ✅ Require branches to be up to date
+  - ✅ Block force pushes and deletions
+
+Note: the agreed carve-out — everything under docs/ and the Python tooling
+(project_management/) may push directly — is a team convention recorded in
+gruppkontrakt.md. GitHub rulesets apply per-branch, not per-path, so the
+convention stands alongside the ruleset; do not surprise teammates with rule
+enforcement mid-sprint. Revisit whether a path-scoped exception is feasible
+before enabling.
 ```
 
 ### PR Template
@@ -325,12 +212,12 @@ Closes #[issue number]
 ## Tasks
 
 - [ ] Create .github/workflows directory
-- [ ] Create PR validation workflow
-- [ ] Create backend validation workflow
-- [ ] Configure branch protection rules
+- [ ] Create PR validation workflow (lint, typecheck, test, build) for the single Next.js app
+- [ ] Add the Playwright E2E job (task 09) with the PostgreSQL service
+- [ ] Apply the GitHub ruleset on `main` (PR + 1 review; status checks)
 - [ ] Create PR template
 - [ ] Add status badges to README
-- [ ] Test workflows on a PR
+- [ ] Test workflows on a real PR
 - [ ] Document workflow in README
 
 ## Done Criteria
@@ -340,7 +227,8 @@ Closes #[issue number]
 - [ ] Type checks pass before merge
 - [ ] Tests pass before merge
 - [ ] Build succeeds before merge
-- [ ] Branch protection prevents direct pushes
+- [ ] Ruleset blocks direct app-code pushes to `main`
+- [ ] Docs-only changes still follow the agreed convention
 - [ ] PR template is used
 - [ ] Status badges show in README
 
@@ -348,11 +236,11 @@ Closes #[issue number]
 
 - Use `npm ci` instead of `npm install` for deterministic builds
 - Cache node_modules to speed up workflows
-- Use services for database in backend tests
-- Consider adding code coverage reporting
+- Use the PostgreSQL service container for tests (matches the chosen database)
+- Docs/`project_management/` changes do not need the full pipeline — they push directly per the group contract
 
 ## Questions to Resolve
 
 - [ ] Should we deploy on merge to main?
-- [ ] Which hosting platform for deployment?
-- [ ] Should we run E2E tests in CI?
+- [ ] Should we run E2E tests in CI from the start or only near Gate 4?
+- [ ] Can the ruleset enforce the docs-direct carve-out per path?

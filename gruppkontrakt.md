@@ -1,16 +1,16 @@
 # Gruppkontrakt — Inl 3 Grupparbete (HealthAccess)
 
-> **Status:** Utkast v0.1 — fyll i och signera på kickoffet fredag 4 september.
+> **Status:** v0.2 — signerat av Matias fre 4 sep på kickoffet; övriga signerar senast lör 5 sep. Najma (`umoraghad0-del`) var inte på kickoffet — hennes roll/ansvar läggs till när hon själv deklarerar fokus.
 > Mall: [Gruppkontrakt mall](https://gist.github.com/postmodernistx/6afcbe224bce912a6da1a86b8b94adbc) · Scope: [`docs/Raw_Requirements.md`](docs/Raw_Requirements.md)
 
 ## Team
 
 | Namn | GitHub | Roll |
 |---|---|---|
-| Matias Marti | `matdevstamp` | Lead |
-| Kassim Segerberg | `Kassim10` | TBD |
-| Ramadan | `rcilomba` | TBD |
-| Najma Hasan | `umoraghad0-del` | TBD |
+| Matias Marti | `matdevstamp` | Koordinator / Lead (fokus på Gate 1–2) |
+| Kassim Segerberg | `Kassim10` | Backend (API-routes, DB/Prisma, middleware); stream D chain core öppen |
+| Ramadan | `rcilomba` | UI / Frontend (all UI, stream D-vyn TBD) |
+| Najma Hasan | `umoraghad0-del` | Pair programming — deklarerar eget fokus senare |
 
 ## 1. Projekt & ambitionsnivå
 
@@ -21,20 +21,18 @@ Vi bygger HealthAccess: ett system där medicinska journaler ligger i en SQL-dat
 
 ## 2. Roller & ansvarsområden
 
-Rollerna följer exempelfördelningen i `docs/Raw_Requirements.md`. Vi fyller i riktiga namn bredvid Person 1–4 här när vi kommit överens på kickoffet.
+Vi avviker från exempelfördelningen Person 1–4 i `docs/Raw_Requirements.md` — vi delar i stället på backend/UI/koordinering (beslut på kickoff 4 sep, se `docs/meetings/2026-09-04-kickoff-agenda.md`). Stream D (chain core + P2P) är ännu inte fördelad.
 
 | Person | Ansvarsområde | Streams |
 |---|---|---|
-| Person 1 — Crypto & liggare | `Block`/`Blockchain`-klasser, public/private key-signering, Merkle tree, verifiering | D (chain core) |
-| Person 2 — P2P-nätverk | Websocket-synk mellan servrar, distribuera audit blocks, longest chain rule, Socket.IO | D (P2P/realtime) |
-| Person 3 — Express API & middleware | Routes, `auditLogger`-middleware, backend, databas & routing | A/B/C (backend) |
-| Person 4 — Front end | Inloggning, journal-sök/-vy, live access-log-vy, verifikationsbadge | A/B/C (frontend) |
-
-**Namn → Person:** Person 1: ____ · Person 2: ____ · Person 3: ____ · Person 4: ____
+| Kassim Segerberg (`Kassim10`) | Backend: Next.js API-routes, databas & Prisma, middleware, `auditLogger` | A/B/C (backend), D chain core öppen |
+| Ramadan (`rcilomba`) | Frontend/UI: inloggning, journal-sök/-vy, live access-log-vy, verifikationsbadge | A/B/C (frontend), D-vy TBD |
+| Matias Marti (`matdevstamp`) | Koordinator/Lead: möten, PR-review, unblocking, Gate 1–2 | — |
+| Najma Hasan (`umoraghad0-del`) | Pair programming; deklarerar eget fokus senare | öppen |
 
 - **Scrum master:** TBD (vi kan rotera)
 - **Lead:** Matias Marti (`matdevstamp`)
-- **Backup/review:** Person 1 ↔ Person 2, Person 3 ↔ Person 4
+- **Backup/review:** backend ↔ UI-par (Kassim ↔ Ramadan); Najma fyller på där det behövs. Matias PR:er granskas av den som har mest koll på området.
 
 ## 3. Tidigare grupparbeteserfarenheter
 
@@ -76,7 +74,8 @@ Vi för en **loggbok per person** för dagliga standups och mötesdeltagande (se
 
 ## 7. Uppgiftsfördelning & arbetsflöde
 
-- Ingenting committas direkt till `main` — allt går via **PR** med minst **1 review**.
+- Ingenting committas direkt till `main` — allt går via **PR** med minst **1 review**. **Undantag (beslut på kickoff):** allt under `docs/` (markdown, CSV, diagram, `.mmd` m.m.) och Python-verktyget (`project_management/`) får pushas direkt till `main`; all app-kod (Next.js/TS, Prisma/DB-schema, config) kräver PR + review.
+- **Ingen granskar eller slår ihop sin egen PR** — inte heller lead: Matias app-kod granskas av någon annan i teamet (den som har mest koll på området: Kassim för backend, Ramadan för UI, Najma där hon är inkopplad).
 - Branch-namn: `feature/<task-id>-<topic>` eller `chore/<task-id>-<topic>`.
 - Uppgifter bryts ner till ~en halv dags arbete och tas från draft-tasks/issues; tar man på sig en uppgift utanför standupen säger man till på nästa.
 - Kodkonflikter löser vi tillsammans med den som äger filerna (shared files ändras bara via reviewad integrationstask).
@@ -87,11 +86,11 @@ Vi för en **loggbok per person** för dagliga standups och mötesdeltagande (se
 - **Commits:** ____ (förslag: Conventional Commits)
 - **Lint/format:** ESLint + Prettier (se draft tasks 07–08)
 - **Språk i kod (identifierare, kommentarer):** ____
-- **Branch protection:** ____ (förslag: enforce PR reviews på `main`)
+- **Branch protection:** enforce PR reviews på `main` för app-kod; allt under `docs/` + `project_management/` får pushas direkt
 
 ## 9. Feedback & återkoppling
 
-- Code reviews görs på PR:er, tidsfrist: ____
+- Code reviews görs på PR:er, tidsfrist: **ingen fast tidsgräns** — granskaren svarar så snart som möjligt
 - Feedback på design/UI: ____
 - Tidsfrist för återkoppling på det någon gjort: ____
 
@@ -120,7 +119,7 @@ Vi har läst och godkänner gruppkontraktet:
 
 | Namn | GitHub | Datum | Signatur |
 |---|---|---|---|
-| Matias Marti | `matdevstamp` | | |
-| Kassim Segerberg | `Kassim10` | | |
-| Ramadan | `rcilomba` | | |
-| Najma Hasan | `umoraghad0-del` | | |
+| Matias Marti | `matdevstamp` | 2026-09-04 | ✅ |
+| Kassim Segerberg | `Kassim10` | senast 2026-09-05 | |
+| Ramadan | `rcilomba` | senast 2026-09-05 | |
+| Najma Hasan | `umoraghad0-del` | senast 2026-09-05 | |

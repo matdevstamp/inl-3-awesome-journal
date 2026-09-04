@@ -2,11 +2,11 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-16
+- **Deadline:** 2026-09-11
 - **Status:** TODO
-- **Assignee:** TBD
+- **Assignee:** rcilomba
 - **Tags:** frontend, ui, required, gate:3-features, stream:A-identity
-- **Dependencies:** 05-vite-tailwind-shadcn.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
+- **Dependencies:** 05-nextjs-tailwind-shadcn.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
 - **Estimated Effort:** 12h
 
 ## Requirements
@@ -18,9 +18,9 @@
 - Notes creation with visibility options
 - Access logs display
 - Responsive design
-- Must use a framework (not plain HTML)
+- Must use a framework (not plain HTML) — React via Next.js (kickoff decision)
 
-The examples below are optional starter patterns. React Query, `openapi-fetch`, generated `api/generated.ts`, and the exact hook structure may be replaced with equivalent tools; backend authorization and clear loading/error states remain required.
+The examples below are optional starter patterns. React Query, typed fetch helpers, and the exact hook structure may be replaced with equivalent tools; backend authorization and clear loading/error states remain required.
 
 ## User Stories
 
@@ -62,10 +62,10 @@ The examples below are optional starter patterns. React Query, `openapi-fetch`, 
 
 ## Design
 
-### Tech Stack Options
-- **React** (recommended) - Large ecosystem, easy to learn
-- **Vue** - Good for quick prototyping
-- **Svelte** - Modern, lightweight
+### Tech Stack (decided at kickoff)
+- **Next.js (App Router) + React + TypeScript** — fullstack; UI pages and route handlers in one app
+- **Tailwind CSS + shadcn/ui** — styling and accessible components (task 05 scaffold)
+- Optional: **TanStack React Query** for client-side server state
 
 ### Page Structure
 
@@ -83,57 +83,54 @@ The examples below are optional starter patterns. React Query, `openapi-fetch`, 
 
 ```
 src/
+├── app/                    # App Router routes = pages
+│   ├── page.tsx
+│   ├── login/
+│   ├── access-denied/
+│   ├── dashboard/
+│   ├── patients/
+│   │   └── [id]/           # journal view per role
+│   └── api/                # route handlers (backend) — see task 06
 ├── components/
 │   ├── auth/
-│   │   ├── LoginForm.jsx
-│   │   └── ProtectedRoute.jsx
+│   │   ├── LoginForm.tsx
+│   │   └── LogoutButton.tsx
 │   ├── patients/
-│   │   ├── PatientSearch.jsx
-│   │   ├── PatientCard.jsx
-│   │   └── PatientList.jsx
+│   │   ├── PatientSearch.tsx
+│   │   ├── PatientCard.tsx
+│   │   └── PatientList.tsx
 │   ├── records/
-│   │   ├── RecordList.jsx
-│   │   ├── RecordCard.jsx
-│   │   └── RecordForm.jsx
+│   │   ├── RecordList.tsx
+│   │   ├── RecordCard.tsx
+│   │   └── RecordForm.tsx
 │   ├── notes/
-│   │   ├── NoteList.jsx
-│   │   ├── NoteCard.jsx
-│   │   └── NoteForm.jsx
+│   │   ├── NoteList.tsx
+│   │   ├── NoteCard.tsx
+│   │   └── NoteForm.tsx
 │   └── common/
-│       ├── Header.jsx
-│       ├── Sidebar.jsx
-│       └── Loading.jsx
-├── pages/
-│   ├── LoginPage.jsx
-│   ├── DashboardPage.jsx
-│   ├── PatientsPage.jsx
-│   ├── PatientDetailPage.jsx
-│   └── ProfilePage.jsx
-├── services/
-│   └── api.js
-└── App.jsx
+│       ├── Header.tsx
+│       ├── Sidebar.tsx
+│       └── Loading.tsx
+└── lib/                    # shared types + typed fetch client
 ```
 
 ### Optional React Query API Pattern
 
-For server data such as patients, records, notes, and access logs, keep API calls in one authenticated client and use stable query keys. Prefer generated OpenAPI types from `src/api/generated.ts` for request parameters and response data. Keep form state and visual state local to components.
+For server data such as patients, records, notes, and access logs, keep calls in one authenticated typed client and use stable query keys. Import the shared request/response types from `src/lib/types/api.ts` (the same types route handlers use — no OpenAPI/generated.ts toolchain). Keep form state and visual state local to components.
 
 ```tsx
 import { useQuery } from '@tanstack/react-query';
-import type { paths } from '@/api/generated';
+import type { User } from '@/lib/types/api';
+import { api } from '@/lib/api/client';
 
-type CurrentUser = paths['/api/auth/me']['get']['responses'][200]['content']['application/json'];
-
-export function useCurrentUser(api: ApiClient) {
-	return useQuery({
+export function useCurrentUser() {
+	return useQuery<User>({
 		queryKey: ['current-user'],
-		queryFn: () => api.getCurrentUser(),
+		queryFn: () => api.get('/api/auth/me'),
 		retry: false,
 	});
 }
 ```
-
-Regenerate `api/generated.ts` from the OpenAPI document instead of manually duplicating response interfaces in feature components.
 
 Render explicit loading, error, empty, and success states. The query key improves caching and refetching; it does not grant access to data.
 
@@ -182,8 +179,8 @@ Render explicit loading, error, empty, and success states. The query key improve
 
 ## Tasks
 
-- [ ] Choose frontend framework (React recommended)
-- [ ] Set up project structure with routing
+- [x] Choose frontend framework → Next.js + React (kickoff)
+- [ ] Set up project structure with App Router routes (from task 05 scaffold)
 - [ ] Create login page with form validation
 - [ ] Implement authentication context/state management
 - [ ] Create protected route component
@@ -214,15 +211,15 @@ Render explicit loading, error, empty, and success states. The query key improve
 
 ## Notes
 
-- Consider using a UI component library to speed up development
+- Use shadcn/ui components from the task 05 scaffold
 - Make sure to handle token expiration gracefully
 - Implement proper loading skeletons instead of spinners
-- Use React Context or Redux for state management
+- Prefer server components where possible; use 'use client' for interactive parts
 - Consider lazy loading for better performance
 
 ## Questions to Resolve
 
-- [ ] React vs Vue vs Svelte? (React recommended)
-- [ ] Which CSS framework? (Tailwind recommended)
-- [ ] State management approach? (Context API vs Redux)
-- [ ] Should we use a component library? (Material UI, Ant Design?)
+- [x] React vs Vue vs Svelte? → React in Next.js (kickoff)
+- [x] Which CSS framework? → Tailwind + shadcn/ui (kickoff)
+- [ ] State management approach? (Context API vs TanStack Query)
+- [x] Component library? → shadcn/ui (kickoff)

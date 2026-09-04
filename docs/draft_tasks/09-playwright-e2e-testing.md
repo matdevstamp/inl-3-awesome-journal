@@ -2,11 +2,11 @@
 
 ## Metadata
 - **Priority:** P1 - High
-- **Deadline:** 2026-09-08 (runner and fixtures), 2026-09-29 (critical flows) (runner and fixtures), 2026-09-29 (critical flows)
+- **Deadline:** 2026-09-08 (runner and fixtures), 2026-09-29 (critical flows)
 - **Status:** TODO
-- **Assignee:** TBD
+- **Assignee:** matdevstamp (pairs: rcilomba)
 - **Tags:** testing, e2e, playwright, required, gate:2-scaffold
-- **Dependencies:** 05-vite-tailwind-shadcn.md, 06-backend-project-setup.md, 07-typescript-strict-config.md, 08-eslint-prettier-config.md
+- **Dependencies:** 05-nextjs-tailwind-shadcn.md, 06-backend-project-setup.md, 07-typescript-strict-config.md, 08-eslint-prettier-config.md
 - **Related:** 10-github-actions-cicd.md, 19-testing.md
 - **Estimated Effort:** 8h
 
@@ -57,34 +57,31 @@ Playwright is deliberately split into two increments. Configure the runner, fixt
 ### Project Structure
 
 ```
-src/frontend/
-├── tests/
-│   ├── e2e/
-│   │   ├── auth/
-│   │   │   ├── login.spec.ts
-│   │   │   └── logout.spec.ts
-│   │   ├── patients/
-│   │   │   ├── search.spec.ts
-│   │   │   └── view.spec.ts
-│   │   ├── records/
-│   │   │   ├── view.spec.ts
-│   │   │   └── create.spec.ts
-│   │   ├── notes/
-│   │   │   ├── create.spec.ts
-│   │   │   ├── visibility.spec.ts
-│   │   │   └── realtime.spec.ts
-│   │   ├── access-logs/
-│   │   │   └── view.spec.ts
-│   │   └── blockchain/
-│   │       └── verify.spec.ts
-│   ├── fixtures/
-│   │   ├── auth.fixture.ts
-│   │   └── test-data.ts
-│   └── helpers/
-│       ├── api.helper.ts
-│       └── db.helper.ts
-├── playwright.config.ts
-└── package.json
+e2e/                     # or tests/ at the repo root — one Playwright suite for the Next app
+├── auth/
+│   ├── login.spec.ts
+│   └── logout.spec.ts
+├── patients/
+│   ├── search.spec.ts
+│   └── view.spec.ts
+├── records/
+│   ├── view.spec.ts
+│   └── create.spec.ts
+├── notes/
+│   ├── create.spec.ts
+│   ├── visibility.spec.ts
+│   └── realtime.spec.ts
+├── access-logs/
+│   └── view.spec.ts
+└── blockchain/
+    └── verify.spec.ts
+fixtures/
+├── auth.fixture.ts
+└── test-data.ts
+helpers/
+├── api.helper.ts
+└── db.helper.ts
+playwright.config.ts
 ```
 
 ### Playwright Configuration
@@ -94,7 +91,7 @@ src/frontend/
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: './e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -104,7 +101,7 @@ export default defineConfig({
     ['json', { outputFile: 'test-results.json' }],
   ],
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: 'http://localhost:3001',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'on-first-retry',
@@ -129,16 +126,16 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: 'npm run dev',
-      url: 'http://localhost:5173',
+      command: 'npm run dev -- -p 3001',
+      url: 'http://localhost:3001/api/health',
       reuseExistingServer: !process.env.CI,
-      cwd: './',
+      env: { SERVER_ID: 'hospital-s' },
     },
     {
-      command: 'npm run dev:backend',
-      url: 'http://localhost:3001/health',
+      command: 'npm run dev -- -p 3002',
+      url: 'http://localhost:3002/api/health',
       reuseExistingServer: !process.env.CI,
-      cwd: '../backend',
+      env: { SERVER_ID: 'ambulance-a' },
     },
   ],
 });
@@ -149,7 +146,7 @@ export default defineConfig({
 ```bash
 npm install -D @playwright/test
 npx playwright install
-npx playwright codegen http://localhost:5173/login
+npx playwright codegen http://localhost:3001/login
 npx playwright test --reporter=list
 ```
 
@@ -346,6 +343,20 @@ e2e-tests:
   name: E2E Tests
   runs-on: ubuntu-latest
   needs: [build]
+  services:
+    postgres:
+      image: postgres:16
+      env:
+        POSTGRES_USER: test
+        POSTGRES_PASSWORD: test
+        POSTGRES_DB: healthaccess_test
+      ports:
+        - 5432:5432
+      options: >-
+        --health-cmd pg_isready
+        --health-interval 10s
+        --health-timeout 5s
+        --health-retries 5
   steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -357,15 +368,15 @@ e2e-tests:
         cache: 'npm'
 
     - name: Install dependencies
-      working-directory: src/frontend
       run: npm ci
 
     - name: Install Playwright browsers
-      working-directory: src/frontend
       run: npx playwright install --with-deps
 
     - name: Run E2E tests
-      working-directory: src/frontend
+      env:
+        DATABASE_URL: postgresql://test:test@localhost:5432/healthaccess_test
+        JWT_SECRET: test-secret
       run: npx playwright test
 
     - name: Upload test report
@@ -373,7 +384,7 @@ e2e-tests:
       if: always()
       with:
         name: playwright-report
-        path: src/frontend/playwright-report/
+        path: playwright-report/
         retention-days: 30
 ```
 

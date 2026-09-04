@@ -2,11 +2,11 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-07
+- **Deadline:** 2026-09-08
 - **Status:** TODO
-- **Assignee:** TBD
+- **Assignee:** matdevstamp
 - **Tags:** tooling, linting, code-quality, required, gate:2-scaffold
-- **Dependencies:** 05-vite-tailwind-shadcn.md, 07-typescript-strict-config.md
+- **Dependencies:** 05-nextjs-tailwind-shadcn.md, 07-typescript-strict-config.md
 - **Estimated Effort:** 2h
 
 ## Requirements

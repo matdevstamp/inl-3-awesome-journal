@@ -2,7 +2,7 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-18
+- **Deadline:** 2026-09-16
 - **Status:** TODO
 - **Assignee:** TBD
 - **Tags:** networking, p2p, distributed, required, gate:3-features, stream:D-audit

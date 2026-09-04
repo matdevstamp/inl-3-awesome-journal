@@ -37,24 +37,23 @@ The contract should cover:
 
 ### Repository Structure
 ```
-├── docs/
-│   ├── tasks/
-│   └── meetings/
-├── src/
-│   ├── frontend/
-│   └── backend/
-├── blockchain/
-├── database/
+├── docs/           # requirements, meetings, logbooks, diagrams, draft tasks
+├── src/            # one Next.js (fullstack) app per server
+│   ├── app/        # App Router pages + route handlers (src/app/api/...)
+│   └── lib/        # shared TS types, Prisma client, blockchain, P2P
+├── prisma/         # Prisma schema + migrations (single schema source of truth)
 ├── README.md
 └── gruppkontrakt.md
 ```
+
+> **Stack (kickoff 2026-09-04):** fullstack **Next.js** — UI and API route handlers live in the same TypeScript app, run twice (ports 3001/3002) for the P2P demo. No separate Vite frontend or Express backend.
 
 ## Tasks
 
 - [ ] Create GitHub repository
 - [ ] Write gruppkontrakt.md using provided template
 - [ ] Add the per-member loggbok files under `docs/logbooks/` (or the format the group decides at kickoff)
-- [ ] Set up branch protection rules (no direct commits to main)
+- [ ] Record branch rule (app code via PR + 1 review; docs/ + Python tooling push direct) and apply the GitHub ruleset later with task 10
 - [ ] Create README.md with initial project description
 - [ ] Set up project board (GitHub Projects or similar)
 - [ ] Establish meeting schedule (min 2 standups/week)
@@ -62,7 +61,7 @@ The contract should cover:
 - [ ] Add the meeting agenda and note template from `docs/MEETING_TEMPLATE.md`
 - [ ] Add a requirements-checkpoint agenda item to every planning meeting and at least two meetings per week
 - [ ] Create a lightweight requirements traceability checklist linking each requirement to a task and later evidence
-- [ ] Define PR review process
+- [x] Define PR review process (min 1 review; nobody reviews/merges their own PR — not even the lead; no fixed review time-frame) — decided at kickoff, in gruppkontrakt §7/§9
 - [ ] Set up development environment instructions
 
 ## Done Criteria
@@ -86,7 +85,7 @@ The contract should cover:
 
 ## Questions to Resolve
 
-- [ ] Which frontend framework will we use? (React, Vue, Svelte?)
-- [ ] Which authentication method? (JWT, sessions, passwordless?)
-- [ ] How will we handle the blockchain implementation?
-- [ ] What database will we use? (PostgreSQL, MySQL, SQLite?)
+- [x] Frontend: React inside Next.js (fullstack) — decided at kickoff
+- [x] Auth: JWT in an httpOnly cookie — decided at kickoff
+- [x] Blockchain: simple custom chain (stream D split TBD) — decided at kickoff
+- [x] Database: PostgreSQL (dev + prod) — decided at kickoff

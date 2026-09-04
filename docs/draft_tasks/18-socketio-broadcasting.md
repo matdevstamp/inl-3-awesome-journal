@@ -2,7 +2,7 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-23
+- **Deadline:** 2026-09-21
 - **Status:** TODO
 - **Assignee:** TBD
 - **Tags:** realtime, websocket, socketio, required, gate:4-integration

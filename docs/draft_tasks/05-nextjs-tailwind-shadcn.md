@@ -1,17 +1,17 @@
-# Task: Vite + Tailwind CSS + shadcn/ui Setup
+# Task: Next.js + Tailwind CSS + shadcn/ui Setup
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-05
+- **Deadline:** 2026-09-07
 - **Status:** TODO
-- **Assignee:** TBD
+- **Assignee:** matdevstamp
 - **Tags:** frontend, tooling, ui, required, gate:2-scaffold
 - **Dependencies:** 01-project-setup-group-contract.md, 03-graphify-architecture-artifacts.md
 - **Estimated Effort:** 3h
 
 ## Requirements
 
-- Modern frontend build tool (Vite)
+- Fullstack **Next.js (App Router)** scaffold — UI and API route handlers in one app (kickoff decision)
 - Utility-first CSS (Tailwind CSS)
 - Accessible component library (shadcn/ui)
 
@@ -29,37 +29,52 @@ The examples below are optional starting points, not additional requirements. Th
 ### Tech Stack
 
 ```
-Build Tool:     Vite 6.x
+Framework:      Next.js (App Router, TypeScript) — fullstack
 CSS Framework:  Tailwind CSS 4.x
 Components:     shadcn/ui (Radix UI primitives)
 Icons:          Lucide React
 Animation:      tailwindcss-animate
+Servers:        two instances of the same app (ports 3001 + 3002)
 ```
 
 ### Project Structure
 
 ```
-src/frontend/
-├── src/
-│   ├── components/
-│   │   └── ui/           # shadcn/ui components
-│   │       ├── button.tsx
-│   │       ├── input.tsx
-│   │       ├── card.tsx
-│   │       ├── dialog.tsx
-│   │       ├── select.tsx
-│   │       ├── table.tsx
-│   │       ├── badge.tsx
-│   │       ├── avatar.tsx
-│   │       ├── dropdown-menu.tsx
-│   │       └── ...
-│   ├── lib/
-│   │   └── utils.ts      # cn() utility
-│   └── ...
+src/
+├── app/
+│   ├── layout.tsx        # root layout (fonts, providers)
+│   ├── globals.css       # Tailwind + design tokens
+│   ├── page.tsx
+│   ├── (auth)/           # login, access-denied pages
+│   ├── dashboard/
+│   ├── patients/
+│   └── api/              # route handlers = the backend
+│       ├── auth/
+│       ├── patients/
+│       ├── records/
+│       ├── notes/
+│       └── access-log/
+├── components/
+│   └── ui/               # shadcn/ui components
+│       ├── button.tsx
+│       ├── input.tsx
+│       ├── card.tsx
+│       ├── dialog.tsx
+│       ├── select.tsx
+│       ├── table.tsx
+│       ├── badge.tsx
+│       ├── avatar.tsx
+│       ├── dropdown-menu.tsx
+│       └── ...
+├── lib/
+│   ├── utils.ts          # cn() utility
+│   ├── prisma.ts         # shared Prisma client
+│   ├── auth/             # JWT helpers + middleware
+│   ├── blockchain/       # chain core
+│   └── p2p/              # Socket.IO / peer sync
 ├── components.json       # shadcn/ui config
-├── tailwind.config.js
-├── postcss.config.js
-└── vite.config.ts
+├── tsconfig.json         # path alias @/* -> ./src/*
+└── next.config.ts
 ```
 
 ### shadcn/ui Installation
@@ -85,59 +100,43 @@ npx shadcn@latest add toast
 npx shadcn@latest add skeleton
 ```
 
-### Vite Configuration
+### Next.js Configuration
 
 ```typescript
-// vite.config.ts
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+// next.config.ts
+import type { NextConfig } from 'next';
 
-export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
-  server: {
-    port: 5173,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
-      },
-      '/socket.io': {
-        target: 'http://localhost:3001',
-        ws: true,
-      },
-    },
-  },
-});
+const nextConfig: NextConfig = {
+  // Path alias @/* is defined in tsconfig.json; no proxy needed because
+  // API route handlers live in the same app (src/app/api).
+};
+
+export default nextConfig;
 ```
 
 ### Optional Basic Setup Example
 
 ```bash
-npm create vite@latest src/frontend -- --template react-ts
-cd src/frontend
+npx create-next-app@latest . --typescript --tailwind --eslint --app
 npm install
-npm install -D tailwindcss @tailwindcss/vite
-npm run dev
+npm run dev -- -p 3001   # server 1 (Hospital)
+npm run dev -- -p 3002   # server 2 (Ambulance), separate terminal
 ```
 
 Keep the final commands and folder structure documented for the rest of the team, even if the implementation differs from this example.
 
 ### Optional Server-State Foundation
 
-TanStack React Query is an optional way to manage server state. It is not required if the team chooses another consistent approach.
+TanStack React Query is an optional way to manage server-side state in client components. It is not required if the team chooses another consistent approach.
 
 ```bash
 npm install @tanstack/react-query
 ```
 
 ```tsx
-// main.tsx
+// src/app/providers.tsx
+'use client';
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient({
@@ -146,25 +145,23 @@ const queryClient = new QueryClient({
   },
 });
 
-createRoot(document.getElementById('root')!).render(
-  <QueryClientProvider client={queryClient}>
-    <App />
-  </QueryClientProvider>,
-);
+export function Providers({ children }: { children: React.ReactNode }) {
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+}
 ```
 
-Keep authentication tokens, API calls, and query keys in shared modules rather than scattering `fetch` calls through components.
+Keep authentication tokens, API calls, and query keys in shared modules rather than scattering `fetch` calls through components. Client components call route handlers under `src/app/api/`; route handlers call shared `src/lib` services.
 
 ### Tailwind Configuration
 
 ```javascript
-// tailwind.config.js
+// tailwind.config.ts (or Tailwind 4 CSS-first @theme in globals.css)
 import tailwindAnimate from 'tailwindcss-animate';
 
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ['class'],
-  content: ['./index.html', './src/**/*.{ts,tsx}'],
+  content: ['./src/**/*.{ts,tsx}'],
   theme: {
     container: {
       center: true,
@@ -234,12 +231,11 @@ export default {
 };
 ```
 
-### CSS Variables (src/index.css)
+### CSS Variables (src/app/globals.css)
 
 ```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+/* or: @tailwind base; @tailwind components; @tailwind utilities; (v3) */
 
 @layer base {
   :root {
@@ -311,30 +307,31 @@ export function cn(...inputs: ClassValue[]) {
 
 ## Tasks
 
-- [ ] Initialize Vite React TypeScript project
+- [ ] Scaffold Next.js (App Router, TypeScript) at the repo root
 - [ ] Install and configure Tailwind CSS
 - [ ] Setup shadcn/ui with components.json
 - [ ] Install core shadcn/ui components
-- [ ] Configure path aliases in vite.config.ts
+- [ ] Configure path aliases (@/* in tsconfig.json)
 - [ ] Setup CSS variables for theming
 - [ ] Create cn() utility function
-- [ ] Configure Vite proxy for API calls
 - [ ] Add dark mode support
-- [ ] Test component rendering
+- [ ] Verify the app runs on ports 3001 and 3002
+- [ ] Add a minimal /api/health route handler and a login shell
 
 ## Done Criteria
 
-- [ ] Vite dev server starts correctly
+- [ ] `npm run dev -- -p 3001` and `npm run dev -- -p 3002` both start
 - [ ] Tailwind classes are applied
 - [ ] shadcn/ui components render properly
 - [ ] Path aliases work (@/components)
-- [ ] API proxy is configured
+- [ ] A route handler responds on /api/health
 - [ ] Dark mode toggle works
 - [ ] Hot module replacement works
 - [ ] Production build succeeds
 
 ## Notes
 
+- Stack decision: fullstack Next.js per server (kickoff 2026-09-04) — no separate Vite frontend or Express backend
 - Use `npx shadcn@latest add <component>` to add new components
 - shadcn/ui components are copied into your project, not installed as a package
 - You can customize the components after adding them

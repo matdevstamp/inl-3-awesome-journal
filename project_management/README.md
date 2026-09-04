@@ -40,7 +40,7 @@ export GITHUB_REPOSITORY=owner/repo-name
 | `python3 -m project_management task create --title "X" --label type:feature --label gate:2-scaffold` | Creates an issue with labels |
 | `python3 -m project_management task create --title "X" --assignee octocat` | Creates and assigns to a GitHub user |
 | `python3 -m project_management task create --title "X" --deadline 2026-09-10` | Adds a deadline line to the issue body |
-| `python3 -m project_management task create --title "X" --draft docs/draft_tasks/05-vite-tailwind-shadcn.md` | Creates the issue **and** stamps the draft file with the issue URL, plus sets project fields (Priority, Size, Estimate, Target date, Gate, Stream) |
+| `python3 -m project_management task create --title "X" --draft docs/draft_tasks/05-nextjs-tailwind-shadcn.md` | Creates the issue **and** stamps the draft file with the issue URL, plus sets project fields (Priority, Size, Estimate, Target date, Gate, Stream) |
 
 ### Update Work
 

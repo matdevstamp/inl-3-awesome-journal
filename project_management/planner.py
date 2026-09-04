@@ -27,40 +27,40 @@ TEAM_MEMBERS = {
     "umoraghad0-del": "Najma Hasan",
 }
 
-# Role-to-username mapping.  Fill in during the kickoff meeting.
-# Person areas follow the example split in ``docs/Raw_Requirements.md``:
-#   Person 1 - Crypto & liggare (Block/Blockchain, signing, Merkle, verification)
-#   Person 2 - P2P-nätverk (server sync, audit-block distribution, Socket.IO)
-#   Person 3 - Express API & middleware (routes, auditLogger, backend, database)
-#   Person 4 - Front end (login, journal search/view, live access-log view)
+# Role-to-username mapping for legacy "Person N" prose in docs.
+# The kickoff (2026-09-04) deviated from the example Person 1-4 split in
+# ``docs/Raw_Requirements.md``: the team now works backend (Kassim), UI
+# (Ramadan), coordinator/lead + Gate 2 setup (Matias), and a floating pair
+# programmer (Najma) who declares her focus later. Stream D (chain core +
+# P2P, tasks 15/16/18) is still unassigned.
 ROLE_TO_USER = {
-    "Person 1": None,  # Crypto & liggare → assign to a GitHub username
-    "Person 2": None,  # P2P-nätverk
-    "Person 3": None,  # Express API & middleware
-    "Person 4": None,  # Front end
+    "Person 1": None,  # Crypto & liggare → open (chain core; Kassim may take it)
+    "Person 2": None,  # P2P-nätverk → open
+    "Person 3": None,  # legacy Express API & middleware label (no longer used)
+    "Person 4": None,  # legacy frontend label (no longer used)
 }
 
 KICKOFF_ASSIGNMENTS = {
     "01": "Team",
     "02": "Team",
-    "03": "Scaffold pair (Person 3 + Person 4)",
-    "04": "Person 3",
-    "05": "Person 4",
-    "06": "Person 3",
-    "07": "Person 3",
-    "08": "Person 4",
-    "09": "Person 4",
-    "10": "Person 3",
-    "11": "Person 3",
-    "12": "Person 4",
-    "13": "Person 4",
-    "14": "Person 3",
-    "15": "Person 1",
-    "16": "Person 2",
-    "17": "Team",
-    "18": "Person 2",
+    "03": "Team",
+    "04": "matdevstamp",
+    "05": "matdevstamp",
+    "06": "matdevstamp",
+    "07": "matdevstamp",
+    "08": "matdevstamp",
+    "09": "matdevstamp",
+    "10": "matdevstamp",
+    "11": "Kassim10",
+    "12": "rcilomba",
+    "13": "rcilomba",
+    "14": "Kassim10",
+    "15": "TBD",
+    "16": "TBD",
+    "17": "Kassim10",
+    "18": "TBD",
     "19": "Team",
-    "20": "Person 4",
+    "20": "matdevstamp",
     "21": "Team",
 }
 

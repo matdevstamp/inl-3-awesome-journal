@@ -2,9 +2,9 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-23
+- **Deadline:** 2026-09-18
 - **Status:** TODO
-- **Assignee:** TBD
+- **Assignee:** Kassim10
 - **Tags:** security, roles, access-control, required, gate:4-integration
 - **Dependencies:** 11-backend-api-auth.md, 12-frontend-ui.md, 13-patient-view-search.md, 14-medical-notes.md
 - **Estimated Effort:** 6h

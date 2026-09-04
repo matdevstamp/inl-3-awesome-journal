@@ -2,9 +2,9 @@
 
 ## Metadata
 - **Priority:** P0 - Required throughout
-- **Deadline:** 2026-09-29 (final; initial slice 2026-09-05)
+- **Deadline:** 2026-09-24 (final; initial slice 2026-09-05)
 - **Status:** TODO
-- **Assignee:** TBD
+- **Assignee:** matdevstamp
 - **Tags:** documentation, readme, required, gate:5-delivery
 - **Dependencies:** 01-project-setup-group-contract.md
 - **Related:** 03-graphify-architecture-artifacts.md, 19-testing.md
@@ -27,7 +27,7 @@ Document the bug-report workflow: raw intake, lead triage, draft-task conversion
 
 The examples in this task are optional documentation starters, not mandatory technology choices. The team may document equivalent commands and tools if a new teammate can reproduce the project.
 - README must be usable by a new teammate on a clean machine, not merely describe the project
-- README must link to the DBML schema, Mermaid architecture diagrams, API contract, meeting notes, and graphify report
+- README must link to the Prisma-generated Mermaid ER diagram (`docs/diagrams/data-model.md`), the other Mermaid architecture diagrams, API documentation (route-handler list), meeting notes, and graphify report
 - Document the deliberate privacy boundary: medical content remains in SQL; only access-log data is represented on the blockchain
 - Include a reproducible demo script covering allowed and denied role flows, two servers, and live broadcasting
 
@@ -88,22 +88,29 @@ Brief description of the project and its purpose.
 [Link to meeting documentation]
 ```
 
-### Optional API Documentation Snippet
+### API Documentation
 
-If the team chooses Scalar, link the generated API reference from the README:
+Document the HTTP surface of the route handlers under `src/app/api/` — one table with method, path, purpose, and required role per endpoint, plus where the shared request/response types live (`src/lib/types/api.ts`).
 
 ```markdown
 ## API Documentation
 
-- OpenAPI document: [`/openapi.json`](http://localhost:3001/openapi.json)
-- Interactive API reference: [`/docs`](http://localhost:3001/docs)
+Route handlers live in the same Next.js app as the UI (no separate API server).
+
+| Method | Path | Purpose | Roles |
+|--------|------|---------|-------|
+| POST | /api/auth/login | Log in, sets httpOnly JWT cookie | public |
+| POST | /api/auth/logout | Clear session | any |
+| GET  | /api/auth/me | Current user + role | any |
+| GET  | /api/patients?name= | Search patients | doctor/nurse/ambulance |
+| ...  | ... | ... | ... |
 ```
 
-Scalar is optional. Swagger UI, ReDoc, or another documented OpenAPI viewer is equally acceptable.
+There is no OpenAPI/Scalar/generated-client toolchain in this project (kickoff decision: shared TypeScript types instead). If the team still wants an interactive reference later, it can be added without changing the architecture.
 
 ### Optional React Query Documentation Note
 
-If React Query is selected, document the client setup, generated `api/generated.ts` workflow, query-key conventions, cache invalidation after mutations, loading/error states, and any polling intervals. State clearly that `generated.ts` is regenerated from OpenAPI and is not edited manually. This is guidance for maintainability, not a required library choice.
+If React Query is selected, document the typed client setup, query-key conventions, cache invalidation after mutations, loading/error states, and any polling intervals. Shared types come from `src/lib/types/api.ts`; there is no generated file to regenerate.
 
 ### Meeting Documentation Template
 
@@ -134,7 +141,7 @@ If React Query is selected, document the client setup, generated `api/generated.
 
 - [ ] Write an initial README before feature work: purpose, scope, architecture, local setup placeholder, and team
 - [ ] Add installation, environment variables, database migration/seed, and two-server startup instructions
-- [ ] Add database structure, DBML link, CREATE/migration regeneration instructions, and privacy boundary
+- [ ] Add database structure, generated data-model diagram link, and migration/seed regeneration instructions (including: `data-model.md` is emitted by the `generator erd` block in `prisma/schema.prisma`, so `npx prisma generate` refreshes it), plus the privacy boundary
 - [ ] Add API and Mermaid diagram links, graphify report link, screenshots, and demo script
 - [ ] Keep README and meeting notes current at each weekly review
 - [ ] Keep a requirements traceability section current: requirement, implementation/task, test or demo evidence, owner, status
@@ -175,6 +182,6 @@ If React Query is selected, document the client setup, generated `api/generated.
 ## Questions to Resolve
 
 - [ ] Which screenshot tool to use?
-- [ ] How detailed should API documentation be?
-- [ ] Should we use a documentation generator (e.g., Swagger)?
+- [x] How detailed should API documentation be? → route-handler table in README
+- [x] Should we use a documentation generator? → no (shared types; kickoff)
 - [ ] How to format meeting notes consistently?

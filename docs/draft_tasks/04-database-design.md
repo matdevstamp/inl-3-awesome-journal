@@ -2,9 +2,9 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-05
+- **Deadline:** 2026-09-07
 - **Status:** TODO
-- **Assignee:** TBD
+- **Assignee:** matdevstamp
 - **Tags:** database, backend, required, gate:2-scaffold
 - **Dependencies:** 01-project-setup-group-contract.md, 02-database-choice-discussion.md, 03-graphify-architecture-artifacts.md
 - **Estimated Effort:** 4h
@@ -18,8 +18,8 @@
 - Patient data must be searchable by name
 - Access logs generated to blockchain when data is viewed
 - Notes with visibility categories (private, healthcare, all)
-- A checked-in `database/schema.dbml` file that is kept in sync with the Prisma schema
-- A Mermaid entity-relationship diagram derived from the approved schema
+- `prisma/schema.prisma` is the **single source of truth** for the schema (kickoff decision — no DBML)
+- A Mermaid entity-relationship diagram **generated from the Prisma schema** (checked in, never hand-edited)
 
 ## User Stories
 
@@ -57,12 +57,23 @@
 
 ### Required Design Artifacts
 
-- `database/schema.dbml` is the human-readable database diagram source of truth for review.
-- `src/backend/prisma/schema.prisma` is the executable Prisma schema.
-- `docs/diagrams/data-model.mmd` visualizes the same entities and relationships in Mermaid.
-- The DBML, Mermaid diagram, Prisma schema, migrations, and README description must agree before implementation starts.
+- `prisma/schema.prisma` is the **only source of truth** — migrations and the Prisma client are generated from it.
+- `docs/diagrams/data-model.md` is a Markdown page embedding the Mermaid ER diagram **generated from the Prisma schema**, so it renders on GitHub. Checked in, regenerated on every schema change, never hand-edited.
+- The README describes the schema and links the diagram; migrations serve as the "CREATE script".
+- No hand-written DBML — one source of truth avoids drift (kickoff decision).
 
-The DBML should include PostgreSQL as the target database, enums for roles and note visibility, primary keys, foreign keys, indexes supporting patient-name search, and representative records only when they contain safe fictional data.
+Pin the ER-diagram generator inside `prisma/schema.prisma` so regeneration is automatic:
+
+```prisma
+generator erd {
+  provider = "prisma-erd-generator"                       // dev dependency
+  output   = "../docs/diagrams/data-model.md"             // .md = fenced mermaid block, renders on GitHub
+}
+```
+
+With that block present, **every `npx prisma generate` rewrites `docs/diagrams/data-model.md`** — the same command that builds the Prisma client, so the diagram cannot drift from the schema. (Prisma ≥5 uses `prisma-erd-generator` v3; `.md` output is text-only and needs no `@mermaid-js/mermaid-cli`/Chromium.)
+
+The Prisma schema targets PostgreSQL and includes enums for roles and note visibility, primary keys, foreign keys, indexes supporting patient-name search, and fictional seed data only.
 
 ### Database Schema
 
@@ -137,12 +148,13 @@ CREATE INDEX idx_access_logs_patient ON access_logs(patient_id);
 
 ## Tasks
 
-- [ ] Discuss and choose database system (see task 02-database-choice-discussion.md)
-- [ ] Create Prisma schema as single source of truth
+- [x] Discuss and choose database system → PostgreSQL (task 02)
+- [x] Prisma schema as single source of truth (no DBML — kickoff decision)
 - [ ] Generate database migrations from Prisma schema
 - [ ] Add appropriate indexes for search performance
 - [ ] Create seed data script with test users and patients
-- [ ] Document database structure in README
+- [ ] Add the `generator erd` block (above) to `prisma/schema.prisma` so `npx prisma generate` emits `docs/diagrams/data-model.md`
+- [ ] Document database structure in README (link diagram + migrations)
 - [ ] Test CRUD operations for all entities
 - [ ] Verify GDPR compliance (no medical records on blockchain)
 
@@ -151,6 +163,7 @@ CREATE INDEX idx_access_logs_patient ON access_logs(patient_id);
 - [ ] All tables created with proper relationships
 - [ ] Indexes added for search operations
 - [ ] Seed data script works correctly
+- [ ] `data-model.md` regenerates automatically via `npx prisma generate` and renders on GitHub
 - [ ] Database documentation is complete
 - [ ] All team members can connect to database
 - [ ] CRUD operations tested for all entities
@@ -159,12 +172,13 @@ CREATE INDEX idx_access_logs_patient ON access_logs(patient_id);
 
 - Medical records must NEVER be stored on blockchain (GDPR requirement)
 - Access logs are the only things that go to blockchain
-- Consider using an ORM (Sequelize, Prisma, TypeORM) for easier database operations
+- Prisma is the ORM and the schema source of truth
 - Make sure to handle Swedish personal numbers correctly
+- Keep the Prisma schema, migrations, and generated diagram in one commit so they never drift
 
 ## Questions to Resolve
 
-- [ ] PostgreSQL vs SQLite? (see task 02-database-choice-discussion.md)
-- [ ] Should we use Prisma as the single source of truth?
+- [x] PostgreSQL vs SQLite? → **PostgreSQL** (see task 02-database-choice-discussion.md)
+- [x] Prisma as single source of truth? → yes; DBML dropped
 - [ ] How to handle database seeding?
 - [ ] Do we need indexes for this project scale?

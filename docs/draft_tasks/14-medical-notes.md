@@ -2,9 +2,9 @@
 
 ## Metadata
 - **Priority:** P1 - High
-- **Deadline:** 2026-09-18
+- **Deadline:** 2026-09-16
 - **Status:** TODO
-- **Assignee:** TBD
+- **Assignee:** Kassim10 (backend visibility) + rcilomba (UI)
 - **Tags:** frontend, notes, visibility, required, gate:3-features, stream:C-notes
 - **Dependencies:** 04-database-design.md, 11-backend-api-auth.md, 12-frontend-ui.md
 - **Related:** 13-patient-view-search.md
@@ -20,7 +20,7 @@
 - Notes are saved and displayed in patient view
 - Access to notes is logged
 
-React Query is an optional way to coordinate note queries and mutations. If used, request and response types should come from the generated `src/api/generated.ts` file, and the relevant cache should be invalidated or updated after successful writes. The backend still decides which note content is visible.
+React Query is an optional way to coordinate note queries and mutations. If used, request and response types come from the shared types module (`src/lib/types/api.ts`) — no generated client. The route handlers (backend) still decide which note content is visible.
 
 ## User Stories
 
@@ -165,12 +165,12 @@ Show `isPending`, `isError`, and the server error message in the form. Do not in
 ## Tasks
 
 - [ ] Create note creation form with visibility selector
-- [ ] Implement note API endpoints (CRUD)
-- [ ] Add visibility-based filtering in backend
+- [ ] Implement note route handlers (CRUD) under src/app/api/notes
+- [ ] Add visibility-based filtering in the route handlers (backend)
 - [ ] Create note display component
 - [ ] Implement role-based note visibility
 - [ ] Add note count indicator for hidden notes
-- [ ] Log note access to blockchain
+- [ ] Log note access to the access-log chain
 - [ ] Add note editing functionality
 - [ ] Add note deletion with confirmation
 - [ ] Handle edge cases (empty notes, long text)
@@ -182,7 +182,7 @@ Show `isPending`, `isError`, and the server error message in the form. Do not in
 - [ Healthcare notes visible to healthcare staff
 - [ ] "All" notes visible to patients too
 - [ ] Patients see count of hidden notes
-- [ ] Note access is logged to blockchain
+- [ ] Note access is logged to the access-log chain
 - [ ] Notes can be edited by author
 - [ ] Notes can be deleted with confirmation
 - [ ] UI clearly shows note visibility level

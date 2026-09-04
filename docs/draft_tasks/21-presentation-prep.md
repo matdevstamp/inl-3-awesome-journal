@@ -2,7 +2,7 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-10-01
+- **Deadline:** 2026-09-29
 - **Status:** TODO
 - **Assignee:** Team
 - **Tags:** presentation, demo, required, gate:5-delivery

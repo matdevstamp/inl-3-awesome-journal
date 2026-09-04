@@ -2,9 +2,9 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-16
+- **Deadline:** 2026-09-10
 - **Status:** TODO
-- **Assignee:** TBD
+- **Assignee:** Kassim10
 - **Tags:** backend, api, auth, required, gate:3-features, stream:A-identity
 - **Dependencies:** 04-database-design.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
 - **Estimated Effort:** 8h
@@ -12,9 +12,9 @@
 ## Requirements
 
 - Login system with 5 user roles
-- Role-based access control for all endpoints
-- RESTful API for frontend communication
-- JWT or session-based authentication
+- Role-based access control on every route handler
+- RESTful JSON API exposed by Next.js route handlers under `src/app/api` (same app as the UI)
+- JWT in an httpOnly cookie (kickoff decision)
 - Secure password handling
 
 ## User Stories
@@ -104,18 +104,18 @@ POST   /api/access-log          - Log access to blockchain
 
 ## Tasks
 
-- [ ] Set up Node.js/Express backend
-- [ ] Implement authentication middleware (JWT)
-- [ ] Create login/logout endpoints
-- [ ] Implement role-based access control middleware
-- [ ] Create patient search endpoint
-- [ ] Create medical records CRUD endpoints
-- [ ] Create notes CRUD endpoints with visibility control
-- [ ] Implement access logging endpoint
-- [ ] Add input validation and error handling
-- [ ] Write API documentation
-- [ ] Set up CORS for frontend communication
-- [ ] Implement rate limiting for security
+- [ ] Confirm route-handler skeleton from task 06 (src/app/api + src/lib/auth)
+- [ ] Implement JWT sign/verify + httpOnly cookie helpers
+- [ ] Create login/logout/me route handlers
+- [ ] Implement the requireRole() guard used by protected route handlers
+- [ ] Create patient search route handler
+- [ ] Create medical records CRUD route handlers
+- [ ] Create notes CRUD route handlers with visibility control
+- [ ] Implement access-log route handler
+- [ ] Add input validation (Zod) and error handling
+- [ ] Write API documentation (shared types + endpoint list; no OpenAPI toolchain)
+- [ ] Add rate limiting for security
+- [ ] Add middleware.ts short-circuit for unauthenticated page requests
 
 ## Done Criteria
 
@@ -130,15 +130,15 @@ POST   /api/access-log          - Log access to blockchain
 
 ## Notes
 
-- Consider using Passport.js for authentication
-- Use bcrypt for password hashing
-- Implement refresh tokens for better UX
+- JWT lives in an httpOnly cookie; Next.js middleware guards pages and route handlers authorize every request server-side
+- Use bcrypt (or argon2) for password hashing
+- Implement refresh tokens only if needed for UX
 - Log all authentication attempts for security
-- Consider passwordless login option (course allows it)
+- Consider passwordless login option (course allows it) only after the MVP flow works
 
 ## Questions to Resolve
 
-- [ ] JWT vs session-based auth? (JWT recommended for simplicity)
+- [x] JWT vs session-based auth? → JWT in httpOnly cookie (kickoff)
 - [ ] Should we implement passwordless login?
 - [ ] How long should tokens be valid?
-- [ ] Should we use an API framework like Fastify instead of Express?
+- [x] Express vs another framework? → no Express; Next.js route handlers (kickoff)

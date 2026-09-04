@@ -77,15 +77,17 @@
 
 **Best for:** Projects that need fast development but production readiness
 
-## Recommendation
+## Decision (kickoff 2026-09-04)
 
-For this project, I recommend **Option C: SQLite for development, PostgreSQL for production**.
+**PostgreSQL for both development and production** (Option B). Recorded in `docs/meetings/2026-09-04-kickoff-agenda.md`.
 
 **Rationale:**
-1. **Development speed:** SQLite requires zero setup, team can start immediately
-2. **P2P requirement:** PostgreSQL is better for multi-server setup
-3. **Prisma support:** Prisma handles both databases seamlessly
-4. **CI/CD:** GitHub Actions can use PostgreSQL service for testing
+1. **Two fullstack servers share it** — both Next.js instances connect to the same PostgreSQL, matching the P2P demo
+2. **Prisma support:** Prisma handles PostgreSQL with migrations and seeding
+3. **CI/CD:** GitHub Actions can run a PostgreSQL service for tests
+4. **No split-DB drift:** one provider in dev and prod avoids SQLite/PostgreSQL migration differences
+
+> Superseded: the earlier draft recommendation (SQLite dev + PostgreSQL prod, Option C) was rejected at kickoff in favor of PostgreSQL everywhere.
 
 ### Prisma Configuration
 
@@ -116,7 +118,7 @@ DATABASE_URL="postgresql://user:password@localhost:5432/healthaccess"
 - [ ] Schedule team meeting to discuss database choice
 - [ ] Present SQLite vs PostgreSQL comparison
 - [ ] Discuss P2P requirements and database implications
-- [ ] Make final decision as a team
+- [x] Make final decision as a team (PostgreSQL dev + prod, kickoff 2026-09-04)
 - [ ] Document decision in README
 - [ ] Update task files with chosen database
 
@@ -138,7 +140,7 @@ DATABASE_URL="postgresql://user:password@localhost:5432/healthaccess"
 
 ## Questions to Resolve
 
-- [ ] Which database do we choose? (SQLite, PostgreSQL, or both?)
+- [x] Which database do we choose? → **PostgreSQL** (dev and prod)
 - [ ] How to handle the P2P requirement with the chosen database?
 - [ ] Should we use Docker for PostgreSQL in development?
 - [ ] How to handle database seeding?
