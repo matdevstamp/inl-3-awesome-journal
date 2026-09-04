@@ -17,3 +17,16 @@ graphify-out/*
 !graphify-out/GRAPH_REPORT.md
 .*buff*/**
 **/__pycache__/**
+
+# ---- Next.js app (scaffold) ----
+/.next/
+/out/
+/build
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.vercel
+*.pem
+.DS_Store
