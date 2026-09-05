@@ -32,7 +32,7 @@ flowchart LR
     API1 -->|svarsdata till UI| UI
 
     API1 -->|varje journal-åtkomst| AUDIT1
-    AUDIT1 -->|append access-log (hash + signatur)| CHAIN
+    AUDIT1 -->|"append access-log (hash + signatur)"| CHAIN
     CHAIN -->|distribuerad kopia| S2
 
     AUDIT1 -. Socket.IO broadcast .-> API2

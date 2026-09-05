@@ -2,8 +2,8 @@
 
 ## Metadata
 - **Priority:** P1 - High
-- **Deadline:** 2026-09-08 (runner and fixtures), 2026-09-29 (critical flows)
-- **Status:** TODO
+- **Deadline:** 2026-09-07 (runner and fixtures), 2026-09-29 (critical flows)
+- **Status:** In review
 - **Assignee:** matdevstamp
 - **Tags:** testing, e2e, playwright, required, gate:2-scaffold
 - **Dependencies:** 05-nextjs-tailwind-shadcn.md, 06-backend-project-setup.md, 07-typescript-strict-config.md, 08-eslint-prettier-config.md
@@ -391,10 +391,10 @@ e2e-tests:
 
 ## Tasks
 
-- [ ] Install Playwright and configure
+- [x] Install Playwright and configure
 - [ ] Write the login-entry smoke test before implementing the login screen
-- [ ] Make the smoke test green as the first executable scaffold check
-- [ ] Create test fixtures for authentication
+- [x] Make the smoke test green as the first executable scaffold check
+- [x] Create test fixtures for authentication
 - [ ] Write login/logout tests
 - [ ] Write patient search tests
 - [ ] Write patient view tests (role-based)

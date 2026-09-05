@@ -7,6 +7,7 @@
 - **Assignee:** Kassim10 (backend visibility) + rcilomba (UI)
 - **Tags:** frontend, notes, visibility, required, gate:3-features, stream:C-notes
 - **Dependencies:** 04-database-design.md, 11-backend-api-auth.md, 12-frontend-ui.md
+- **GitHub Issue:** #16 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/16)
 - **Related:** 13-patient-view-search.md
 - **Estimated Effort:** 5h
 

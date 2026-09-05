@@ -7,6 +7,7 @@
 - **Assignee:** rcilomba
 - **Tags:** frontend, patient, search, required, gate:3-features, stream:B-patient
 - **Dependencies:** 04-database-design.md, 11-backend-api-auth.md, 12-frontend-ui.md
+- **GitHub Issue:** #15 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/15)
 - **Related:** 14-medical-notes.md
 - **Estimated Effort:** 6h
 

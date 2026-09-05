@@ -7,6 +7,7 @@
 - **Assignee:** rcilomba
 - **Tags:** frontend, ui, required, gate:3-features, stream:A-identity
 - **Dependencies:** 05-nextjs-tailwind-shadcn.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
+- **GitHub Issue:** #14 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/14)
 - **Estimated Effort:** 12h
 
 ## Requirements

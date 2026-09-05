@@ -4,9 +4,10 @@
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-16
 - **Status:** TODO
-- **Assignee:** TBD
+- **Assignee:** umoraghad0-del (pair-programmering)
 - **Tags:** networking, p2p, distributed, required, gate:3-features, stream:D-audit
 - **Dependencies:** 15-blockchain-access-logging.md, 06-backend-project-setup.md
+- **GitHub Issue:** #18 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/18)
 - **Estimated Effort:** 6h
 
 ## Requirements
