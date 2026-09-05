@@ -98,7 +98,7 @@ Vi för en **loggbok per person** för dagliga standups och mötesdeltagande (se
 
 > Fyll i på kickoffet — hur reagerar du vid stress? Vilken roll tar du oftast (ledare, planerare, expert, slutförare, granskare, …)?
 
-- Kassim: ____
+- Kassim: Slutförare
 - Ramadan: ____
 - Najma: ____
 - Matias: Slutförare — fokuserar och kör klart under stress
@@ -121,6 +121,6 @@ Vi har läst och godkänner gruppkontraktet:
 | Namn | GitHub | Datum | Signatur |
 |---|---|---|---|
 | Matias Marti | `matdevstamp` | 2026-09-04 | ✅ (v0.3) |
-| Kassim Segerberg | `Kassim10` | senast 2026-09-05 | |
+| Kassim Segerberg | `Kassim10` | 2026-09-05 | ✅ (v0.3) |
 | Ramadan | `rcilomba` | senast 2026-09-05 | |
 | Najma Hasan | `umoraghad0-del` | senast 2026-09-05 | |
