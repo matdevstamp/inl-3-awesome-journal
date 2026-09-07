@@ -2,8 +2,8 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-08
-- **Status:** TODO
+- **Deadline:** 2026-09-07
+- **Status:** In review
 - **Assignee:** matdevstamp
 - **Tags:** typescript, type-safety, required, gate:2-scaffold
 - **Dependencies:** 05-nextjs-tailwind-shadcn.md, 06-backend-project-setup.md
@@ -225,16 +225,16 @@ export function LoginForm({ onSubmit, isLoading }: LoginFormProps) {
 
 ## Tasks
 
-- [ ] Configure tsconfig.json with strict settings
-- [ ] Configure tsconfig.json with strict settings (Next.js defaults + strict)
-- [ ] Setup path aliases (@/* -> ./src/*)
-- [ ] Create shared API types module (src/lib/types/api.ts)
-- [ ] Create utility types file
-- [ ] Create type guard utilities
-- [ ] Update the typed fetch client for safety
-- [ ] Fix any TypeScript errors in existing code
-- [ ] Add no-explicit-any rule to ESLint
-- [ ] Document TypeScript conventions
+- [x] Configure tsconfig.json with strict settings
+- [x] Configure tsconfig.json with strict settings (Next.js defaults + strict)
+- [x] Setup path aliases (@/* -> ./src/*)
+- [x] Create shared API types module (src/lib/types/api.ts)
+- [x] Create utility types file
+- [x] Create type guard utilities
+- [x] Update the typed fetch client for safety
+- [x] Fix any TypeScript errors in existing code
+- [x] Add no-explicit-any rule to ESLint
+- [x] Document TypeScript conventions
 - [ ] Train team on strict TypeScript
 
 ## Done Criteria

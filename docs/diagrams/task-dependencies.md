@@ -32,16 +32,16 @@ flowchart TD
     subgraph decisions["Gate 1-Decisions"]
     T01["01 Project Setup & Group Contract (23% · 6/26 · todo)"]
     T02["02 Database Choice Discussion (27% · 4/15 · todo)"]
-    T03["03 Graphify Architecture Artifacts (0% · 0/7 · todo)"]
+    T03["03 Graphify Architecture Artifacts (100% · 7/7 · todo)"]
     end
     subgraph scaffold["Gate 2-Scaffold"]
-    T04["04 Database Design & Setup (20% · 4/20 · todo)"]
-    T05["05 Next.js + Tailwind CSS + shadcn/ui Setup (0% · 0/21 · todo)"]
-    T06["06 Backend Project Setup (Next.js Route Handlers & Services) (9% · 2/23 · todo)"]
-    T07["07 TypeScript Strict Configuration (0% · 0/22 · todo)"]
-    T08["08 ESLint + Prettier Configuration (0% · 0/22 · todo)"]
-    T09["09 Playwright E2E Testing (0% · 0/27 · todo)"]
-    T10["10 GitHub Actions CI/CD Workflow (0% · 0/33 · todo)"]
+    T04["04 Database Design & Setup (50% · 10/20 · doing)"]
+    T05["05 Next.js + Tailwind CSS + shadcn/ui Setup (0% · 0/21 · doing)"]
+    T06["06 Backend Project Setup (Next.js Route Handlers & Services) (48% · 11/23 · doing)"]
+    T07["07 TypeScript Strict Configuration (45% · 10/22 · doing)"]
+    T08["08 ESLint + Prettier Configuration (32% · 7/22 · doing)"]
+    T09["09 Playwright E2E Testing (11% · 3/27 · doing)"]
+    T10["10 GitHub Actions CI/CD Workflow (21% · 7/33 · doing)"]
     end
     subgraph features["Gate 3-Features"]
     T11["11 Backend API & Authentication (8% · 2/24 · todo)"]
@@ -127,13 +127,13 @@ flowchart TD
     class T01 todo;
     class T02 todo;
     class T03 todo;
-    class T04 todo;
-    class T05 todo;
-    class T06 todo;
-    class T07 todo;
-    class T08 todo;
-    class T09 todo;
-    class T10 todo;
+    class T04 doing;
+    class T05 doing;
+    class T06 doing;
+    class T07 doing;
+    class T08 doing;
+    class T09 doing;
+    class T10 doing;
     class T11 todo;
     class T12 todo;
     class T13 todo;

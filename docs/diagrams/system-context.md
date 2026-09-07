@@ -35,5 +35,5 @@ flowchart TD
     API1 -->|append access log| CHAIN
     API2 -->|append access log| CHAIN
 
-    API1 <-->|P2P: access-loggar + anteckningar (Socket.IO)| API2
+    API1 <-->|"P2P: access-loggar + anteckningar (Socket.IO)"| API2
 ```

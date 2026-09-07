@@ -2,8 +2,8 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-08
-- **Status:** TODO
+- **Deadline:** 2026-09-07
+- **Status:** In review
 - **Assignee:** matdevstamp
 - **Tags:** ci/cd, github-actions, automation, required, gate:2-scaffold
 - **Dependencies:** 05-nextjs-tailwind-shadcn.md, 08-eslint-prettier-config.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
@@ -212,14 +212,14 @@ Closes #[issue number]
 
 ## Tasks
 
-- [ ] Create .github/workflows directory
-- [ ] Create PR validation workflow (lint, typecheck, test, build) for the single Next.js app
-- [ ] Add the Playwright E2E job (task 09) with the PostgreSQL service
-- [ ] Apply the GitHub ruleset on `main` (PR + 1 review; status checks)
-- [ ] Create PR template
-- [ ] Add status badges to README
+- [x] Create .github/workflows directory
+- [x] Create PR validation workflow (lint, typecheck, test, build) for the single Next.js app
+- [x] Add the Playwright E2E job (task 09) with the PostgreSQL service
+- [x] Apply the GitHub ruleset on `main` (PR + 1 review; status checks)
+- [x] Create PR template
+- [x] Add status badges to README
 - [ ] Test workflows on a real PR
-- [ ] Document workflow in README
+- [x] Document workflow in README
 
 ## Done Criteria
 

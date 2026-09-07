@@ -4,7 +4,7 @@
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-21
 - **Status:** TODO
-- **Assignee:** TBD
+- **Assignee:** umoraghad0-del (pair-programmering)
 - **Tags:** realtime, websocket, socketio, required, gate:4-integration
 - **Dependencies:** 17-user-roles-access-control.md, 14-medical-notes.md, 16-p2p-network.md, 12-frontend-ui.md
 - **Related:** 15-blockchain-access-logging.md

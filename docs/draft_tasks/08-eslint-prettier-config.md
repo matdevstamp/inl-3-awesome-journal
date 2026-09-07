@@ -2,8 +2,8 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-08
-- **Status:** TODO
+- **Deadline:** 2026-09-07
+- **Status:** In review
 - **Assignee:** matdevstamp
 - **Tags:** tooling, linting, code-quality, required, gate:2-scaffold
 - **Dependencies:** 05-nextjs-tailwind-shadcn.md, 07-typescript-strict-config.md
@@ -181,17 +181,17 @@ echo "npx lint-staged" > .husky/pre-commit
 
 ## Tasks
 
-- [ ] Install ESLint and plugins
-- [ ] Create eslint.config.js with flat config
-- [ ] Install Prettier and plugins
-- [ ] Create .prettierrc configuration
-- [ ] Create .prettierignore
+- [x] Install ESLint and plugins
+- [x] Create eslint.config.js with flat config
+- [x] Install Prettier and plugins
+- [x] Create .prettierrc configuration
+- [x] Create .prettierignore
 - [ ] Setup VS Code settings and extensions
 - [ ] Install Husky for git hooks
 - [ ] Configure lint-staged
 - [ ] Create pre-commit hook
-- [ ] Test linting on existing code
-- [ ] Add npm scripts for linting
+- [x] Test linting on existing code
+- [x] Add npm scripts for linting
 
 ## Done Criteria
 

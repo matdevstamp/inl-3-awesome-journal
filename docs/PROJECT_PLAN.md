@@ -33,14 +33,14 @@ The project must also leave behind understandable evidence: a working README, me
 
 ### Roles
 
-The kickoff (2026-09-04) deviated from the example Person 1–4 split in `docs/Raw_Requirements.md` — the contract now records real roles: **backend (Kassim)**, **UI (Ramadan)**, **coordinator/lead + Gate 2 setup (Matias)**, and **floating pair programmer (Najma)**, who declares her focus later. Stream D (chain core + P2P) is still unassigned (tasks 15/16/18). The A–D feature streams remain the mapping target; backup/review pairs across backend/UI.
+The kickoff (2026-09-04) deviated from the example Person 1–4 split in `docs/Raw_Requirements.md` — the contract now records real roles: **backend (Kassim)**, **UI (Ramadan)**, **coordinator/lead + Gate 2 setup (Matias)**, and **Stream D owner (Najma)**. Najma declared her focus on 2026-09-05: main responsibility for blockchain/access-logging (task 15), pair-programming on P2P (16) and Socket.IO (18). Ramadan keeps task 12 (Frontend UI). The A–D feature streams remain the mapping target; backup/review pairs across backend/UI.
 
 | Team member | Area | Streams |
 |---|---|---|
 | Matias (`matdevstamp`) | Coordinator/Lead; Gate 2 setup (tasks 04–10); docs | — |
-| Kassim (`Kassim10`) | Backend — route handlers, DB access, auth, auditLogger, blockchain candidate | A/B/C (backend) |
-| Ramadan (`rcilomba`) | UI — pages, components, shadcn, search/view | A/B/C (frontend) |
-| Najma (`umoraghad0-del`) | Floating pair programmer; declares own focus later | open |
+| Kassim (`Kassim10`) | Backend — route handlers, DB access, auth, auditLogger | A/B/C (backend) |
+| Ramadan (`rcilomba`) | UI — task 12 (login, dashboard-shell, access-denied), pages, components, shadcn, search/view | A/B/C (frontend), D-vy |
+| Najma (`umoraghad0-del`) | Blockchain/access-logging (chain core, task 15); pair P2P (16) & Socket.IO (18) | D |
 
 Gate 1 tasks (01–03) are Team-owned; the lead coordinates. Gate 2 scaffold is owned by Matias, pairing with Kassim/Ramadan where needed. No feature branch should create a competing root package, app shell, configuration, or directory layout.
 

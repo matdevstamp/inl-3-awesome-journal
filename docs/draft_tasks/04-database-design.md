@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-07
-- **Status:** TODO
+- **Status:** In review
 - **Assignee:** matdevstamp
 - **Tags:** database, backend, required, gate:2-scaffold
 - **Dependencies:** 01-project-setup-group-contract.md, 02-database-choice-discussion.md, 03-graphify-architecture-artifacts.md
@@ -150,13 +150,13 @@ CREATE INDEX idx_access_logs_patient ON access_logs(patient_id);
 
 - [x] Discuss and choose database system → PostgreSQL (task 02)
 - [x] Prisma schema as single source of truth (no DBML — kickoff decision)
-- [ ] Generate database migrations from Prisma schema
-- [ ] Add appropriate indexes for search performance
-- [ ] Create seed data script with test users and patients
-- [ ] Add the `generator erd` block (above) to `prisma/schema.prisma` so `npx prisma generate` emits `docs/diagrams/data-model.md`
-- [ ] Document database structure in README (link diagram + migrations)
+- [x] Generate database migrations from Prisma schema
+- [x] Add appropriate indexes for search performance
+- [x] Create seed data script with test users and patients
+- [x] Add the `generator erd` block (above) to `prisma/schema.prisma` so `npx prisma generate` emits `docs/diagrams/data-model.md`
+- [x] Document database structure in README (link diagram + migrations)
 - [ ] Test CRUD operations for all entities
-- [ ] Verify GDPR compliance (no medical records on blockchain)
+- [x] Verify GDPR compliance (no medical records on blockchain)
 
 ## Done Criteria
 

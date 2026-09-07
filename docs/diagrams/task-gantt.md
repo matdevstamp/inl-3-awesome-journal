@@ -31,15 +31,15 @@ gantt
     section Gate 1-Decisions
     01 Project Setup & Group Contract (23% · 6/26 · todo) : active, 2026-09-04, 1d
     02 Database Choice Discussion (27% · 4/15 · todo) : active, 2026-09-04, 1d
-    03 Graphify Architecture Artifacts (0% · 0/7 · todo) : active, 2026-09-07, 1d
+    03 Graphify Architecture Artifacts (100% · 7/7 · todo) : active, 2026-09-07, 1d
     section Gate 2-Scaffold
-    04 Database Design & Setup (20% · 4/20 · todo) : active, 2026-09-07, 1d
-    05 Next.js + Tailwind CSS + shadcn/ui Setup (0% · 0/21 · todo) : active, 2026-09-07, 1d
-    06 Backend Project Setup (Next.js Route Handlers & Services) (9% · 2/23 · todo) : active, 2026-09-08, 1d
-    07 TypeScript Strict Configuration (0% · 0/22 · todo) : active, 2026-09-08, 1d
-    08 ESLint + Prettier Configuration (0% · 0/22 · todo) : active, 2026-09-08, 1d
-    09 Playwright E2E Testing (0% · 0/27 · todo) : active, 2026-09-07, 2d
-    10 GitHub Actions CI/CD Workflow (0% · 0/33 · todo) : active, 2026-09-08, 1d
+    04 Database Design & Setup (50% · 10/20 · doing) : active, 2026-09-07, 1d
+    05 Next.js + Tailwind CSS + shadcn/ui Setup (0% · 0/21 · doing) : active, 2026-09-07, 1d
+    06 Backend Project Setup (Next.js Route Handlers & Services) (48% · 11/23 · doing) : active, 2026-09-07, 1d
+    07 TypeScript Strict Configuration (45% · 10/22 · doing) : active, 2026-09-07, 1d
+    08 ESLint + Prettier Configuration (32% · 7/22 · doing) : active, 2026-09-07, 1d
+    09 Playwright E2E Testing (11% · 3/27 · doing) : active, 2026-09-06, 2d
+    10 GitHub Actions CI/CD Workflow (21% · 7/33 · doing) : active, 2026-09-07, 1d
     section Gate 3-Features
     11 Backend API & Authentication (8% · 2/24 · todo) : active, 2026-09-09, 2d
     12 Frontend UI Development (13% · 4/30 · todo) : active, 2026-09-09, 3d

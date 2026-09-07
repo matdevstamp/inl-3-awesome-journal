@@ -50,12 +50,12 @@ The diagrams must distinguish SQL medical data from blockchain access-log data a
 
 ## Done Criteria
 
-- [ ] `graph.html` and `GRAPH_REPORT.md` are present in `graphify-out/` and are the only graphify outputs tracked by Git
-- [ ] `git check-ignore` confirms graphify cache/intermediate files are ignored
-- [ ] The three Mermaid diagrams render without syntax errors and match the implemented boundaries
-- [ ] `docs/diagrams/data-model.md` is generated from the approved Prisma schema and includes relationships/indexes
-- [ ] README links to every artifact and explains how to regenerate graphify outputs
-- [ ] A short architecture review records at least one finding or explicitly says no findings were found
+- [x] `graph.html` and `GRAPH_REPORT.md` are present in `graphify-out/` and are the only graphify outputs tracked by Git
+- [x] `git check-ignore` confirms graphify cache/intermediate files are ignored
+- [x] The three Mermaid diagrams render without syntax errors and match the implemented boundaries
+- [x] `docs/diagrams/data-model.md` is generated from the approved Prisma schema and includes relationships/indexes
+- [x] README links to every artifact and explains how to regenerate graphify outputs
+- [x] A short architecture review records at least one finding or explicitly says no findings were found
 
 ## Notes
 
@@ -65,4 +65,4 @@ Each diagram file follows the `docs/diagrams/task-dependencies.md` pattern: a sh
 
 ## Questions to Resolve
 
-- [ ] Which graphify version and command will be documented in the README?
+- [x] Which graphify version and command will be documented in the README?

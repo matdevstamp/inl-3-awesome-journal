@@ -30,12 +30,13 @@ TEAM_MEMBERS = {
 # Role-to-username mapping for legacy "Person N" prose in docs.
 # The kickoff (2026-09-04) deviated from the example Person 1-4 split in
 # ``docs/Raw_Requirements.md``: the team now works backend (Kassim), UI
-# (Ramadan), coordinator/lead + Gate 2 setup (Matias), and a floating pair
-# programmer (Najma) who declares her focus later. Stream D (chain core +
-# P2P, tasks 15/16/18) is still unassigned.
+# (Ramadan), coordinator/lead + Gate 2 setup (Matias), and Stream D owner
+# (Najma), who declared her focus on 2026-09-05: blockchain/access-logging
+# (task 15) as main responsibility, pair-programming P2P (16) and
+# Socket.IO (18).
 ROLE_TO_USER = {
-    "Person 1": None,  # Crypto & liggare → open (chain core; Kassim may take it)
-    "Person 2": None,  # P2P-nätverk → open
+    "Person 1": "umoraghad0-del",  # Crypto & liggare (chain core) → Najma
+    "Person 2": "umoraghad0-del",  # P2P-nätverk → Najma (pair)
     "Person 3": None,  # legacy Express API & middleware label (no longer used)
     "Person 4": None,  # legacy frontend label (no longer used)
 }
@@ -55,10 +56,10 @@ KICKOFF_ASSIGNMENTS = {
     "12": "rcilomba",
     "13": "rcilomba",
     "14": "Kassim10",
-    "15": "TBD",
-    "16": "TBD",
+    "15": "umoraghad0-del",
+    "16": "umoraghad0-del",
     "17": "Kassim10",
-    "18": "TBD",
+    "18": "umoraghad0-del",
     "19": "Team",
     "20": "matdevstamp",
     "21": "Team",
@@ -102,7 +103,7 @@ _STATUS_STYLES = {
     "todo": "fill:#ffffff,stroke:#b0bec5,color:#546e7a,stroke-dasharray:5 4",
 }
 _DONE_STATUS = {"DONE", "COMPLETE", "COMPLETED"}
-_DOING_STATUS = {"DOING", "IN PROGRESS", "IN-PROGRESS", "INPROGRESS", "WIP", "ACTIVE", "STARTED"}
+_DOING_STATUS = {"DOING", "IN PROGRESS", "IN-PROGRESS", "INPROGRESS", "WIP", "ACTIVE", "STARTED", "IN REVIEW", "IN-REVIEW", "INREVIEW", "REVIEW", "REVIEWING"}
 _BOX_RE = re.compile(r"(?m)^\s*-\s*\[(.)\]")
 
 
