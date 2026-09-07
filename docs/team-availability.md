@@ -11,13 +11,13 @@ Fill in your row during the kickoff meeting. This helps us find meeting slots an
 
 For each day, mark one of:
 
-| Mark | Meaning |
-|------|---------|
-| `AM` | Available morning (09–12) |
-| `PM` | Available afternoon (12–18) |
-| `EVE` | Available evening (18–22) |
-| `ALL` | Free most of the day |
-| `—` | Not available |
+| Mark   | Meaning                                             |
+| ------ | --------------------------------------------------- |
+| `AM`   | Available morning (09–12)                           |
+| `PM`   | Available afternoon (12–18)                         |
+| `EVE`  | Available evening (18–22)                           |
+| `ALL`  | Free most of the day                                |
+| `—`    | Not available                                       |
 | `WORK` | Planning to code that day (still put meeting times) |
 
 Example: `ALL` = free all day, `AM+PM` = morning and afternoon, `EVE` = only evenings.
@@ -26,57 +26,57 @@ Example: `ALL` = free all day, `AM+PM` = morning and afternoon, `EVE` = only eve
 
 ## Week 1 — Sep 2–8 (Gate 1 + Gate 2: Decisions, Contract & Scaffold)
 
-| Name | GitHub | Wed 2 | Thu 3 | Fri 4 | Sat 5 | Sun 6 | Mon 7 | Tue 8 |
-|------|--------|-------|-------|-------|-------|-------|-------|-------|
-| Kassim | Kassim10 | | | **KICKOFF** | | | | |
-| Ramadan | rcilomba | | | **KICKOFF** | | | | |
-| Najma | umoraghad0-del | | | **KICKOFF** | | | | |
-| Matias | matdevstamp | | | **KICKOFF**, 13–15 | | | 17–17:30 + 19–21 | |
+| Name    | GitHub         | Wed 2 | Thu 3 | Fri 4              | Sat 5 | Sun 6 | Mon 7            | Tue 8 |
+| ------- | -------------- | ----- | ----- | ------------------ | ----- | ----- | ---------------- | ----- |
+| Kassim  | Kassim10       |       |       | **KICKOFF**        |       |       |                  |       |
+| Ramadan | rcilomba       | 09-15 |       | **KICKOFF**        |       |       | 09-15            |       |
+| Najma   | umoraghad0-del |       |       | **KICKOFF**        |       |       |                  |       |
+| Matias  | matdevstamp    |       |       | **KICKOFF**, 13–15 |       |       | 17–17:30 + 19–21 |       |
 
 **Gate 1 exit:** By end of Mon Sep 7 — contract signed, DB chosen, graphify done.
 **Gate 2 exit:** By end of Tue Sep 8 — scaffold working, CI green, first test red/green.
 
 ## Week 2 — Sep 9–15 (Gate 3: Features Start)
 
-| Name | GitHub | Wed 9 | Thu 10 | Fri 11 | Sat 12 | Sun 13 | Mon 14 | Tue 15 |
-|------|--------|-------|--------|--------|--------|--------|--------|--------|
-| Kassim | Kassim10 | | | | | | | |
-| Ramadan | rcilomba | | | | | | | |
-| Najma | umoraghad0-del | | | | | | | |
-| Matias | matdevstamp | 17–17:30 + 19–21 | 17–17:30 + 19–21 | 17–17:30 + 19–21 | | | | |
+| Name    | GitHub         | Wed 9            | Thu 10           | Fri 11           | Sat 12 | Sun 13 | Mon 14 | Tue 15 |
+| ------- | -------------- | ---------------- | ---------------- | ---------------- | ------ | ------ | ------ | ------ |
+| Kassim  | Kassim10       |                  |                  |                  |        |        |        |        |
+| Ramadan | rcilomba       | 09–15            |                  |                  |        |        | 09–15  |        |
+| Najma   | umoraghad0-del |                  |                  |                  |        |        |        |        |
+| Matias  | matdevstamp    | 17–17:30 + 19–21 | 17–17:30 + 19–21 | 17–17:30 + 19–21 |        |        |        |        |
 
 **Stream owners start their feature branches.**
 
 ## Week 3 — Sep 16–22 (Gate 3 cont. + Gate 4: Integration)
 
-| Name | GitHub | Wed 16 | Thu 17 | Fri 18 | Sat 19 | Sun 20 | Mon 21 | Tue 22 |
-|------|--------|--------|--------|--------|--------|--------|--------|--------|
-| Kassim | Kassim10 | | | | | | | |
-| Ramadan | rcilomba | | | | | | | |
-| Najma | umoraghad0-del | | | | | | | |
-| Matias | matdevstamp | 17–17:30 + 19–21 | 17–17:30 + 19–21 | 17–17:30 + 19–21 | | | | |
+| Name    | GitHub         | Wed 16           | Thu 17           | Fri 18           | Sat 19 | Sun 20 | Mon 21 | Tue 22        |
+| ------- | -------------- | ---------------- | ---------------- | ---------------- | ------ | ------ | ------ | ------------- |
+| Kassim  | Kassim10       |                  |                  |                  |        |        |        |               |
+| Ramadan | rcilomba       | 09–15            |                  |                  |        |        | 09–15  | 09–10 + 12–22 |
+| Najma   | umoraghad0-del |                  |                  |                  |        |        |        |               |
+| Matias  | matdevstamp    | 17–17:30 + 19–21 | 17–17:30 + 19–21 | 17–17:30 + 19–21 |        |        |        |               |
 
 **Gate 4 exit:** By end of Mon Sep 21 — vertical flow works on two servers.
 
 ## Week 4 — Sep 23–29 (Gate 5: Delivery & Polish)
 
-| Name | GitHub | Wed 23 | Thu 24 | Fri 25 | Sat 26 | Sun 27 | Mon 28 | Tue 29 |
-|------|--------|--------|--------|--------|--------|--------|--------|--------|
-| Kassim | Kassim10 | | | | | | | |
-| Ramadan | rcilomba | | | | | | | |
-| Najma | umoraghad0-del | | | | | | | |
-| Matias | matdevstamp | 17–17:30 + 19–21 | 17–17:30 + 19–21 | 17–17:30 + 19–21 | | | | |
+| Name    | GitHub         | Wed 23           | Thu 24           | Fri 25           | Sat 26 | Sun 27 | Mon 28 | Tue 29        |
+| ------- | -------------- | ---------------- | ---------------- | ---------------- | ------ | ------ | ------ | ------------- |
+| Kassim  | Kassim10       |                  |                  |                  |        |        |        |               |
+| Ramadan | rcilomba       | 09–15            | 09–10 + 12–22?   |                  |        |        | 09–15  | 09–10 + 12–22 |
+| Najma   | umoraghad0-del |                  |                  |                  |        |        |        |               |
+| Matias  | matdevstamp    | 17–17:30 + 19–21 | 17–17:30 + 19–21 | 17–17:30 + 19–21 |        |        |        |               |
 
 **Focus:** Tests, docs, screenshots, demo rehearsal.
 
 ## Final Days — Sep 30 – Oct 2 (Submission)
 
-| Name | GitHub | Wed 30 | Thu 1 | Fri 2 ⚠️ |
-|------|--------|--------|-------|----------|
-| Kassim | Kassim10 | | | **DEADLINE 11:00** |
-| Ramadan | rcilomba | | | **DEADLINE 11:00** |
-| Najma | umoraghad0-del | | | **DEADLINE 11:00** |
-| Matias | matdevstamp | 17–17:30 + 19–21 | 17–17:30 + 19–21 | **DEADLINE 11:00** |
+| Name    | GitHub         | Wed 30           | Thu 1            | Fri 2 ⚠️           |
+| ------- | -------------- | ---------------- | ---------------- | ------------------ |
+| Kassim  | Kassim10       |                  |                  | **DEADLINE 11:00** |
+| Ramadan | rcilomba       | 09–15            | 09–10 + 12–22?   | **DEADLINE 11:00** |
+| Najma   | umoraghad0-del |                  |                  | **DEADLINE 11:00** |
+| Matias  | matdevstamp    | 17–17:30 + 19–21 | 17–17:30 + 19–21 | **DEADLINE 11:00** |
 
 ---
 
@@ -98,10 +98,10 @@ Oct 2 11:00  ⚠️ DEADLINE
 
 After everyone fills in availability, pick **2 fixed slots per week** that work for all:
 
-| Meeting | Day | Time | Purpose |
-|---------|-----|------|---------|
-| Standup 1 | TBD | TBD | Quick sync, blockers |
-| Standup 2 | TBD | TBD | Progress review |
+| Meeting   | Day | Time | Purpose              |
+| --------- | --- | ---- | -------------------- |
+| Standup 1 | TBD | TBD  | Quick sync, blockers |
+| Standup 2 | TBD | TBD  | Progress review      |
 
 **Communication channel:** Microsoft Teams ✓
 
