@@ -72,7 +72,9 @@ export function DashboardShell() {
             <CardHeader>
               <SearchIcon className="size-5 text-muted-foreground" aria-hidden="true" />
               <CardTitle>Patient search</CardTitle>
-              <CardDescription>Search by patient name once the patient API is ready.</CardDescription>
+              <CardDescription>
+                Search by patient name once the patient API is ready.
+              </CardDescription>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               Planned route: /patients
@@ -95,7 +97,9 @@ export function DashboardShell() {
           <CardHeader>
             <ActivityIcon className="size-5 text-muted-foreground" aria-hidden="true" />
             <CardTitle>Access logs</CardTitle>
-            <CardDescription>Every journal access should appear in the blockchain-backed log.</CardDescription>
+            <CardDescription>
+              Every journal access should appear in the blockchain-backed log.
+            </CardDescription>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">Waiting for task 15.</CardContent>
         </Card>
@@ -104,9 +108,13 @@ export function DashboardShell() {
           <CardHeader>
             <ShieldCheckIcon className="size-5 text-muted-foreground" aria-hidden="true" />
             <CardTitle>Verification</CardTitle>
-            <CardDescription>Verification badge placeholder for the blockchain audit state.</CardDescription>
+            <CardDescription>
+              Verification badge placeholder for the blockchain audit state.
+            </CardDescription>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">No chain data loaded yet.</CardContent>
+          <CardContent className="text-sm text-muted-foreground">
+            No chain data loaded yet.
+          </CardContent>
         </Card>
       </section>
     </main>

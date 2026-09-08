@@ -9,7 +9,8 @@ type RoleBadgeProps = {
 };
 
 export function RoleBadge({ role }: RoleBadgeProps) {
-  const variant = role === "unauthorized" ? "destructive" : role === "patient" ? "secondary" : "default";
+  const variant =
+    role === "unauthorized" ? "destructive" : role === "patient" ? "secondary" : "default";
 
   return <Badge variant={variant}>{roleLabel(role)}</Badge>;
 }
