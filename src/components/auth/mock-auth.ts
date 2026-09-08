@@ -73,11 +73,17 @@ export function signInWithMockUser(username: string, password: string): SessionU
     role: user.role,
     organizationId: user.organizationId,
   };
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionUser));
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionUser));
+  }
   return sessionUser;
 }
 
 export function getMockSession(): SessionUser | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
   const value = window.localStorage.getItem(STORAGE_KEY);
   if (!value) {
     return null;
@@ -92,5 +98,9 @@ export function getMockSession(): SessionUser | null {
 }
 
 export function clearMockSession() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
   window.localStorage.removeItem(STORAGE_KEY);
 }
