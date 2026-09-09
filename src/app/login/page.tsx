@@ -1,8 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
+import { ArrowLeftIcon } from "lucide-react";
 
 import { LoginForm } from "@/components/auth/login-form";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
   return (
@@ -15,7 +17,13 @@ export default function LoginPage() {
       </header>
       <section className="flex flex-1 items-center justify-center p-4 md:p-8">
         <div className="grid w-full max-w-5xl overflow-hidden rounded-xl bg-background shadow-xl ring-1 ring-border md:grid-cols-[minmax(0,0.95fr)_minmax(320px,1.05fr)]">
-          <div className="flex items-center justify-center p-6 md:p-10">
+          <div className="flex flex-col justify-center gap-6 p-6 md:p-10">
+            <Button asChild variant="ghost" size="sm" className="w-fit">
+              <Link href="/">
+                <ArrowLeftIcon aria-hidden="true" />
+                Back to home
+              </Link>
+            </Button>
             <LoginForm />
           </div>
           <div className="relative min-h-[320px] overflow-hidden bg-emerald-600 md:min-h-[520px]">
