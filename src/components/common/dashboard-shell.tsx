@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ActivityIcon, FileTextIcon, SearchIcon, ShieldCheckIcon } from "lucide-react";
 
 import { getMockSession, roleLabel } from "@/components/auth/mock-auth";
 import { AppHeader } from "@/components/common/app-header";
 import { RoleBadge } from "@/components/common/role-badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { SessionUser } from "@/lib/types/api";
@@ -76,8 +78,10 @@ export function DashboardShell() {
                 Search by patient name once the patient API is ready.
               </CardDescription>
             </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              Planned route: /patients
+            <CardContent>
+              <Button asChild>
+                <Link href="/patients">Open patient search</Link>
+              </Button>
             </CardContent>
           </Card>
         ) : (
