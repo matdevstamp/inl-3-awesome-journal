@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-11
-- **Status:** TODO
+- **Status:** In progress
 - **Assignee:** rcilomba
 - **Tags:** frontend, ui, required, gate:3-features, stream:A-identity
 - **Dependencies:** 05-nextjs-tailwind-shadcn.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
@@ -212,6 +212,7 @@ Render explicit loading, error, empty, and success states. The query key improve
 
 ## Notes
 
+- Main scaffold (task 05) is in place; **no frontend feature code pushed yet** — Ramadan starts here (Sep 8). Status "In progress" reflects the handoff, not merged work.
 - Use shadcn/ui components from the task 05 scaffold
 - Make sure to handle token expiration gracefully
 - Implement proper loading skeletons instead of spinners

@@ -45,12 +45,10 @@ Vi avviker från exempelfördelningen Person 1–4 i `docs/Raw_Requirements.md` 
 
 ## 4. Mötestider & format
 
-Planera in (fyll i tider på kickoffet — låst när alla fyllt i [`docs/team-availability.md`](docs/team-availability.md)):
+Fast återkommande schema: **2 möten/vecka — tisdagar och torsdagar** (tider fylls i på kickoffet — låst när alla fyllt i [`docs/team-availability.md`](docs/team-availability.md)):
 
-- **Daily standup varje vardag** — samma tid om möjligt: kl. ____
-- **Backlog refining** varje vecka (~1 h): ____
-- **Sprint planning** varje vecka (~1–2 h): ____
-- **Retrospektiv** varje vecka (~1 h): ____
+- **Möte 1 — tisdag:** quick sync, blockers (standup)
+- **Möte 2 — torsdag:** progress review (+ sprint planning/retro efter behov)
 - Mötesanteckningar hamnar i `docs/meetings/` med [`docs/MEETING_TEMPLATE.md`](docs/MEETING_TEMPLATE.md), samma dag.
 - Facilitator/timekeeper/note-taker roterar (alfabetisk ordning per vecka som default).
 - Varje möte innehåller en requirements checkpoint mot `docs/Raw_Requirements.md`.

@@ -30,19 +30,19 @@ gantt
 
     section Gate 1-Decisions
     01 Project Setup & Group Contract (23% · 6/26 · todo) : active, 2026-09-04, 1d
-    02 Database Choice Discussion (27% · 4/15 · todo) : active, 2026-09-04, 1d
-    03 Graphify Architecture Artifacts (100% · 7/7 · todo) : active, 2026-09-07, 1d
+    02 Database Choice Discussion ✓ : done, 2026-09-04, 1d
+    03 Graphify Architecture Artifacts ✓ : done, 2026-09-07, 1d
     section Gate 2-Scaffold
-    04 Database Design & Setup (50% · 10/20 · doing) : active, 2026-09-07, 1d
-    05 Next.js + Tailwind CSS + shadcn/ui Setup (0% · 0/21 · doing) : active, 2026-09-07, 1d
-    06 Backend Project Setup (Next.js Route Handlers & Services) (48% · 11/23 · doing) : active, 2026-09-07, 1d
-    07 TypeScript Strict Configuration (45% · 10/22 · doing) : active, 2026-09-07, 1d
-    08 ESLint + Prettier Configuration (32% · 7/22 · doing) : active, 2026-09-07, 1d
-    09 Playwright E2E Testing (11% · 3/27 · doing) : active, 2026-09-06, 2d
-    10 GitHub Actions CI/CD Workflow (21% · 7/33 · doing) : active, 2026-09-07, 1d
+    04 Database Design & Setup ✓ : done, 2026-09-07, 1d
+    05 Next.js + Tailwind CSS + shadcn/ui Setup ✓ : done, 2026-09-07, 1d
+    06 Backend Project Setup (Next.js Route Handlers & Services) ✓ : done, 2026-09-07, 1d
+    07 TypeScript Strict Configuration ✓ : done, 2026-09-07, 1d
+    08 ESLint + Prettier Configuration ✓ : done, 2026-09-07, 1d
+    09 Playwright E2E Testing ✓ : done, 2026-09-06, 2d
+    10 GitHub Actions CI/CD Workflow ✓ : done, 2026-09-07, 1d
     section Gate 3-Features
     11 Backend API & Authentication (8% · 2/24 · todo) : active, 2026-09-09, 2d
-    12 Frontend UI Development (13% · 4/30 · todo) : active, 2026-09-09, 3d
+    12 Frontend UI Development (13% · 4/30 · doing) : active, 2026-09-09, 3d
     13 Patient View & Search (0% · 0/25 · todo) : active, 2026-09-14, 2d
     14 Medical Notes with Visibility Control (0% · 0/23 · todo) : active, 2026-09-16, 1d
     15 Blockchain Access Logging (0% · 0/23 · todo) : active, 2026-09-13, 2d

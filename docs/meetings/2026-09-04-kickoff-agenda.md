@@ -203,7 +203,7 @@ Map real people to the streams. **Tentative — adjust based on interest/skill.*
 
 **Then** agree on:
 
-- [ ] Meeting schedule: **pending** — everyone fills `docs/team-availability.md` first, then we book 2 fixed slots/week (see action items)
+- [x] Meeting schedule: **Tuesdays + Thursdays** (2 fixed slots/week, see `docs/team-availability.md`; times TBD)
 - [x] Logbook format: **per-member CSV in `docs/logbooks/`** (default, in-repo)
 - [x] Communication channel: Microsoft Teams ✓
 - [ ] Definition of done: PR merged + CI green + reviewer approved + meeting note updated? (confirm)
@@ -246,7 +246,7 @@ Open `docs/Raw_Requirements.md` together. For each section, mark:
 | Patient view with role-based display | Unclear | |
 | Access logs on blockchain | Covered (planned) | Simple custom chain |
 | P2P with 2 servers + Socket.IO | Covered (planned) | Two fullstack Next.js servers |
-| Min 2 meetings/week documented | Unclear | Schedule pending availability |
+| Min 2 meetings/week documented | Unclear | Schedule decided: Tuesdays + Thursdays |
 | Group contract | Unclear | Signing today / Sat morning |
 | PR-only workflow | Covered (planned) | Special rule: everything in `docs/` + Python direct; app code via PR |
 
@@ -315,7 +315,7 @@ Use the parking lot in `docs/MEETING_TEMPLATE.md` for topics that need more time
 | Build tool | Next.js | Merged with backend choice; Vite dropped |
 | Blockchain library | Simple custom chain | Teaches the concept; no heavy deps for access logs |
 | PR reviews | Nobody merges/reviews their own PR — not even the lead | Matias's code is reviewed by whoever owns the area (Kassim backend, Ramadan UI); no review time-cap |
-| Meeting schedule | Pending availability | Everyone fills `docs/team-availability.md`, then book 2x/week |
+| Meeting schedule | **Tuesdays + Thursdays** | Times TBD; recorded in `docs/team-availability.md` |
 
 ## Decisions Still Open
 
@@ -323,7 +323,7 @@ Use the parking lot in `docs/MEETING_TEMPLATE.md` for topics that need more time
 |---|---|---|
 | Stream D split (chain core vs P2P) | Kassim + Matias (lead) | Before Gate 3 features start (Wed Sep 9) |
 | Najma's focus area | Najma (declares herself) | Before Gate 3 features start (Wed Sep 9) |
-| Meeting slots (2x/week) | Everyone (availability) | This week |
+| Meeting times (Tuesdays + Thursdays) | Everyone (availability) | This week |
 | Disagreement handling | Team | Before signing |
 
 ---

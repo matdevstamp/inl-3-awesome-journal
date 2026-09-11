@@ -100,8 +100,8 @@ After everyone fills in availability, pick **2 fixed slots per week** that work 
 
 | Meeting   | Day | Time | Purpose              |
 | --------- | --- | ---- | -------------------- |
-| Standup 1 | TBD | TBD  | Quick sync, blockers |
-| Standup 2 | TBD | TBD  | Progress review      |
+| Standup 1 | Tuesday | TBD  | Quick sync, blockers |
+| Standup 2 | Thursday | TBD  | Progress review      |
 
 **Communication channel:** Microsoft Teams ✓
 
