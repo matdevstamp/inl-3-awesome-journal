@@ -1,25 +1,33 @@
 import bcrypt from "bcryptjs";
 import type { NextRequest } from "next/server";
+import { z } from "zod";
 
 import { signSessionToken } from "@/lib/auth";
 import { fail, ok } from "@/lib/api/http";
 import { prisma } from "@/lib/prisma";
-import type { LoginRequest, LoginResponse, SessionUser } from "@/lib/types/api";
+import type { LoginResponse, SessionUser } from "@/lib/types/api";
+
+const loginSchema = z.object({
+  username: z.string().min(1),
+  password: z.string().min(1),
+});
 
 export async function POST(request: NextRequest) {
-  let body: LoginRequest;
+  let rawBody: unknown;
 
   try {
-    body = (await request.json()) as LoginRequest;
+    rawBody = await request.json();
   } catch {
     return fail("INVALID_REQUEST", "Invalid request body", 400);
   }
 
-  const { username, password } = body;
+  const parsed = loginSchema.safeParse(rawBody);
 
-  if (!username || !password) {
-    return fail("INVALID_REQUEST", "Username and password are required", 400);
+  if (!parsed.success) {
+    return fail("INVALID_REQUEST", "Invalid login data", 400);
   }
+
+  const { username, password } = parsed.data;
 
   const user = await prisma.user.findUnique({
     where: { username },
