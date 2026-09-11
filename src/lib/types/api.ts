@@ -41,3 +41,66 @@ export interface LoginRequest {
 export interface LoginResponse {
   user: SessionUser;
 }
+
+/** Patient search filters supported by task 13. */
+export type PatientSearchFilter = "name" | "dob" | "personalNumber";
+
+/** Patient summary shown in search results. */
+export interface PatientSummary {
+  id: number;
+  name: string;
+  dateOfBirth: string;
+  personalNumber: string;
+  recordCount: number;
+  noteCount: number;
+  lastVisit: string;
+}
+
+/** GET /api/patients search payload. */
+export interface PatientSearchResponse {
+  patients: PatientSummary[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+  query: string;
+  filters: PatientSearchFilter[];
+}
+
+/** Role-filtered medical record preview for the journal page. */
+export interface MedicalRecordPreview {
+  id: number;
+  date: string;
+  title: string;
+  practitioner: string;
+  summary: string;
+}
+
+/** Role-filtered note preview for the journal page. */
+export interface JournalNotePreview {
+  id: number;
+  createdAt: string;
+  author: string;
+  visibility: NoteVisibility;
+  text: string;
+}
+
+/** Access event preview for patient and staff views. */
+export interface AccessLogPreview {
+  id: number;
+  timestamp: string;
+  actorName: string;
+  actorRole: Role;
+  action: "viewed" | "created_note" | "updated_record";
+  verified: boolean;
+}
+
+/** GET /api/patients/[id] journal payload. */
+export interface PatientJournalResponse {
+  patient: PatientSummary;
+  viewerRole: Role;
+  isOwnJournal: boolean;
+  records: MedicalRecordPreview[];
+  notes: JournalNotePreview[];
+  accessLogs: AccessLogPreview[];
+}
