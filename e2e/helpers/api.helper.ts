@@ -2,8 +2,12 @@ import type { APIRequestContext } from "@playwright/test";
 import type { ApiResponse } from "@/lib/types/api";
 
 /** GET an endpoint and unwrap the ApiResponse envelope. */
-export async function apiGet<T>(request: APIRequestContext, path: string): Promise<T> {
-  const response = await request.get(path);
+export async function apiGet<T>(
+  request: APIRequestContext,
+  path: string,
+  headers?: Record<string, string>,
+): Promise<T> {
+  const response = await request.get(path, { headers });
   expectStatus(response.status());
   const body = (await response.json()) as ApiResponse<T>;
   if (!body.ok) throw new Error(`API error ${body.error.code}: ${body.error.message}`);

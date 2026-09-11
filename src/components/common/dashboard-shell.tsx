@@ -1,23 +1,23 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ActivityIcon, FileTextIcon, SearchIcon, ShieldCheckIcon } from "lucide-react";
 
-import { getMockSession, roleLabel } from "@/components/auth/mock-auth";
+import { roleLabel, useMockSession } from "@/components/auth/mock-auth";
 import { AppHeader } from "@/components/common/app-header";
-import { RoleBadge } from "@/components/common/role-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { SessionUser } from "@/lib/types/api";
+import { patientIdForUser } from "@/lib/patients/mock-patients";
 
 const staffRoles = new Set(["doctor", "nurse", "ambulance"]);
 
 export function DashboardShell() {
   const router = useRouter();
-  const [user] = useState<SessionUser | null>(() => getMockSession());
+  const user = useMockSession();
 
   useEffect(() => {
     if (!user) {
@@ -49,21 +49,50 @@ export function DashboardShell() {
   }
 
   const isStaff = staffRoles.has(user.role);
+  const ownPatientId = patientIdForUser(user);
 
   return (
     <main className="flex flex-1 flex-col">
       <AppHeader />
-      <section className="border-b bg-muted/30 px-4 py-6 md:px-6">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-3">
-          <RoleBadge role={user.role} />
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
-              {isStaff ? "Care staff dashboard" : "My health record"}
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-              Signed in as {roleLabel(user.role)}. This mock dashboard lets the frontend move while
-              backend authentication and patient data are being finished.
-            </p>
+      <section className="relative overflow-hidden border-b bg-primary px-4 py-10 text-primary-foreground md:min-h-[360px] md:px-6 md:py-14">
+        <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.16),transparent_48%)]" />
+        <div className="absolute inset-y-0 right-0 hidden w-[52%] overflow-hidden [clip-path:ellipse(86%_82%_at_78%_50%)] md:block">
+          <Image
+            src="/images/doctors.jpg"
+            alt=""
+            fill
+            className="object-cover"
+            priority
+            sizes="52vw"
+          />
+          <div className="absolute inset-0 bg-primary/20" />
+        </div>
+        <div className="relative mx-auto grid w-full max-w-6xl items-center gap-8 md:min-h-[250px] md:grid-cols-[minmax(0,0.9fr)_minmax(320px,0.6fr)]">
+          <div className="z-10 flex flex-col gap-5">
+            <div className="w-fit rounded-full border border-primary-foreground/25 bg-primary-foreground/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground/85">
+              {roleLabel(user.role)}
+            </div>
+            <div>
+              <h1 className="max-w-xl text-4xl font-bold leading-[1.05] tracking-tight md:text-6xl">
+                {isStaff ? "Care staff dashboard" : "My health record"}
+              </h1>
+              <p className="mt-5 max-w-xl text-base leading-7 text-primary-foreground/82 md:text-lg">
+                Signed in as {roleLabel(user.role)}. This mock dashboard lets the frontend move
+                while backend authentication and patient data are being finished.
+              </p>
+            </div>
+          </div>
+
+          <div className="relative min-h-56 overflow-hidden rounded-lg border border-primary-foreground/20 bg-primary-foreground/10 shadow-xl md:hidden">
+            <Image
+              src="/images/doctors.jpg"
+              alt=""
+              fill
+              className="object-cover"
+              priority
+              sizes="(min-width: 768px) 420px, 100vw"
+            />
+            <div className="absolute inset-0 bg-primary/10" />
           </div>
         </div>
       </section>
@@ -92,7 +121,11 @@ export function DashboardShell() {
               <CardDescription>Patients go directly to their own journal view.</CardDescription>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
-              Planned route: /patients/me
+              <Button asChild>
+                <Link href={ownPatientId ? `/patients/${ownPatientId}` : "/patients"}>
+                  Open my journal
+                </Link>
+              </Button>
             </CardContent>
           </Card>
         )}
