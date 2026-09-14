@@ -20,7 +20,11 @@ export function DashboardShell() {
   const user = useMockSession();
 
   useEffect(() => {
-    if (!user) {
+    if (user === undefined) {
+      return;
+    }
+
+    if (user === null) {
       router.push("/login");
       return;
     }
@@ -30,7 +34,7 @@ export function DashboardShell() {
     }
   }, [router, user]);
 
-  if (!user) {
+  if (user === undefined || user === null) {
     return (
       <DashboardLoading>
         <Skeleton className="h-32" />

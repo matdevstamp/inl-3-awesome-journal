@@ -18,7 +18,11 @@ export default function PatientsPage() {
   const user = useMockSession();
 
   useEffect(() => {
-    if (!user) {
+    if (user === undefined) {
+      return;
+    }
+
+    if (user === null) {
       router.push("/login");
       return;
     }
@@ -34,7 +38,7 @@ export default function PatientsPage() {
     }
   }, [router, user]);
 
-  if (!user || !isStaffRole(user.role)) {
+  if (user === undefined || user === null || !isStaffRole(user.role)) {
     return (
       <main className="flex flex-1 flex-col">
         <AppHeader />

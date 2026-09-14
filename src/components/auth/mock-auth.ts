@@ -133,8 +133,8 @@ export function mockSessionHeaders(user: SessionUser): HeadersInit {
   };
 }
 
-export function useMockSession(): SessionUser | null {
-  return useSyncExternalStore(subscribeToMockSession, getMockSession, () => null);
+export function useMockSession(): SessionUser | null | undefined {
+  return useSyncExternalStore(subscribeToMockSession, getMockSession, () => undefined);
 }
 
 function subscribeToMockSession(onStoreChange: () => void): () => void {
