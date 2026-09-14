@@ -3,7 +3,8 @@ import type { NextRequest } from "next/server";
 import { z } from "zod";
 
 import { signSessionToken } from "@/lib/auth";
-import { fail, ok } from "@/lib/api/http";
+import { applyCors, corsPreflight } from "@/lib/api/cors";
+import { createRateLimiter, fail, ok } from "@/lib/api/http";
 import { prisma } from "@/lib/prisma";
 import type { LoginResponse, SessionUser } from "@/lib/types/api";
 
@@ -12,19 +13,33 @@ const loginSchema = z.object({
   password: z.string().min(1),
 });
 
+const loginRateLimiter = createRateLimiter(5, 60_000);
+
+export function OPTIONS(request: NextRequest) {
+  return corsPreflight(request);
+}
+
 export async function POST(request: NextRequest) {
+  const forwardedFor = request.headers.get("x-forwarded-for");
+
+  const ip = forwardedFor?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
+
+  if (!loginRateLimiter.isAllowed(ip)) {
+    return applyCors(request, fail("RATE_LIMITED", "Too many login attempts", 429));
+  }
+
   let rawBody: unknown;
 
   try {
     rawBody = await request.json();
   } catch {
-    return fail("INVALID_REQUEST", "Invalid request body", 400);
+    return applyCors(request, fail("INVALID_REQUEST", "Invalid request body", 400));
   }
 
   const parsed = loginSchema.safeParse(rawBody);
 
   if (!parsed.success) {
-    return fail("INVALID_REQUEST", "Invalid login data", 400);
+    return applyCors(request, fail("INVALID_REQUEST", "Invalid login data", 400));
   }
 
   const { username, password } = parsed.data;
@@ -34,13 +49,17 @@ export async function POST(request: NextRequest) {
   });
 
   if (!user) {
-    return fail("INVALID_CREDENTIALS", "Invalid credentials", 401);
+    loginRateLimiter.recordFailure(ip);
+
+    return applyCors(request, fail("INVALID_CREDENTIALS", "Invalid credentials", 401));
   }
 
   const passwordMatches = await bcrypt.compare(password, user.passwordHash);
 
   if (!passwordMatches) {
-    return fail("INVALID_CREDENTIALS", "Invalid credentials", 401);
+    loginRateLimiter.recordFailure(ip);
+
+    return applyCors(request, fail("INVALID_CREDENTIALS", "Invalid credentials", 401));
   }
 
   const sessionUser: SessionUser = {
@@ -49,6 +68,8 @@ export async function POST(request: NextRequest) {
     role: user.role,
     organizationId: user.organizationId,
   };
+
+  loginRateLimiter.reset(ip);
 
   const token = signSessionToken(sessionUser);
 
@@ -63,5 +84,5 @@ export async function POST(request: NextRequest) {
     path: "/",
   });
 
-  return response;
+  return applyCors(request, response);
 }
