@@ -122,5 +122,5 @@ Vi har läst och godkänner gruppkontraktet:
 |---|---|---|---|
 | Matias Marti | `matdevstamp` | 2026-09-04 | ✅ (v0.3) |
 | Kassim Segerberg | `Kassim10` | 2026-09-05 | ✅ (v0.3) |
-| Ramadan | `rcilomba` | senast 2026-09-05 | |
-| Najma Hasan | `umoraghad0-del` | senast 2026-09-05 | |
+| Ramadan | `rcilomba` | senast 2026-09-05 | | 
+| Najma Hasan | `umoraghad0-del` | senast 2026-09-14 | ✅ |
