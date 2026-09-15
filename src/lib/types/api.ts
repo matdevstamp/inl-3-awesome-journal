@@ -81,6 +81,7 @@ export interface JournalNotePreview {
   id: number;
   createdAt: string;
   author: string;
+  authorUserId: number;
   visibility: NoteVisibility;
   text: string;
 }
@@ -99,6 +100,7 @@ export interface AccessLogPreview {
 export interface PatientJournalResponse {
   patient: PatientSummary;
   viewerRole: Role;
+  viewerUserId: number;
   isOwnJournal: boolean;
   records: MedicalRecordPreview[];
   notes: JournalNotePreview[];

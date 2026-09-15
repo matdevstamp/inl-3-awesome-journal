@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ActivityIcon, CheckCircle2Icon, FileTextIcon, LockIcon } from "lucide-react";
 
-import { mockSessionHeaders } from "@/components/auth/mock-auth";
+import { getMockUserDisplayName, mockSessionHeaders } from "@/components/auth/mock-auth";
 import { RoleBadge } from "@/components/common/role-badge";
 import { PatientNotesPanel } from "@/components/patients/patient-notes-panel";
 import { Badge } from "@/components/ui/badge";
@@ -148,7 +148,11 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
           </TabsContent>
 
           <TabsContent value="notes" className="mt-4">
-            <PatientNotesPanel journal={journal} onCreateNote={handleCreateNote} />
+            <PatientNotesPanel
+              authorName={getMockUserDisplayName(user)}
+              journal={journal}
+              onCreateNote={handleCreateNote}
+            />
           </TabsContent>
 
           <TabsContent value="access" className="mt-4">

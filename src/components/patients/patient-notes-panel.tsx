@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { InfoIcon, NotebookPenIcon } from "lucide-react";
 
-import { roleLabel } from "@/components/auth/mock-auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,27 +15,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { isStaffRole } from "@/lib/patients/mock-patients";
+import {
+  DEFAULT_NOTE_VISIBILITY,
+  isStaffRole,
+  NOTE_VISIBILITY_LABELS,
+} from "@/lib/patients/mock-patients";
 import type { JournalNotePreview, NoteVisibility, PatientJournalResponse } from "@/lib/types/api";
 
 const VISIBILITY_OPTIONS: Array<{
   value: NoteVisibility;
-  label: string;
   description: string;
 }> = [
   {
     value: "private",
-    label: "Private",
     description: "Only visible to the author",
   },
   {
     value: "healthcare",
-    label: "Healthcare",
     description: "Visible to doctors, nurses, and ambulance staff",
   },
   {
     value: "all",
-    label: "All",
     description: "Visible to staff and the patient",
   },
 ];
@@ -44,15 +43,18 @@ const VISIBILITY_OPTIONS: Array<{
 const MAX_NOTE_LENGTH = 1000;
 
 export function PatientNotesPanel({
+  authorName,
   journal,
   onCreateNote,
 }: {
+  authorName: string;
   journal: PatientJournalResponse;
   onCreateNote: (note: JournalNotePreview) => void;
 }) {
   const canCreateNote = isStaffRole(journal.viewerRole);
+  const nextLocalNoteId = useRef(10_000);
   const [noteText, setNoteText] = useState("");
-  const [visibility, setVisibility] = useState<NoteVisibility>("healthcare");
+  const [visibility, setVisibility] = useState<NoteVisibility>(DEFAULT_NOTE_VISIBILITY);
   const [formError, setFormError] = useState<string | null>(null);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -70,15 +72,16 @@ export function PatientNotesPanel({
     }
 
     onCreateNote({
-      id: Date.now(),
+      id: nextLocalNoteId.current++,
       createdAt: formatNow(),
-      author: roleLabel(journal.viewerRole),
+      author: authorName,
+      authorUserId: journal.viewerUserId,
       visibility,
       text: trimmedText,
     });
 
     setNoteText("");
-    setVisibility("healthcare");
+    setVisibility(DEFAULT_NOTE_VISIBILITY);
     setFormError(null);
   }
 
@@ -127,7 +130,7 @@ export function PatientNotesPanel({
                   <SelectContent>
                     {VISIBILITY_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
-                        {option.label}
+                        {NOTE_VISIBILITY_LABELS[option.value]}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -143,7 +146,7 @@ export function PatientNotesPanel({
                   variant="outline"
                   onClick={() => {
                     setNoteText("");
-                    setVisibility("healthcare");
+                    setVisibility(DEFAULT_NOTE_VISIBILITY);
                     setFormError(null);
                   }}
                 >
@@ -178,7 +181,7 @@ export function PatientNotesPanel({
             <div className="flex items-start gap-2 rounded-lg border bg-muted/40 p-3 text-sm text-muted-foreground">
               <InfoIcon className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
               <span>
-                {journal.hiddenNotesCount} protected note
+                {journal.hiddenNotesCount} protected healthcare note
                 {journal.hiddenNotesCount === 1 ? "" : "s"} exist but are hidden for this role.
               </span>
             </div>
@@ -194,7 +197,7 @@ function NoteCard({ note }: { note: JournalNotePreview }) {
     <div className="rounded-lg border p-3">
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant={note.visibility === "all" ? "secondary" : "outline"}>
-          {visibilityLabel(note.visibility)}
+          {NOTE_VISIBILITY_LABELS[note.visibility]}
         </Badge>
         <span className="text-xs text-muted-foreground">
           {note.author} - {note.createdAt}
@@ -203,15 +206,6 @@ function NoteCard({ note }: { note: JournalNotePreview }) {
       <p className="mt-2 whitespace-pre-wrap text-sm">{note.text}</p>
     </div>
   );
-}
-
-function visibilityLabel(visibility: NoteVisibility): string {
-  const labels: Record<NoteVisibility, string> = {
-    private: "Private",
-    healthcare: "Healthcare",
-    all: "All",
-  };
-  return labels[visibility];
 }
 
 function formatNow(): string {
