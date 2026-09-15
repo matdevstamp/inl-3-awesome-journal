@@ -1,6 +1,8 @@
 import { AuthError } from "@/lib/auth";
 import { fail, ok } from "@/lib/api/http";
 import { requireRoleOrMock } from "@/lib/api/mock-auth";
+import { createAccessLog } from "@/lib/blockchain/access-log-service";
+import { env } from "@/lib/env";
 import {
   findPatient,
   getJournalForPatient,
@@ -36,6 +38,13 @@ export async function GET(request: Request, context: RouteContext) {
     }
 
     const journal = getJournalForPatient(patientId, user.role);
+     createAccessLog({
+     userId: user.id,
+     patientId,
+     recordId: null,
+     action: "view",
+     serverId: env.serverId,
+     });
 
     return ok({
       patient,

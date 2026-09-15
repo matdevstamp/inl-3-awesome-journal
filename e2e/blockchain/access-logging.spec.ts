@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { Blockchain } from "../../src/lib/blockchain/blockchain";
+import { createAccessLog, getAccessLogBlockchain } from "../../src/lib/blockchain/access-log-service";
 
 test.describe("blockchain access logging", () => {
   test("adds an access log to the blockchain", () => {
@@ -59,5 +60,25 @@ test("does not store medical record content on the blockchain", () => {
   expect(storedData).not.toHaveProperty("content");
   expect(storedData).not.toHaveProperty("note");
   expect(storedData).not.toHaveProperty("personalNumber");
+});
+test("creates a blockchain log for a journal view", () => {
+  const blockchain = getAccessLogBlockchain();
+  const before = blockchain.chain.length;
+
+  createAccessLog({
+    userId: 1,
+    patientId: 10,
+    action: "view",
+    serverId: "hospital-s",
+  });
+
+  expect(blockchain.chain).toHaveLength(before + 1);
+
+  const block = blockchain.chain.at(-1);
+
+  expect(block?.data.userId).toBe(1);
+  expect(block?.data.patientId).toBe(10);
+  expect(block?.data.action).toBe("view");
+  expect(block?.data.recordId).toBeNull();
 });
 });
