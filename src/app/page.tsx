@@ -19,9 +19,14 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild>
-              <a href="/api/health">Check API health</a>
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button asChild>
+                <a href="/login">Go to login</a>
+              </Button>
+              <Button asChild variant="outline">
+                <a href="/api/health">Check API health</a>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </section>
