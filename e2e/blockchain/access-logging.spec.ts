@@ -81,4 +81,15 @@ test("creates a blockchain log for a journal view", () => {
   expect(block?.data.action).toBe("view");
   expect(block?.data.recordId).toBeNull();
 });
+test("returns access logs and blockchain status", async ({ request }) => {
+  const response = await request.get("/api/access-log");
+
+  expect(response.ok()).toBeTruthy();
+
+  const body = await response.json();
+
+  expect(body.ok).toBe(true);
+  expect(body.data.accessLogs).toBeDefined();
+  expect(body.data.chainValid).toBe(true);
+});
 });

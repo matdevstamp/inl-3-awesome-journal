@@ -1,5 +1,13 @@
-import { notImplemented } from "@/lib/api/http";
+import { ok } from "@/lib/api/http";
+import { getAccessLogBlockchain } from "@/lib/blockchain/access-log-service";
 
 export async function GET() {
-  return notImplemented("Access-log queries arrive with the blockchain chain in task 15.");
+  const blockchain = getAccessLogBlockchain();
+
+  return ok({
+    accessLogs: blockchain.chain
+      .slice(1)
+      .map((block) => block.data),
+    chainValid: blockchain.isValid(),
+  });
 }
