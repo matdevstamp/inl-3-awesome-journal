@@ -2,23 +2,18 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  ActivityIcon,
-  CheckCircle2Icon,
-  FileTextIcon,
-  LockIcon,
-  NotebookPenIcon,
-} from "lucide-react";
+import { ActivityIcon, CheckCircle2Icon, FileTextIcon, LockIcon } from "lucide-react";
 
 import { mockSessionHeaders } from "@/components/auth/mock-auth";
 import { RoleBadge } from "@/components/common/role-badge";
+import { PatientNotesPanel } from "@/components/patients/patient-notes-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { apiRequest } from "@/lib/api/client";
-import type { PatientJournalResponse, SessionUser } from "@/lib/types/api";
+import type { JournalNotePreview, PatientJournalResponse, SessionUser } from "@/lib/types/api";
 
 export function PatientJournal({ patientId, user }: { patientId: string; user: SessionUser }) {
   const [journal, setJournal] = useState<PatientJournalResponse | null>(null);
@@ -85,6 +80,19 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
 
   const title = journal.isOwnJournal ? "My health record" : journal.patient.name;
 
+  function handleCreateNote(note: JournalNotePreview) {
+    setJournal((currentJournal) => {
+      if (!currentJournal) {
+        return currentJournal;
+      }
+
+      return {
+        ...currentJournal,
+        notes: [note, ...currentJournal.notes],
+      };
+    });
+  }
+
   return (
     <>
       <section className="border-b bg-muted/30 px-4 py-6 md:px-6">
@@ -140,30 +148,7 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
           </TabsContent>
 
           <TabsContent value="notes" className="mt-4">
-            <Card>
-              <CardHeader>
-                <NotebookPenIcon className="size-5 text-muted-foreground" aria-hidden="true" />
-                <CardTitle>Notes</CardTitle>
-                <CardDescription>
-                  Patients only see notes marked for everyone. Staff can see healthcare notes.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="grid gap-3">
-                {journal.notes.map((note) => (
-                  <div key={note.id} className="rounded-lg border p-3">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Badge variant={note.visibility === "all" ? "secondary" : "outline"}>
-                        {note.visibility}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">
-                        {note.author} - {note.createdAt}
-                      </span>
-                    </div>
-                    <p className="mt-2 text-sm">{note.text}</p>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+            <PatientNotesPanel journal={journal} onCreateNote={handleCreateNote} />
           </TabsContent>
 
           <TabsContent value="access" className="mt-4">

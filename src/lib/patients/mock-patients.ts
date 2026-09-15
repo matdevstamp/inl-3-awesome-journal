@@ -259,10 +259,12 @@ export function searchPatients(
 
 export function getJournalForPatient(patientId: number, viewerRole: Role) {
   const notes = NOTES[patientId] ?? [];
+  const visibleNotes = filterNotesForRole(notes, viewerRole);
 
   return {
     records: RECORDS[patientId] ?? [],
-    notes: filterNotesForRole(notes, viewerRole),
+    notes: visibleNotes,
+    hiddenNotesCount: Math.max(notes.length - visibleNotes.length, 0),
     accessLogs: ACCESS_LOGS[patientId] ?? [],
   };
 }

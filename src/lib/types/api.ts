@@ -102,5 +102,6 @@ export interface PatientJournalResponse {
   isOwnJournal: boolean;
   records: MedicalRecordPreview[];
   notes: JournalNotePreview[];
+  hiddenNotesCount: number;
   accessLogs: AccessLogPreview[];
 }
