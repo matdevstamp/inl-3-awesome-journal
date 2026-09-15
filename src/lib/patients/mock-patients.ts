@@ -15,6 +15,14 @@ export const DEFAULT_PATIENT_FILTERS: PatientSearchFilter[] = ["name"];
 
 export const PATIENT_PAGE_SIZE = 3;
 
+export const DEFAULT_NOTE_VISIBILITY: NoteVisibility = "healthcare";
+
+export const NOTE_VISIBILITY_LABELS: Record<NoteVisibility, string> = {
+  private: "Private",
+  healthcare: "Healthcare",
+  all: "All",
+};
+
 const USER_PATIENT_IDS: Record<number, number> = {
   4: 1,
 };
@@ -110,6 +118,7 @@ const NOTES: Record<number, JournalNotePreview[]> = {
       id: 1001,
       createdAt: "2026-08-18 10:42",
       author: "Dr. Sofia Berg",
+      authorUserId: 1,
       visibility: "all",
       text: "Patient informed about follow-up and agrees with the care plan.",
     },
@@ -117,6 +126,7 @@ const NOTES: Record<number, JournalNotePreview[]> = {
       id: 1002,
       createdAt: "2026-08-18 10:48",
       author: "Dr. Sofia Berg",
+      authorUserId: 1,
       visibility: "healthcare",
       text: "Healthcare staff should monitor blood pressure trend at next visit.",
     },
@@ -124,6 +134,7 @@ const NOTES: Record<number, JournalNotePreview[]> = {
       id: 1003,
       createdAt: "2026-08-18 10:51",
       author: "Dr. Sofia Berg",
+      authorUserId: 1,
       visibility: "private",
       text: "Private reminder to compare previous medication history.",
     },
@@ -133,6 +144,7 @@ const NOTES: Record<number, JournalNotePreview[]> = {
       id: 2001,
       createdAt: "2026-08-30 14:10",
       author: "Nurse Alex Lind",
+      authorUserId: 2,
       visibility: "all",
       text: "Patient received written instructions for next appointment.",
     },
@@ -142,6 +154,7 @@ const NOTES: Record<number, JournalNotePreview[]> = {
       id: 3001,
       createdAt: "2026-09-01 08:15",
       author: "Ambulance Unit A",
+      authorUserId: 3,
       visibility: "healthcare",
       text: "Ambulance team confirmed allergy information during transport.",
     },
@@ -151,6 +164,7 @@ const NOTES: Record<number, JournalNotePreview[]> = {
       id: 4001,
       createdAt: "2026-07-12 09:05",
       author: "Dr. Sofia Berg",
+      authorUserId: 1,
       visibility: "all",
       text: "Patient has received referral information.",
     },
@@ -257,27 +271,38 @@ export function searchPatients(
   };
 }
 
-export function getJournalForPatient(patientId: number, viewerRole: Role) {
+export function getJournalForPatient(patientId: number, viewer: SessionUser) {
   const notes = NOTES[patientId] ?? [];
+  const visibleNotes = filterNotesForViewer(notes, viewer);
 
   return {
     records: RECORDS[patientId] ?? [],
-    notes: filterNotesForRole(notes, viewerRole),
+    notes: visibleNotes,
+    hiddenNotesCount: countHiddenNotes(notes, viewer.role),
     accessLogs: ACCESS_LOGS[patientId] ?? [],
   };
 }
 
-function filterNotesForRole(notes: JournalNotePreview[], viewerRole: Role) {
-  if (viewerRole === "patient") {
-    return notes.filter((note) => note.visibility === "all");
+function countHiddenNotes(notes: JournalNotePreview[], viewerRole: Role): number {
+  if (viewerRole !== "patient") {
+    return 0;
   }
 
-  if (isStaffRole(viewerRole)) {
-    const visibleToStaff = new Set<NoteVisibility>(["all", "healthcare", "private"]);
-    return notes.filter((note) => visibleToStaff.has(note.visibility));
-  }
+  return notes.filter((note) => note.visibility === "healthcare").length;
+}
 
-  return [];
+function filterNotesForViewer(notes: JournalNotePreview[], viewer: SessionUser) {
+  return notes.filter((note) => {
+    if (note.visibility === "all") {
+      return true;
+    }
+
+    if (note.visibility === "healthcare") {
+      return isStaffRole(viewer.role);
+    }
+
+    return note.authorUserId === viewer.id;
+  });
 }
 
 function normalize(value: string): string {
