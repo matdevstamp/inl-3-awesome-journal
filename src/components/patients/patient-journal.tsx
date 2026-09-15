@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ActivityIcon, CheckCircle2Icon, FileTextIcon, LockIcon } from "lucide-react";
+import {
+  ActivityIcon,
+  CheckCircle2Icon,
+  FileTextIcon,
+  LockIcon,
+  NotebookPenIcon,
+} from "lucide-react";
 
 import { getMockUserDisplayName, mockSessionHeaders } from "@/components/auth/mock-auth";
 import { RoleBadge } from "@/components/common/role-badge";
@@ -116,14 +122,41 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
           </div>
         ) : null}
 
-        <Tabs defaultValue="records">
-          <TabsList className="flex-wrap">
-            <TabsTrigger value="records">Records</TabsTrigger>
-            <TabsTrigger value="notes">Notes</TabsTrigger>
-            <TabsTrigger value="access">Access log</TabsTrigger>
+        <Tabs defaultValue="records" className="flex-col gap-4">
+          <TabsList className="grid h-auto w-full grid-cols-1 gap-3 bg-transparent p-0 md:grid-cols-3">
+            <TabsTrigger
+              value="records"
+              className="h-auto justify-start gap-3 rounded-lg border bg-card p-4 text-left data-active:bg-primary data-active:text-primary-foreground"
+            >
+              <FileTextIcon className="size-5" aria-hidden="true" />
+              <span>
+                <span className="block font-medium">Records</span>
+                <span className="block text-xs opacity-75">{journal.records.length} entries</span>
+              </span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="notes"
+              className="h-auto justify-start gap-3 rounded-lg border bg-card p-4 text-left data-active:bg-primary data-active:text-primary-foreground"
+            >
+              <NotebookPenIcon className="size-5" aria-hidden="true" />
+              <span>
+                <span className="block font-medium">Notes</span>
+                <span className="block text-xs opacity-75">{journal.notes.length} visible</span>
+              </span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="access"
+              className="h-auto justify-start gap-3 rounded-lg border bg-card p-4 text-left data-active:bg-primary data-active:text-primary-foreground"
+            >
+              <ActivityIcon className="size-5" aria-hidden="true" />
+              <span>
+                <span className="block font-medium">Access log</span>
+                <span className="block text-xs opacity-75">{journal.accessLogs.length} events</span>
+              </span>
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="records" className="mt-4">
+          <TabsContent value="records">
             <Card>
               <CardHeader>
                 <FileTextIcon className="size-5 text-muted-foreground" aria-hidden="true" />
@@ -147,7 +180,7 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
             </Card>
           </TabsContent>
 
-          <TabsContent value="notes" className="mt-4">
+          <TabsContent value="notes">
             <PatientNotesPanel
               authorName={getMockUserDisplayName(user)}
               journal={journal}
@@ -155,7 +188,7 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
             />
           </TabsContent>
 
-          <TabsContent value="access" className="mt-4">
+          <TabsContent value="access">
             <Card>
               <CardHeader>
                 <ActivityIcon className="size-5 text-muted-foreground" aria-hidden="true" />
