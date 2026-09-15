@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-15
-- **Status:** TODO
+- **Status:** DONE (merged via PR #24, 2026-09-15)
 - **Assignee:** rcilomba
 - **Tags:** frontend, patient, search, required, gate:3-features, stream:B-patient
 - **Dependencies:** 04-database-design.md, 11-backend-api-auth.md, 12-frontend-ui.md
@@ -193,30 +193,32 @@ Never put permissions in a query key or assume that changing a URL protects pati
 
 ## Tasks
 
-- [ ] Create patient search component
-- [ ] Implement search route handler with pagination (src/app/api/patients)
-- [ ] Add search filters (name, DOB, personal number)
-- [ ] Create patient journal view component (src/app/patients/[id])
-- [ ] Implement role-based view switching
-- [ ] Add patient ownership validation
-- [ ] Create "Access Denied" page
-- [ ] Implement search result highlighting
-- [ ] Add loading states for search
-- [ ] Handle empty search results gracefully
+- [x] Create patient search component
+- [x] Implement search route handler with pagination (src/app/api/patients)
+- [x] Add search filters (name, DOB, personal number)
+- [x] Create patient journal view component (src/app/patients/[id])
+- [x] Implement role-based view switching
+- [x] Add patient ownership validation
+- [x] Create "Access Denied" page
+- [x] Implement search result highlighting
+- [x] Add loading states for search
+- [x] Handle empty search results gracefully
 - [ ] Add keyboard navigation for search
 
 ## Done Criteria
 
-- [ ] Search returns correct results by name
-- [ ] Pagination works correctly
-- [ ] Filters narrow down search results
-- [ ] Patient view adapts to user role
-- [ ] Patients can only see own data
-- [ ] URL manipulation is prevented
-- [ ] "Access Denied" page shows for unauthorized
-- [ ] Search is fast and responsive
-- [ ] Empty states are handled properly
+- [x] Search returns correct results by name
+- [x] Pagination works correctly
+- [x] Filters narrow down search results
+- [x] Patient view adapts to user role
+- [x] Patients can only see own data
+- [x] URL manipulation is prevented
+- [x] "Access Denied" page shows for unauthorized
+- [x] Search is fast and responsive
+- [x] Empty states are handled properly
 - [ ] Keyboard navigation works
+
+**Optional (descoped 2026-09-15):** keyboard navigation for search results — nice-to-have, not required for issue completion. Delivered by PR #24 (squash commit `227fc0c`).
 
 ## Notes
 

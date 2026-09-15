@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-04
-- **Status:** TODO
+- **Status:** In review
 - **Assignee:** Team
 - **Tags:** setup, documentation, required, gate:1-decisions
 - **Dependencies:** None
