@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-15
-- **Status:** DONE (merged via PR #24, 2026-09-15)
+- **Status:** DONE
 - **Assignee:** rcilomba
 - **Tags:** frontend, patient, search, required, gate:3-features, stream:B-patient
 - **Dependencies:** 04-database-design.md, 11-backend-api-auth.md, 12-frontend-ui.md
@@ -222,6 +222,7 @@ Never put permissions in a query key or assume that changing a URL protects pati
 
 ## Notes
 
+- Delivered by PR #24 (squash commit `227fc0c`, merged 2026-09-15); issue #15 closed as completed.
 - Consider implementing debounced search for better UX
 - Use React Router for patient detail navigation
 - Make sure to sanitize search input to prevent SQL injection

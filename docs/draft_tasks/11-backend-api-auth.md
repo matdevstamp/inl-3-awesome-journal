@@ -105,11 +105,11 @@ POST   /api/access-log          - Log access to blockchain
 
 ## Tasks
 
-- [ ] Confirm route-handler skeleton from task 06 (src/app/api + src/lib/auth)
-- [ ] Implement JWT sign/verify + httpOnly cookie helpers
+- [x] Confirm route-handler skeleton from task 06 (src/app/api + src/lib/auth)
+- [x] Implement JWT sign/verify + httpOnly cookie helpers
 - [ ] Create login/logout/me route handlers
-- [ ] Implement the requireRole() guard used by protected route handlers
-- [ ] Create patient search route handler
+- [x] Implement the requireRole() guard used by protected route handlers
+- [x] Create patient search route handler
 - [ ] Create medical records CRUD route handlers
 - [ ] Create notes CRUD route handlers with visibility control
 - [ ] Implement access-log route handler

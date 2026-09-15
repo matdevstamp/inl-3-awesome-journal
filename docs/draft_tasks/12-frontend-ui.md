@@ -181,38 +181,38 @@ Render explicit loading, error, empty, and success states. The query key improve
 ## Tasks
 
 - [x] Choose frontend framework → Next.js + React (kickoff)
-- [ ] Set up project structure with App Router routes (from task 05 scaffold)
-- [ ] Create login page with form validation
-- [ ] Implement authentication context/state management
-- [ ] Create protected route component
-- [ ] Build patient search interface
-- [ ] Create patient detail view
-- [ ] Build medical records display
+- [x] Set up project structure with App Router routes (from task 05 scaffold)
+- [x] Create login page with form validation
+- [x] Implement authentication context/state management
+- [x] Create protected route component
+- [x] Build patient search interface
+- [x] Create patient detail view
+- [x] Build medical records display
 - [ ] Create notes interface with visibility selector
-- [ ] Implement access logs display
-- [ ] Add loading states and error handling
-- [ ] Style with CSS framework (Tailwind, Bootstrap, or Material UI)
-- [ ] Make responsive for different screen sizes
+- [x] Implement access logs display
+- [x] Add loading states and error handling
+- [x] Style with CSS framework (Tailwind, Bootstrap, or Material UI)
+- [x] Make responsive for different screen sizes
 - [ ] Add form validation throughout
-- [ ] Create reusable UI components
+- [x] Create reusable UI components
 
 ## Done Criteria
 
-- [ ] Login page works with all 5 roles
-- [ ] Dashboard shows role-appropriate content
-- [ ] Patient search works and displays results
-- [ ] Patient view varies by role correctly
-- [ ] Medical records are displayed properly
+- [x] Login page works with all 5 roles
+- [x] Dashboard shows role-appropriate content
+- [x] Patient search works and displays results
+- [x] Patient view varies by role correctly
+- [x] Medical records are displayed properly
 - [ ] Notes can be created with visibility options
-- [ ] Access logs are shown to authorized users
-- [ ] UI is responsive and user-friendly
+- [x] Access logs are shown to authorized users
+- [x] UI is responsive and user-friendly
 - [ ] All forms have proper validation
-- [ ] Loading states are shown during API calls
-- [ ] Error messages are displayed clearly
+- [x] Loading states are shown during API calls
+- [x] Error messages are displayed clearly
 
 ## Notes
 
-- Main scaffold (task 05) is in place; **no frontend feature code pushed yet** — Ramadan starts here (Sep 8). Status "In progress" reflects the handoff, not merged work.
+- Progress: auth shell merged in PR #22; patient search + journal merged in PR #24 (task 13). Remaining: notes UI, form validation, and wiring records/notes/access-logs to real APIs (tasks 11/14/15).
 - Use shadcn/ui components from the task 05 scaffold
 - Make sure to handle token expiration gracefully
 - Implement proper loading skeletons instead of spinners
@@ -223,5 +223,5 @@ Render explicit loading, error, empty, and success states. The query key improve
 
 - [x] React vs Vue vs Svelte? → React in Next.js (kickoff)
 - [x] Which CSS framework? → Tailwind + shadcn/ui (kickoff)
-- [ ] State management approach? (Context API vs TanStack Query)
+- [x] State management approach? → custom useSyncExternalStore session store; TanStack Query not adopted (PR #24)
 - [x] Component library? → shadcn/ui (kickoff)
