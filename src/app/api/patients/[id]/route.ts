@@ -37,7 +37,6 @@ export async function GET(request: Request, context: RouteContext) {
       return fail("PATIENT_NOT_FOUND", "Patient could not be found.", 404);
     }
 
-    const journal = getJournalForPatient(patientId, user.role);
      createAccessLog({
      userId: user.id,
      patientId,
@@ -45,10 +44,12 @@ export async function GET(request: Request, context: RouteContext) {
      action: "view",
      serverId: env.serverId,
      });
+    const journal = getJournalForPatient(patientId, user);
 
     return ok({
       patient,
       viewerRole: user.role,
+      viewerUserId: user.id,
       isOwnJournal: ownPatientId === patientId,
       ...journal,
     } satisfies PatientJournalResponse);
