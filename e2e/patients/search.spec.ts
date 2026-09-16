@@ -1,14 +1,7 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 import { apiGet } from "../helpers/api.helper";
-import type { PatientSearchResponse, SessionUser } from "@/lib/types/api";
-
-const doctorSession: SessionUser = {
-  id: 1,
-  username: "doctor",
-  role: "doctor",
-  organizationId: 1,
-};
+import type { PatientSearchResponse } from "@/lib/types/api";
 
 test.describe("patient search", () => {
   test("finds a patient by name through the API", async ({ request }) => {
@@ -23,7 +16,29 @@ test.describe("patient search", () => {
   });
 
   test("shows an empty visible state for no frontend results", async ({ page }) => {
-    await setMockSession(page, doctorSession);
+    const loginResponse = await page.request.post("/api/auth/login", {
+      data: {
+        username: "dr_test",
+        password: "test123",
+      },
+    });
+
+    expect(loginResponse.status()).toBe(200);
+
+    await page.goto("/");
+
+    await page.evaluate(() => {
+      window.localStorage.setItem(
+        "awesome-journal.mock-user",
+        JSON.stringify({
+          id: 1,
+          username: "doctor",
+          role: "doctor",
+          organizationId: 1,
+        }),
+      );
+    });
+
     await page.goto("/patients");
 
     await page.getByPlaceholder("Search patients...").fill("ZZZZZ");
@@ -40,6 +55,7 @@ test.describe("patient search", () => {
         "x-mock-username": "patient",
       },
     });
+
     const body = await response.json();
 
     expect(response.status()).toBe(403);
@@ -47,9 +63,3 @@ test.describe("patient search", () => {
     expect(body.error.code).toBe("UNAUTHORIZED");
   });
 });
-
-async function setMockSession(page: Page, user: SessionUser) {
-  await page.addInitScript((sessionUser) => {
-    window.localStorage.setItem("awesome-journal.mock-user", JSON.stringify(sessionUser));
-  }, user);
-}
