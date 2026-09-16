@@ -1,4 +1,5 @@
 export interface BlockchainAccessLog {
+  eventId: string;
   userId: number;
   patientId: number;
   recordId: number | null;

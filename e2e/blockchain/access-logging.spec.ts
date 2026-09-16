@@ -7,6 +7,7 @@ test.describe("blockchain access logging", () => {
     const blockchain = new Blockchain();
 
     const accessLog = {
+      eventId: "event-1",
       userId: 1,
       patientId: 10,
       recordId: 100,
@@ -26,6 +27,7 @@ test.describe("blockchain access logging", () => {
   const blockchain = new Blockchain();
 
   const accessLog = {
+    eventId: "event-2",
     userId: 1,
     patientId: 10,
     recordId: 100,
@@ -45,6 +47,7 @@ test("does not store medical record content on the blockchain", () => {
   const blockchain = new Blockchain();
 
   const accessLog = {
+    eventId: "event-3",
     userId: 1,
     patientId: 10,
     recordId: 100,

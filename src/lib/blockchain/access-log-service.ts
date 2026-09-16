@@ -13,6 +13,7 @@ interface CreateAccessLogInput {
 
 export function createAccessLog(input: CreateAccessLogInput) {
   const accessLog: BlockchainAccessLog = {
+    eventId: crypto.randomUUID(),
     userId: input.userId,
     patientId: input.patientId,
     recordId: input.recordId ?? null,
