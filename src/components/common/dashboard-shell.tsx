@@ -60,27 +60,27 @@ export function DashboardShell() {
       <AppHeader />
       <section className="relative overflow-hidden border-b bg-primary px-4 py-10 text-primary-foreground md:min-h-[360px] md:px-6 md:py-14">
         <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.16),transparent_48%)]" />
-        <div className="absolute inset-y-0 right-0 hidden w-[52%] overflow-hidden [clip-path:ellipse(86%_82%_at_78%_50%)] md:block">
+        <div className="absolute inset-y-0 right-0 hidden w-[46%] overflow-hidden [clip-path:ellipse(88%_82%_at_82%_50%)] md:block">
           <Image
             src="/images/doctors.jpg"
             alt=""
             fill
             className="object-cover"
             priority
-            sizes="52vw"
+            sizes="46vw"
           />
           <div className="absolute inset-0 bg-primary/20" />
         </div>
-        <div className="relative mx-auto grid w-full max-w-6xl items-center gap-8 md:min-h-[250px] md:grid-cols-[minmax(0,0.9fr)_minmax(320px,0.6fr)]">
-          <div className="z-10 flex flex-col gap-5">
+        <div className="relative mx-auto grid w-full max-w-6xl items-center gap-8 md:min-h-[250px] md:grid-cols-[minmax(0,520px)_1fr]">
+          <div className="z-10 flex max-w-[520px] flex-col gap-5">
             <div className="w-fit rounded-full border border-primary-foreground/25 bg-primary-foreground/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground/85">
               {roleLabel(user.role)}
             </div>
             <div>
-              <h1 className="max-w-xl text-4xl font-bold leading-[1.05] tracking-tight md:text-6xl">
+              <h1 className="text-4xl font-bold leading-[1.05] tracking-tight md:text-6xl">
                 {isStaff ? "Care staff dashboard" : "My health record"}
               </h1>
-              <p className="mt-5 max-w-xl text-base leading-7 text-primary-foreground/82 md:text-lg">
+              <p className="mt-5 max-w-[500px] text-base leading-7 text-primary-foreground/82 md:text-lg">
                 Signed in as {roleLabel(user.role)}. This mock dashboard lets the frontend move
                 while backend authentication and patient data are being finished.
               </p>
