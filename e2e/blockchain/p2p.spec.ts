@@ -81,7 +81,5 @@ test("receives an access log through a P2P message", () => {
   ambulance.receiveMessage(message);
 
   expect(ambulance.blockchain.chain).toHaveLength(1);
-  expect(ambulance.blockchain.chain[0]?.data.eventId).toBe(
-    "event-message-1",
-  );
+  expect(ambulance.blockchain.chain[0]?.data.eventId).toBe("event-message-1");
 });

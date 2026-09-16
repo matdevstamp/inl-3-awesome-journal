@@ -12,22 +12,21 @@ export class Peer {
   }
 
   receiveAccessLog(accessLog: BlockchainAccessLog): void {
-     const alreadyExists = this.blockchain.chain.some(
-    (block) => block.data.eventId === accessLog.eventId,
-  );
+    const alreadyExists = this.blockchain.chain.some(
+      (block) => block.data.eventId === accessLog.eventId,
+    );
     if (!accessLog.eventId.trim()) {
-    return;
-  }
+      return;
+    }
 
-  if (alreadyExists) {
-    return;
-  }
+    if (alreadyExists) {
+      return;
+    }
     this.blockchain.addAccessLog(accessLog);
-    
   }
   receiveMessage(message: P2PAccessLogMessage): void {
-  if (message.type === "access_log") {
-    this.receiveAccessLog(message.data);
+    if (message.type === "access_log") {
+      this.receiveAccessLog(message.data);
+    }
   }
-}
 }
