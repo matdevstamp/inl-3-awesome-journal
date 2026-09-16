@@ -1,5 +1,7 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
+
 import type { Role, SessionUser } from "@/lib/types/api";
 
 export const MOCK_USERS: Array<SessionUser & { displayName: string; password: string }> = [
@@ -46,6 +48,9 @@ export const MOCK_USERS: Array<SessionUser & { displayName: string; password: st
 ];
 
 const STORAGE_KEY = "awesome-journal.mock-user";
+const SESSION_EVENT = "awesome-journal.mock-session-change";
+let cachedSessionValue: string | null = null;
+let cachedSession: SessionUser | null = null;
 
 export function roleLabel(role: Role): string {
   const labels: Record<Role, string> = {
@@ -56,6 +61,10 @@ export function roleLabel(role: Role): string {
     unauthorized: "Unauthorized",
   };
   return labels[role];
+}
+
+export function getMockUserDisplayName(user: SessionUser): string {
+  return MOCK_USERS.find((candidate) => candidate.id === user.id)?.displayName ?? user.username;
 }
 
 export function signInWithMockUser(username: string, password: string): SessionUser | null {
@@ -75,6 +84,8 @@ export function signInWithMockUser(username: string, password: string): SessionU
   };
   if (typeof window !== "undefined") {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionUser));
+    cachedSessionValue = null;
+    window.dispatchEvent(new Event(SESSION_EVENT));
   }
   return sessionUser;
 }
@@ -86,13 +97,23 @@ export function getMockSession(): SessionUser | null {
 
   const value = window.localStorage.getItem(STORAGE_KEY);
   if (!value) {
+    cachedSessionValue = null;
+    cachedSession = null;
     return null;
   }
 
+  if (value === cachedSessionValue) {
+    return cachedSession;
+  }
+
   try {
-    return JSON.parse(value) as SessionUser;
+    cachedSessionValue = value;
+    cachedSession = JSON.parse(value) as SessionUser;
+    return cachedSession;
   } catch {
     window.localStorage.removeItem(STORAGE_KEY);
+    cachedSessionValue = null;
+    cachedSession = null;
     return null;
   }
 }
@@ -103,4 +124,33 @@ export function clearMockSession() {
   }
 
   window.localStorage.removeItem(STORAGE_KEY);
+  cachedSessionValue = null;
+  cachedSession = null;
+  window.dispatchEvent(new Event(SESSION_EVENT));
+}
+
+export function mockSessionHeaders(user: SessionUser): HeadersInit {
+  return {
+    "x-mock-role": user.role,
+    "x-mock-user-id": String(user.id),
+    "x-mock-username": user.username,
+  };
+}
+
+export function useMockSession(): SessionUser | null | undefined {
+  return useSyncExternalStore(subscribeToMockSession, getMockSession, () => undefined);
+}
+
+function subscribeToMockSession(onStoreChange: () => void): () => void {
+  if (typeof window === "undefined") {
+    return () => {};
+  }
+
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener(SESSION_EVENT, onStoreChange);
+
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(SESSION_EVENT, onStoreChange);
+  };
 }
