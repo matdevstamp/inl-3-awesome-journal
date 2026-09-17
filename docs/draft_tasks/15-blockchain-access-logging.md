@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-14
-- **Status:** In progress
+- **Status:** In review
 - **Assignee:** umoraghad0-del (huvudansvar, Stream D)
 - **Tags:** blockchain, logging, gdpr, required, gate:3-features, stream:D-audit
 - **Dependencies:** 04-database-design.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
@@ -191,7 +191,7 @@ function verifyBlockchain(chain) {
 - Make sure to handle network partitions gracefully
 - Log blockchain operations for debugging
 - Consider adding blockchain export functionality
-- Core delivered in PR #32 (`feature/15-blockchain-access-logging`, open): block/chain with SHA-256, access-log struct, service, `GET /api/access-log` + `chainValid`, journal-view logging, tamper-detection e2e (incl. GDPR payload test). Remaining: patient viewer UI, failure logging, status monitor, P2P sync (task 16, PR #33).
+- Core delivered in PR #33 (`feature/16-p2p-network`, **under review**; supersedes #32): block/chain with SHA-256, access-log struct, service, `GET /api/access-log` + `chainValid`, journal-view logging, tamper-detection e2e (incl. GDPR payload test). Remaining after review: non-blocking peer sync (HIGH), startup recovery wiring (MED), chain ordering/consistency (MED). Not yet part of this task: patient viewer UI, failure logging, status monitor.
 
 ## Questions to Resolve
 

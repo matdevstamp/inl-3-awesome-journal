@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-16
-- **Status:** In progress
+- **Status:** In review
 - **Assignee:** umoraghad0-del (pair-programmering)
 - **Tags:** networking, p2p, distributed, required, gate:3-features, stream:D-audit
 - **Dependencies:** 15-blockchain-access-logging.md, 06-backend-project-setup.md
@@ -167,7 +167,7 @@ Sync Process:
 - Use WebSockets for real-time communication
 - Consider using a P2P library like libp2p for production
 - Log all P2P operations for debugging
-- Core delivered in PR #33 (`feature/16-p2p-network`, open): two-server Playwright setup (3001/3002), message protocol, peer discovery with dedup/validation, heartbeat + health checks, access-log sync + recovery, e2e tests. Remaining: graceful partition handling, failover, perf validation.
+- Core delivered in PR #33 (`feature/16-p2p-network`, **under review**): two-server Playwright setup (3001/3002), message protocol, peer discovery with dedup/validation, heartbeat + health checks, access-log sync + recovery, e2e tests. Remaining after review: P2P payload validation (MED), graceful partition handling, failover, perf validation.
 
 ## Questions to Resolve
 
