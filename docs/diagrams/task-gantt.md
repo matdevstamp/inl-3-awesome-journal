@@ -42,11 +42,11 @@ gantt
     10 GitHub Actions CI/CD Workflow ✓ : done, 2026-09-07, 1d
     section Gate 3-Features
     11 Backend API & Authentication (71% · 17/24 · doing) : active, 2026-09-09, 2d
-    12 Frontend UI Development (87% · 26/30 · doing) : active, 2026-09-09, 3d
+    12 Frontend UI Development (93% · 28/30 · doing) : active, 2026-09-09, 3d
     13 Patient View & Search ✓ : done, 2026-09-14, 2d
-    14 Medical Notes with Visibility Control (0% · 0/23 · todo) : active, 2026-09-16, 1d
-    15 Blockchain Access Logging (0% · 0/23 · doing) : active, 2026-09-13, 2d
-    16 P2P Network Implementation (0% · 0/24 · todo) : active, 2026-09-15, 2d
+    14 Medical Notes with Visibility Control (21% · 5/24 · doing) : active, 2026-09-16, 1d
+    15 Blockchain Access Logging (52% · 12/23 · doing) : active, 2026-09-13, 2d
+    16 P2P Network Implementation (67% · 16/24 · doing) : active, 2026-09-15, 2d
     section Gate 4-Integration
     17 User Roles & Access Control (0% · 0/20 · todo) : active, 2026-09-17, 2d
     18 Socket.io Broadcasting (0% · 0/24 · todo) : active, 2026-09-21, 1d

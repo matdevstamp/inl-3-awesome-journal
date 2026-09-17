@@ -45,11 +45,11 @@ flowchart TD
     end
     subgraph features["Gate 3-Features"]
     T11["11 Backend API & Authentication (71% · 17/24 · doing)"]
-    T12["12 Frontend UI Development (87% · 26/30 · doing)"]
+    T12["12 Frontend UI Development (93% · 28/30 · doing)"]
     T13["13 Patient View & Search ✓"]
-    T14["14 Medical Notes with Visibility Control (0% · 0/23 · todo)"]
-    T15["15 Blockchain Access Logging (0% · 0/23 · doing)"]
-    T16["16 P2P Network Implementation (0% · 0/24 · todo)"]
+    T14["14 Medical Notes with Visibility Control (21% · 5/24 · doing)"]
+    T15["15 Blockchain Access Logging (52% · 12/23 · doing)"]
+    T16["16 P2P Network Implementation (67% · 16/24 · doing)"]
     end
     subgraph integration["Gate 4-Integration"]
     T17["17 User Roles & Access Control (0% · 0/20 · todo)"]
@@ -137,9 +137,9 @@ flowchart TD
     class T11 doing;
     class T12 doing;
     class T13 done;
-    class T14 todo;
+    class T14 doing;
     class T15 doing;
-    class T16 todo;
+    class T16 doing;
     class T17 todo;
     class T18 todo;
     class T19 todo;

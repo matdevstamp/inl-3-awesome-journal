@@ -188,7 +188,7 @@ Render explicit loading, error, empty, and success states. The query key improve
 - [x] Build patient search interface
 - [x] Create patient detail view
 - [x] Build medical records display
-- [ ] Create notes interface with visibility selector
+- [x] Create notes interface with visibility selector
 - [x] Implement access logs display
 - [x] Add loading states and error handling
 - [x] Style with CSS framework (Tailwind, Bootstrap, or Material UI)
@@ -203,7 +203,7 @@ Render explicit loading, error, empty, and success states. The query key improve
 - [x] Patient search works and displays results
 - [x] Patient view varies by role correctly
 - [x] Medical records are displayed properly
-- [ ] Notes can be created with visibility options
+- [x] Notes can be created with visibility options
 - [x] Access logs are shown to authorized users
 - [x] UI is responsive and user-friendly
 - [ ] All forms have proper validation
@@ -212,7 +212,7 @@ Render explicit loading, error, empty, and success states. The query key improve
 
 ## Notes
 
-- Progress: auth shell merged in PR #22; patient search + journal merged in PR #24 (task 13). Remaining: notes UI, form validation, and wiring records/notes/access-logs to real APIs (tasks 11/14/15).
+- Progress: auth shell merged in PR #22; patient search + journal merged in PR #24 (task 13); notes UI with visibility selector merged in PR #25 (task 14). Remaining: form validation throughout, wiring records/notes/access-logs to real APIs (tasks 11/14/15).
 - Use shadcn/ui components from the task 05 scaffold
 - Make sure to handle token expiration gracefully
 - Implement proper loading skeletons instead of spinners
