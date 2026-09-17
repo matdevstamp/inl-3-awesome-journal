@@ -44,7 +44,7 @@ flowchart TD
     T10["10 GitHub Actions CI/CD Workflow ✓"]
     end
     subgraph features["Gate 3-Features"]
-    T11["11 Backend API & Authentication (25% · 6/24 · doing)"]
+    T11["11 Backend API & Authentication (71% · 17/24 · doing)"]
     T12["12 Frontend UI Development (87% · 26/30 · doing)"]
     T13["13 Patient View & Search ✓"]
     T14["14 Medical Notes with Visibility Control (0% · 0/23 · todo)"]

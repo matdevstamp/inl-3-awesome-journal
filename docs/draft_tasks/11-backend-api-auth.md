@@ -107,27 +107,27 @@ POST   /api/access-log          - Log access to blockchain
 
 - [x] Confirm route-handler skeleton from task 06 (src/app/api + src/lib/auth)
 - [x] Implement JWT sign/verify + httpOnly cookie helpers
-- [ ] Create login/logout/me route handlers
+- [x] Create login/logout/me route handlers
 - [x] Implement the requireRole() guard used by protected route handlers
 - [x] Create patient search route handler
 - [ ] Create medical records CRUD route handlers
 - [ ] Create notes CRUD route handlers with visibility control
 - [ ] Implement access-log route handler
-- [ ] Add input validation (Zod) and error handling
-- [ ] Write API documentation (shared types + endpoint list; no OpenAPI toolchain)
-- [ ] Add rate limiting for security
-- [ ] Add middleware.ts short-circuit for unauthenticated page requests
+- [x] Add input validation (Zod) and error handling
+- [x] Write API documentation (shared types + endpoint list; no OpenAPI toolchain)
+- [x] Add rate limiting for security
+- [x] Add middleware.ts short-circuit for unauthenticated page requests
 
 ## Done Criteria
 
 - [ ] All API endpoints functional
-- [ ] Authentication works for all 5 roles
+- [x] Authentication works for all 5 roles
 - [ ] Role-based access control enforced
-- [ ] Input validation prevents bad data
-- [ ] Error responses are meaningful
-- [ ] API documentation is complete
-- [ ] CORS configured correctly
-- [ ] Rate limiting prevents abuse
+- [x] Input validation prevents bad data
+- [x] Error responses are meaningful
+- [x] API documentation is complete
+- [x] CORS configured correctly
+- [x] Rate limiting prevents abuse
 
 ## Notes
 

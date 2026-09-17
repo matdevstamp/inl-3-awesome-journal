@@ -41,7 +41,7 @@ gantt
     09 Playwright E2E Testing ✓ : done, 2026-09-06, 2d
     10 GitHub Actions CI/CD Workflow ✓ : done, 2026-09-07, 1d
     section Gate 3-Features
-    11 Backend API & Authentication (25% · 6/24 · doing) : active, 2026-09-09, 2d
+    11 Backend API & Authentication (71% · 17/24 · doing) : active, 2026-09-09, 2d
     12 Frontend UI Development (87% · 26/30 · doing) : active, 2026-09-09, 3d
     13 Patient View & Search ✓ : done, 2026-09-14, 2d
     14 Medical Notes with Visibility Control (0% · 0/23 · todo) : active, 2026-09-16, 1d
