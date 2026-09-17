@@ -5,29 +5,45 @@ import type { P2PAccessLogMessage } from "@/lib/p2p/message";
 export class Peer {
   readonly id: string;
   readonly blockchain: Blockchain;
+  readonly peers: Peer[] = [];
 
-  constructor(id: string) {
+  constructor(id: string, blockchain = new Blockchain()) {
     this.id = id;
-    this.blockchain = new Blockchain();
+    this.blockchain = blockchain;
   }
 
   receiveAccessLog(accessLog: BlockchainAccessLog): void {
-     const alreadyExists = this.blockchain.chain.some(
-    (block) => block.data.eventId === accessLog.eventId,
-  );
+    const alreadyExists = this.blockchain.chain.some(
+      (block) => block.data.eventId === accessLog.eventId,
+    );
     if (!accessLog.eventId.trim()) {
-    return;
-  }
+      return;
+    }
 
-  if (alreadyExists) {
-    return;
-  }
+    if (alreadyExists) {
+      return;
+    }
     this.blockchain.addAccessLog(accessLog);
-    
+  }
+  addPeer(peer: Peer): void {
+    const alreadyExists = this.peers.some((existingPeer) => existingPeer.id === peer.id);
+
+    if (alreadyExists) {
+      return;
+    }
+    this.peers.push(peer);
   }
   receiveMessage(message: P2PAccessLogMessage): void {
-  if (message.type === "access_log") {
-    this.receiveAccessLog(message.data);
+    if (message.type === "access_log") {
+      if (message.from !== message.data.serverId) {
+        return;
+      }
+      this.receiveAccessLog(message.data);
+    }
   }
-}
+  broadcastAccessLog(accessLog: BlockchainAccessLog): void {
+    this.peers.forEach((peer) => {
+      peer.receiveAccessLog(accessLog);
+    });
+  }
 }
