@@ -98,19 +98,23 @@ test.describe("blockchain access logging", () => {
     expect(body.error.code).toBe("UNAUTHENTICATED");
   });
   test("patient can only read access logs for their own journal", async ({ request }) => {
-    createAccessLog({
-      userId: 1,
-      patientId: 1,
-      action: "view",
-      serverId: "hospital-s",
+    const createOwnLog = await request.get("/api/patients/1", {
+      headers: {
+        "x-mock-role": "doctor",
+        "x-mock-user-id": "1",
+      },
     });
 
-    createAccessLog({
-      userId: 1,
-      patientId: 2,
-      action: "view",
-      serverId: "hospital-s",
+    expect(createOwnLog.status()).toBe(200);
+
+    const createOtherLog = await request.get("/api/patients/2", {
+      headers: {
+        "x-mock-role": "doctor",
+        "x-mock-user-id": "1",
+      },
     });
+
+    expect(createOtherLog.status()).toBe(200);
 
     const response = await request.get("/api/access-log", {
       headers: {
