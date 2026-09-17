@@ -197,7 +197,12 @@ test("P2P endpoint stores the received access log in the server blockchain", asy
   expect(body.stored).toBe(true);
 });
 test("syncs a real patient access log from Hospital S to Ambulance A", async ({ request }) => {
-  const eventBefore = await request.get("http://localhost:3002/api/access-log");
+  const eventBefore = await request.get("http://localhost:3002/api/access-log", {
+    headers: {
+      "x-mock-role": "doctor",
+      "x-mock-user-id": "1",
+    },
+  });
   expect(
     eventBefore.ok(),
     `Ambulance /api/access-log returned ${eventBefore.status()}: ${await eventBefore.text()}`,
@@ -212,8 +217,12 @@ test("syncs a real patient access log from Hospital S to Ambulance A", async ({ 
 
   expect(patientResponse.ok()).toBeTruthy();
 
-  const ambulanceResponse = await request.get("http://localhost:3002/api/access-log");
-
+  const ambulanceResponse = await request.get("http://localhost:3002/api/access-log", {
+    headers: {
+      "x-mock-role": "doctor",
+      "x-mock-user-id": "1",
+    },
+  });
   expect(ambulanceResponse.ok()).toBeTruthy();
 
   const body = await ambulanceResponse.json();
