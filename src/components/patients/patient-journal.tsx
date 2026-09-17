@@ -101,7 +101,7 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
 
   return (
     <>
-      <section className="border-b bg-muted/30 px-4 py-6 md:px-6">
+      <section className="border-b bg-background px-4 py-6 md:px-6">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-3">
           <RoleBadge role={journal.viewerRole} />
           <div>
