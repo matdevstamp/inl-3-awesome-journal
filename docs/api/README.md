@@ -36,7 +36,16 @@ Endpointen kräver en giltig autentiserad session.
 
 ## Patienter
 
-### GET /api/patients?name={name}
+### GET /api/patients?q={query}&filter={filter}&page={page}
+
+Patient search reads from SQL and requires a valid JWT cookie. Mock role headers are not accepted.
+`filter` supports `name` (default), `dob`, and `personalNumber`; repeated filters use OR matching.
+Names match case-insensitively, including full names. Date prefixes use `YYYY`, `YYYY-MM`, or
+`YYYY-MM-DD`. Personal numbers can include a hyphen. The legacy `name` query parameter is supported.
+Pages contain three results in stable name/ID order; pages beyond the last page are clamped.
+Invalid filters or page numbers return 400. Missing sessions return 401; forbidden roles return 403.
+The response uses `PatientSearchResponse` in `src/lib/types/api.ts`. Note counts exclude other
+authors' private notes. `lastVisit` is the latest record creation date, or `-` when no records exist.
 
 Söker efter patienter baserat på namn.
 
