@@ -12,19 +12,23 @@ export class Peer {
     this.blockchain = blockchain;
   }
 
-  receiveAccessLog(accessLog: BlockchainAccessLog): void {
+  receiveAccessLog(accessLog: BlockchainAccessLog): boolean {
     const alreadyExists = this.blockchain.chain.some(
       (block) => block.data.eventId === accessLog.eventId,
     );
+
     if (!accessLog.eventId.trim()) {
-      return;
+      return false;
     }
 
     if (alreadyExists) {
-      return;
+      return false;
     }
+
     this.blockchain.addAccessLog(accessLog);
+    return true;
   }
+
   addPeer(peer: Peer): void {
     const alreadyExists = this.peers.some((existingPeer) => existingPeer.id === peer.id);
 
@@ -33,13 +37,16 @@ export class Peer {
     }
     this.peers.push(peer);
   }
-  receiveMessage(message: P2PAccessLogMessage): void {
-    if (message.type === "access_log") {
-      if (message.from !== message.data.serverId) {
-        return;
-      }
-      this.receiveAccessLog(message.data);
+  receiveMessage(message: P2PAccessLogMessage): boolean {
+    if (message.type !== "access_log") {
+      return false;
     }
+
+    if (message.from !== message.data.serverId) {
+      return false;
+    }
+
+    return this.receiveAccessLog(message.data);
   }
   broadcastAccessLog(accessLog: BlockchainAccessLog): void {
     this.peers.forEach((peer) => {

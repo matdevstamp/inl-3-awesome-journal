@@ -10,16 +10,20 @@ export async function sendAccessLogToPeer(accessLog: BlockchainAccessLog): Promi
     data: accessLog,
   };
 
-  const response = await fetch(`${env.peerUrl}/api/p2p/access-log`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(message),
-  });
+  try {
+    const response = await fetch(`${env.peerUrl}/api/p2p/access-log`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(message),
+    });
 
-  if (!response.ok) {
-    throw new Error(`Peer sync failed with status ${response.status}`);
+    if (!response.ok) {
+      console.warn(`Peer sync failed with status ${response.status}`);
+    }
+  } catch (error) {
+    console.warn("Peer sync unavailable; access log remains stored locally.", error);
   }
 }
 export async function checkPeerHealth(peerUrl = env.peerUrl): Promise<boolean> {

@@ -3,10 +3,16 @@ import { fail, ok } from "@/lib/api/http";
 import { requireRoleOrMock } from "@/lib/api/mock-auth";
 import { getAccessLogBlockchain } from "@/lib/blockchain/access-log-service";
 import { patientIdForUser } from "@/lib/patients/mock-patients";
+import { syncServerPeer } from "@/app/api/p2p/server-peer";
 
 export async function GET(request: Request) {
   try {
     const user = await requireRoleOrMock(request, "doctor", "nurse", "ambulance", "patient");
+    try {
+      await syncServerPeer();
+    } catch (error) {
+      console.warn("Peer recovery unavailable; using local access logs.", error);
+    }
 
     const blockchain = getAccessLogBlockchain();
     const allAccessLogs = blockchain.chain.map((block) => block.data);

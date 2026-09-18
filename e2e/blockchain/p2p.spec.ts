@@ -45,6 +45,7 @@ test("does not add the same access log twice", () => {
 
   expect(ambulance.blockchain.chain).toHaveLength(1);
 });
+
 test("rejects an invalid access log", () => {
   const ambulance = new Peer("ambulance-a");
 
@@ -62,6 +63,7 @@ test("rejects an invalid access log", () => {
 
   expect(ambulance.blockchain.chain).toHaveLength(0);
 });
+
 test("receives an access log through a P2P message", () => {
   const ambulance = new Peer("ambulance-a");
 
@@ -85,6 +87,7 @@ test("receives an access log through a P2P message", () => {
   expect(ambulance.blockchain.chain).toHaveLength(1);
   expect(ambulance.blockchain.chain[0]?.data.eventId).toBe("event-message-1");
 });
+
 test("peers can discover each other", () => {
   const hospital = new Peer("hospital-s");
   const ambulance = new Peer("ambulance-a");
@@ -93,6 +96,7 @@ test("peers can discover each other", () => {
 
   expect(hospital.peers).toContain(ambulance);
 });
+
 test("does not add the same peer twice", () => {
   const hospital = new Peer("hospital-s");
   const ambulance = new Peer("ambulance-a");
@@ -102,6 +106,7 @@ test("does not add the same peer twice", () => {
 
   expect(hospital.peers).toHaveLength(1);
 });
+
 test("broadcasts an access log to connected peers", () => {
   const hospital = new Peer("hospital-s");
   const ambulance = new Peer("ambulance-a");
@@ -123,14 +128,17 @@ test("broadcasts an access log to connected peers", () => {
   expect(ambulance.blockchain.chain).toHaveLength(1);
   expect(ambulance.blockchain.chain[0]?.data.eventId).toBe("event-broadcast-1");
 });
+
 test("P2P access-log endpoint accepts an access log message", async ({ request }) => {
+  const eventId = `event-network-${crypto.randomUUID()}`;
+
   const response = await request.post("/api/p2p/access-log", {
     data: {
       type: "access_log",
       from: "hospital-s",
       timestamp: "2026-09-16T14:00:00Z",
       data: {
-        eventId: "event-network-1",
+        eventId,
         userId: 1,
         patientId: 2,
         recordId: null,
@@ -141,11 +149,17 @@ test("P2P access-log endpoint accepts an access log message", async ({ request }
     },
   });
 
-  expect(response.ok()).toBeTruthy();
+  expect(
+    response.ok(),
+    `POST /api/p2p/access-log returned ${response.status()}: ${await response.text()}`,
+  ).toBeTruthy();
 });
+
 test("P2P endpoint returns the received access log", async ({ request }) => {
+  const eventId = `event-network-${crypto.randomUUID()}`;
+
   const accessLog = {
-    eventId: "event-network-2",
+    eventId,
     userId: 1,
     patientId: 2,
     recordId: null,
@@ -167,13 +181,16 @@ test("P2P endpoint returns the received access log", async ({ request }) => {
 
   const body = await response.json();
 
-  expect(body.data.data.eventId).toBe("event-network-2");
+  expect(body.data.data.eventId).toBe(eventId);
 });
+
 test("P2P endpoint stores the received access log in the server blockchain", async ({
   request,
 }) => {
+  const eventId = `event-network-store-${crypto.randomUUID()}`;
+
   const accessLog = {
-    eventId: "event-network-store-1",
+    eventId,
     userId: 1,
     patientId: 2,
     recordId: null,
@@ -196,6 +213,7 @@ test("P2P endpoint stores the received access log in the server blockchain", asy
   expect(response.ok()).toBeTruthy();
   expect(body.stored).toBe(true);
 });
+
 test("syncs a real patient access log from Hospital S to Ambulance A", async ({ request }) => {
   const eventBefore = await request.get("http://localhost:3002/api/access-log", {
     headers: {
@@ -203,6 +221,7 @@ test("syncs a real patient access log from Hospital S to Ambulance A", async ({ 
       "x-mock-user-id": "1",
     },
   });
+
   expect(
     eventBefore.ok(),
     `Ambulance /api/access-log returned ${eventBefore.status()}: ${await eventBefore.text()}`,
@@ -223,6 +242,7 @@ test("syncs a real patient access log from Hospital S to Ambulance A", async ({ 
       "x-mock-user-id": "1",
     },
   });
+
   expect(ambulanceResponse.ok()).toBeTruthy();
 
   const body = await ambulanceResponse.json();
@@ -235,6 +255,7 @@ test("syncs a real patient access log from Hospital S to Ambulance A", async ({ 
   expect(syncedLog).toBeDefined();
   expect(body.data.chainValid).toBe(true);
 });
+
 test("rejects a P2P message with a forged server identity", () => {
   const ambulance = new Peer("ambulance-a");
 
@@ -257,6 +278,7 @@ test("rejects a P2P message with a forged server identity", () => {
 
   expect(ambulance.blockchain.chain).toHaveLength(0);
 });
+
 test("detects when the configured peer is healthy", async () => {
   const isHealthy = await checkPeerHealth();
 
@@ -274,6 +296,7 @@ test("fetches access logs from a healthy peer", async () => {
 
   expect(Array.isArray(accessLogs)).toBe(true);
 });
+
 test("recovers access logs from a peer after reconnecting", async () => {
   const chainLengthBefore = serverPeer.blockchain.chain.length;
 
@@ -282,6 +305,7 @@ test("recovers access logs from a peer after reconnecting", async () => {
   expect(serverPeer.blockchain.isValid()).toBe(true);
   expect(serverPeer.blockchain.chain.length).toBeGreaterThanOrEqual(chainLengthBefore);
 });
+
 test("handles simultaneous access-log events", () => {
   const hospital = new Peer("hospital-s");
   const ambulance = new Peer("ambulance-a");
@@ -316,6 +340,15 @@ test("handles simultaneous access-log events", () => {
 
   expect(hospital.blockchain.chain).toHaveLength(2);
   expect(ambulance.blockchain.chain).toHaveLength(2);
+
+  expect(ambulance.blockchain.chain[0]?.data.eventId).toBe(
+    hospital.blockchain.chain[0]?.data.eventId,
+  );
+
+  expect(ambulance.blockchain.chain[1]?.data.eventId).toBe(
+    hospital.blockchain.chain[1]?.data.eventId,
+  );
+
   expect(hospital.blockchain.isValid()).toBe(true);
   expect(ambulance.blockchain.isValid()).toBe(true);
 });
