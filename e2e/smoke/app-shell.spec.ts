@@ -3,7 +3,11 @@ import { expect, test } from "@playwright/test";
 test.describe("app shell (Gate 2)", () => {
   test("landing page renders and exposes the theme toggle", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByText("Secure health-record access")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: /Awesome\s*Journal/ })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Sign in", exact: true })).toHaveAttribute(
+      "href",
+      "/login",
+    );
     await expect(page.getByRole("button", { name: "Toggle theme" })).toBeVisible();
   });
 
