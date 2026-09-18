@@ -2,7 +2,7 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-21
+- **Deadline:** 2026-09-28
 - **Status:** TODO
 - **Assignee:** umoraghad0-del (pair-programmering)
 - **Tags:** realtime, websocket, socketio, required, gate:4-integration

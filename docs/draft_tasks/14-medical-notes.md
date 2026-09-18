@@ -2,7 +2,7 @@
 
 ## Metadata
 - **Priority:** P1 - High
-- **Deadline:** 2026-09-16
+- **Deadline:** 2026-09-22
 - **Status:** In progress
 - **Assignee:** Kassim10 (backend visibility) + rcilomba (UI)
 - **Tags:** frontend, notes, visibility, required, gate:3-features, stream:C-notes

@@ -2,7 +2,7 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-14
+- **Deadline:** 2026-09-21
 - **Status:** In review
 - **Assignee:** umoraghad0-del (huvudansvar, Stream D)
 - **Tags:** blockchain, logging, gdpr, required, gate:3-features, stream:D-audit

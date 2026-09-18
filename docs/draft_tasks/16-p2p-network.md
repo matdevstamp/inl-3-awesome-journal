@@ -2,7 +2,7 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-16
+- **Deadline:** 2026-09-21
 - **Status:** In review
 - **Assignee:** umoraghad0-del (pair-programmering)
 - **Tags:** networking, p2p, distributed, required, gate:3-features, stream:D-audit
