@@ -217,12 +217,11 @@ test("P2P endpoint stores the received access log in the server blockchain", asy
 test("syncs a real patient access log and keeps both server chains consistent", async ({
   request,
 }) => {
-  const patientResponse = await request.get("http://localhost:3001/api/patients/1", {
-    headers: {
-      "x-mock-role": "doctor",
-      "x-mock-user-id": "1",
-    },
+  const loginResponse = await request.post("http://localhost:3001/api/auth/login", {
+    data: { username: "dr_test", password: "test123" },
   });
+  expect(loginResponse.status()).toBe(200);
+  const patientResponse = await request.get("http://localhost:3001/api/patients/1");
 
   expect(patientResponse.ok()).toBeTruthy();
 

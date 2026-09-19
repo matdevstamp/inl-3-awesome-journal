@@ -1,9 +1,16 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type APIRequestContext } from "@playwright/test";
 import { Blockchain } from "../../src/lib/blockchain/blockchain";
 import {
   createAccessLog,
   getAccessLogBlockchain,
 } from "../../src/lib/blockchain/access-log-service";
+
+async function login(context: APIRequestContext, username: string) {
+  const response = await context.post("/api/auth/login", {
+    data: { username, password: "test123" },
+  });
+  expect(response.status()).toBe(200);
+}
 
 test.describe("blockchain access logging", () => {
   test("adds an access log to the blockchain", () => {
@@ -97,24 +104,23 @@ test.describe("blockchain access logging", () => {
     expect(body.ok).toBe(false);
     expect(body.error.code).toBe("UNAUTHENTICATED");
   });
-  test("patient can only read access logs for their own journal", async ({ request }) => {
-    const createOwnLog = await request.get("/api/patients/1", {
-      headers: {
-        "x-mock-role": "doctor",
-        "x-mock-user-id": "1",
-      },
-    });
+  test("patient can only read access logs for their own journal", async ({
+    request,
+    playwright,
+  }) => {
+    const doctor = await playwright.request.newContext({ baseURL: "http://localhost:3001" });
+    try {
+      await login(doctor, "dr_test");
+      const createOwnLog = await doctor.get("/api/patients/1");
 
-    expect(createOwnLog.status()).toBe(200);
+      expect(createOwnLog.status()).toBe(200);
 
-    const createOtherLog = await request.get("/api/patients/2", {
-      headers: {
-        "x-mock-role": "doctor",
-        "x-mock-user-id": "1",
-      },
-    });
+      const createOtherLog = await doctor.get("/api/patients/999");
 
-    expect(createOtherLog.status()).toBe(200);
+      expect(createOtherLog.status()).toBe(404);
+    } finally {
+      await doctor.dispose();
+    }
 
     const response = await request.get("/api/access-log", {
       headers: {
@@ -135,19 +141,9 @@ test.describe("blockchain access logging", () => {
     }
   });
   test("staff can read access logs", async ({ request }) => {
-    createAccessLog({
-      userId: 1,
-      patientId: 1,
-      action: "view",
-      serverId: "hospital-s",
-    });
-
-    createAccessLog({
-      userId: 2,
-      patientId: 2,
-      action: "view",
-      serverId: "hospital-s",
-    });
+    await login(request, "dr_test");
+    expect((await request.get("/api/patients/1")).status()).toBe(200);
+    expect((await request.get("/api/patients/999")).status()).toBe(404);
 
     const response = await request.get("/api/access-log", {
       headers: {
@@ -165,15 +161,17 @@ test.describe("blockchain access logging", () => {
     const patientIds = body.data.accessLogs.map((log: { patientId: number }) => log.patientId);
 
     expect(patientIds).toContain(1);
-    expect(patientIds).toContain(2);
+    expect(patientIds).toContain(999);
   });
-  test("logs a denied patient access attempt", async ({ request }) => {
-    const response = await request.get("/api/patients/2", {
-      headers: {
-        "x-mock-role": "patient",
-        "x-mock-user-id": "4",
-      },
-    });
+  test("logs a denied patient access attempt", async ({ request, playwright }) => {
+    const patient = await playwright.request.newContext({ baseURL: "http://localhost:3001" });
+    let response;
+    try {
+      await login(patient, "patient_test");
+      response = await patient.get("/api/patients/2");
+    } finally {
+      await patient.dispose();
+    }
 
     expect(response.status()).toBe(403);
 
@@ -196,12 +194,8 @@ test.describe("blockchain access logging", () => {
     expect(deniedLog).toBeDefined();
   });
   test("logs an access attempt when patient is not found", async ({ request }) => {
-    const response = await request.get("/api/patients/999", {
-      headers: {
-        "x-mock-role": "doctor",
-        "x-mock-user-id": "1",
-      },
-    });
+    await login(request, "dr_test");
+    const response = await request.get("/api/patients/999");
 
     expect(response.status()).toBe(404);
 
