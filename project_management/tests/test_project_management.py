@@ -21,6 +21,7 @@ from ..cli import (
 )
 from ..github import GitHubClient, GitHubError
 from ..mermaid_validate import validate_mermaid
+from ..pako import compress, decompress, mermaid_live_url
 from ..planner import (
     KICKOFF_ASSIGNMENTS,
     TEAM_MEMBERS,
@@ -961,6 +962,67 @@ class TestMermaidValidation(unittest.TestCase):
             "    A --> B\n    class A todo;\n"
         )
         self.assertEqual(validate_mermaid(flow, "flowchart"), [])
+
+
+# ── pako: mermaid.live URL scheme ────────────────────────────────────────────
+
+
+class TestPakoMermaidLiveUrl(unittest.TestCase):
+    """The mermaid.live `#pako:` payload must mirror pako+zlib deflate and
+    always verify itself by round-tripping back to the exact source."""
+
+    SAMPLE = 'flowchart TD\n    A["Task A (0/0 · todo)"]\n    A --> B\n'
+
+    def test_round_trip_recovers_exact_source(self):
+        self.assertEqual(decompress(compress(self.SAMPLE)), self.SAMPLE)
+        url = mermaid_live_url(self.SAMPLE)
+        self.assertEqual(decompress(url.rsplit(":", 1)[1]), self.SAMPLE)
+
+    def test_url_shape(self):
+        url = mermaid_live_url(self.SAMPLE)
+        self.assertTrue(url.startswith("https://mermaid.live/edit#pako:"))
+        self.assertNotIn("=", url)  # no base64 padding in mermaid.live payloads
+
+    def test_payload_is_url_safe_base64(self):
+        import base64
+
+        payload = mermaid_live_url(self.SAMPLE).rsplit(":", 1)[1]
+        self.assertNotIn("+", payload)
+        self.assertNotIn("/", payload)
+        # payload must decode to a zlib-wrapped stream (0x78 header),
+        # exactly like pako.deflate(..., to: 'string')
+        raw = base64.urlsafe_b64decode(payload + "=" * (-len(payload) % 4))
+        self.assertEqual(raw[0], 0x78)
+
+    def test_payload_matches_python_zlib_golden_vector(self):
+        # Golden vector: this exact source must compress to this exact payload,
+        # so any drift in the compression scheme is caught by the test.
+        import base64
+        import zlib
+
+        source = "flowchart TD\n    A --> B\n"
+        expected = (
+            base64.urlsafe_b64encode(zlib.compress(source.encode("utf-8")))
+            .rstrip(b"=")
+            .decode("ascii")
+        )
+        self.assertEqual(compress(source), expected)
+
+    def test_corrupt_payload_raises(self):
+        payload = compress(self.SAMPLE)
+        corrupt = "A" * max(1, len(payload) - 1) + payload[-1:]
+        self.assertNotEqual(corrupt, payload)
+        with self.assertRaises(Exception):
+            decompress(corrupt)
+
+    def test_generated_graph_url_round_trips(self):
+        tasks = [
+            _make_task(key="01", title="Contract", deadline=date(2026, 9, 10), effort="2h",
+                       tags=("gate:1-decisions",)),
+        ]
+        graph = task_graph_mermaid(tasks)
+        url = mermaid_live_url(graph)
+        self.assertEqual(decompress(url.rsplit(":", 1)[1]), graph)
 
 
 # ── Planner: board-status mapping (plan sync) ───────────────────────────────

@@ -8,6 +8,7 @@ from pathlib import Path
 from .bug_reports import load_reports, promote_report, triage_report
 from .github import GitHubClient, GitHubError
 from .mermaid_validate import validate_mermaid
+from .pako import mermaid_live_url
 from .planner import (
     KICKOFF_ASSIGNMENTS,
     ROLE_TO_USER,
@@ -399,10 +400,15 @@ def main():
                         # Markdown output renders the diagram on GitHub; do not hand-edit.
                         title = "Task Dependency Graph" if args.plan_command == "graph" else "Task Timeline (Gantt)"
                         legend = GRAPH_LEGEND if args.plan_command == "graph" else GANTT_LEGEND
+                        # Compress to a verifiable Mermaid Live URL, like mermaid.live's
+                        # pako + Base64.encodeURI scheme.
+                        live_url = mermaid_live_url(mermaid)
                         content = (
                             f"# {title}\n\n"
                             "_Auto-generated from the draft tasks in `docs/draft_tasks/`. "
                             "Do not edit by hand._\n\n"
+                            f"Open in **[Mermaid Live]({live_url})** "
+                            "(pako/zlib-compressed, verified to round-trip).\n\n"
                             "Regenerate whenever task metadata changes:\n\n"
                             "```bash\n"
                             "python3 -m project_management plan "
