@@ -37,14 +37,22 @@ export default defineConfig({
       url: "http://localhost:3001/api/health",
       reuseExistingServer: !process.env.CI,
       timeout: 60_000,
-      env: { SERVER_ID: "hospital-s" },
+      env: {
+        SERVER_ID: "hospital-s",
+        PEER_URL: "http://localhost:3002",
+        PEER_HEARTBEAT_MS: "1500",
+      },
     },
     {
       command: "npm run start -- -p 3002",
       url: "http://localhost:3002/api/health",
       reuseExistingServer: !process.env.CI,
       timeout: 60_000,
-      env: { SERVER_ID: "ambulance-a" },
+      env: {
+        SERVER_ID: "ambulance-a",
+        PEER_URL: "http://localhost:3001",
+        PEER_HEARTBEAT_MS: "1500",
+      },
     },
   ],
 });

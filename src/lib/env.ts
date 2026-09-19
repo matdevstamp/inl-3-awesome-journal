@@ -23,9 +23,25 @@ function parsePort(value: string): number {
   return port;
 }
 
+function parsePositiveInt(value: string, name: string): number {
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed <= 0) {
+    throw new Error(`Invalid ${name} value: ${value}`);
+  }
+  return parsed;
+}
+
+const serverId = optionalEnv("SERVER_ID", "hospital-s");
+
+/** Which demo instance the configured peer is. Derived unless PEER_URL is set. */
+const DEFAULT_PEER_URL: Record<string, string> = {
+  "hospital-s": "http://localhost:3002",
+  "ambulance-a": "http://localhost:3001",
+};
+
 export const env = {
   /** Which of the two demo instances this server is (hospital-s | ambulance-a). */
-  serverId: optionalEnv("SERVER_ID", "hospital-s"),
+  serverId,
 
   port: parsePort(optionalEnv("PORT", "3001")),
 
@@ -41,5 +57,8 @@ export const env = {
 
   jwtExpiresIn: optionalEnv("JWT_EXPIRES_IN", "24h"),
 
-  peerUrl: optionalEnv("PEER_URL", "http://localhost:3002"),
+  peerUrl: optionalEnv("PEER_URL", DEFAULT_PEER_URL[serverId] ?? "http://localhost:3002"),
+
+  /** How often the peer heartbeat pings the other server (ms). */
+  peerHeartbeatMs: parsePositiveInt(optionalEnv("PEER_HEARTBEAT_MS", "10000"), "PEER_HEARTBEAT_MS"),
 };

@@ -56,9 +56,13 @@ produktionsservrar från en gemensam build:
 
 ```bash
 npm run build
-npm run start -- -p 3001 &   # SERVER_ID=hospital-s
-npm run start -- -p 3002 &   # SERVER_ID=ambulance-a
+SERVER_ID=hospital-s npm run start -- -p 3001 &    # peer: 3002
+SERVER_ID=ambulance-a npm run start -- -p 3002 &   # peer: 3001
 ```
+
+`PEER_URL` pekar automatiskt på den andra instansen utifrån `SERVER_ID`
+(eller sätts explicit). `PEER_HEARTBEAT_MS` styr hur ofta servrarna pingar
+varandra (default 10 s).
 
 `npm run test` gör exakt detta automatiskt (se Testing).
 
