@@ -2,7 +2,7 @@
 
 ## Metadata
 - **Priority:** P0 - Required throughout
-- **Deadline:** 2026-09-24 (final; initial slice 2026-09-05)
+- **Deadline:** 2026-09-29
 - **Status:** TODO
 - **Assignee:** matdevstamp
 - **Tags:** documentation, readme, required, gate:5-delivery

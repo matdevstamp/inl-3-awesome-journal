@@ -2,12 +2,11 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-21
+- **Deadline:** 2026-09-28
 - **Status:** READY
 - **Assignee:** umoraghad0-del (pair-programmering)
 - **Tags:** realtime, websocket, socketio, required, gate:4-integration
 - **Dependencies:** 17-user-roles-access-control.md, 14-medical-notes.md, 16-p2p-network.md, 12-frontend-ui.md
-- **GitHub Issue:** #28 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/28)
 - **Related:** 15-blockchain-access-logging.md
 - **Estimated Effort:** 5h
 

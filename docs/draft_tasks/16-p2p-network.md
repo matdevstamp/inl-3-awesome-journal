@@ -2,7 +2,7 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-16
+- **Deadline:** 2026-09-21
 - **Status:** DONE
 - **Assignee:** umoraghad0-del (pair-programmering)
 - **Tags:** networking, p2p, distributed, required, gate:3-features, stream:D-audit
@@ -141,10 +141,10 @@ Sync Process:
 - [x] Create peer discovery mechanism
 - [x] Implement heartbeat system
 - [x] Add blockchain sync between servers
-- [x] Handle network partitions
+- [ ] Handle network partitions
 - [x] Implement data consistency checks
 - [x] Add peer health monitoring
-- [x] Create failover mechanism
+- [ ] Create failover mechanism
 - [x] Test with simultaneous access
 
 ## Done Criteria
@@ -153,12 +153,12 @@ Sync Process:
 - [x] Servers can discover each other
 - [x] Access logs sync between servers
 - [x] Blockchain is consistent across servers
-- [x] Network partitions are handled gracefully
+- [ ] Network partitions are handled gracefully
 - [x] Heartbeat detects failed peers
 - [x] Data consistency is maintained
 - [x] Servers can recover from disconnection
 - [x] Simultaneous access works correctly
-- [x] Performance is acceptable
+- [ ] Performance is acceptable
 
 ## Notes
 
@@ -167,6 +167,7 @@ Sync Process:
 - Use WebSockets for real-time communication
 - Consider using a P2P library like libp2p for production
 - Log all P2P operations for debugging
+- Core delivered in PR #33 (`feature/16-p2p-network`, **under review**): two-server Playwright setup (3001/3002), message protocol, peer discovery with dedup/validation, heartbeat + health checks, access-log sync + recovery, e2e tests. Remaining after review: P2P payload validation (MED), graceful partition handling, failover, perf validation.
 
 ## Questions to Resolve
 

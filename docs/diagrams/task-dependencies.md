@@ -45,9 +45,9 @@ flowchart TD
     end
     subgraph features["Gate 3-Features"]
     T11["11 Backend API & Authentication ✓"]
-    T12["12 Frontend UI Development (90% · 27/30 · doing)"]
+    T12["12 Frontend UI Development (93% · 28/30 · doing)"]
     T13["13 Patient View & Search ✓"]
-    T14["14 Medical Notes with Visibility Control (22% · 5/23 · doing)"]
+    T14["14 Medical Notes with Visibility Control (21% · 5/24 · doing)"]
     T15["15 Blockchain Access Logging ✓"]
     T16["16 P2P Network Implementation ✓"]
     end

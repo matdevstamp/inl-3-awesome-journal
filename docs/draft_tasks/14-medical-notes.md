@@ -2,7 +2,7 @@
 
 ## Metadata
 - **Priority:** P1 - High
-- **Deadline:** 2026-09-16
+- **Deadline:** 2026-09-22
 - **Status:** IN PROGRESS
 - **Assignee:** Kassim10 (backend visibility) + rcilomba (UI)
 - **Tags:** frontend, notes, visibility, required, gate:3-features, stream:C-notes
@@ -180,7 +180,7 @@ Show `isPending`, `isError`, and the server error message in the form. Do not in
 
 - [ ] Notes can be created with 3 visibility levels
 - [ ] Private notes only visible to author
-- [ Healthcare notes visible to healthcare staff
+- [ ] Healthcare notes visible to healthcare staff
 - [ ] "All" notes visible to patients too
 - [ ] Patients see count of hidden notes
 - [ ] Note access is logged to the access-log chain
@@ -196,6 +196,7 @@ Show `isPending`, `isError`, and the server error message in the form. Do not in
 - Add character limit for notes (e.g., 1000 chars)
 - Consider adding timestamps and edit history
 - Log all note operations for audit trail
+- UI delivered in PR #25 (merged): note creation form + 3-level visibility selector (mock/local until API ready), note display with visibility badge, role-based note filtering and hidden-note count (`hiddenNotesCount`). Backend `src/app/api/notes|records` are still `notImplemented` stubs — CRUD, server-side visibility filtering and audit logging remain (tracked by task 11 auth + this task). Note: issue #16 was closed after PR #25; reopen if full backend notes CRUD is expected.
 
 ## Questions to Resolve
 

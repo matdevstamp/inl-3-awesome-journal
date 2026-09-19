@@ -2,7 +2,7 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-14
+- **Deadline:** 2026-09-21
 - **Status:** DONE
 - **Assignee:** umoraghad0-del (huvudansvar, Stream D)
 - **Tags:** blockchain, logging, gdpr, required, gate:3-features, stream:D-audit
@@ -166,22 +166,22 @@ function verifyBlockchain(chain) {
 - [x] Integrate blockchain with access logging
 - [x] Add verification system
 - [x] Create API to query access logs
-- [x] Implement blockchain sync between servers
+- [ ] Implement blockchain sync between servers (covered by task 16)
 - [x] Add tamper detection
-- [x] Create access log viewer for patients
-- [x] Log all access attempts (success and failure)
-- [x] Add blockchain status monitoring
+- [ ] Create access log viewer for patients
+- [ ] Log all access attempts (success and failure)
+- [ ] Add blockchain status monitoring
 
 ## Done Criteria
 
 - [x] Access logs are stored in blockchain
 - [x] Blockchain is immutable and verifiable
 - [x] Medical records are NOT on blockchain
-- [x] Access logs sync between servers
-- [x] Patients can view who accessed their data
+- [x] Access logs sync between servers (covered by task 16)
+- [ ] Patients can view who accessed their data
 - [x] Tampering is detected and reported
-- [x] All access attempts are logged
-- [x] Blockchain status can be monitored
+- [ ] All access attempts are logged
+- [ ] Blockchain status can be monitored
 - [x] GDPR compliance is maintained
 
 ## Notes
@@ -191,6 +191,7 @@ function verifyBlockchain(chain) {
 - Make sure to handle network partitions gracefully
 - Log blockchain operations for debugging
 - Consider adding blockchain export functionality
+- Core delivered in PR #33 (`feature/16-p2p-network`, **under review**; supersedes #32): block/chain with SHA-256, access-log struct, service, `GET /api/access-log` + `chainValid`, journal-view logging, tamper-detection e2e (incl. GDPR payload test). Remaining after review: non-blocking peer sync (HIGH), startup recovery wiring (MED), chain ordering/consistency (MED). Not yet part of this task: patient viewer UI, failure logging, status monitor.
 
 ## Questions to Resolve
 

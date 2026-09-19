@@ -24,21 +24,43 @@ export function fail(code: string, message: string, status: number): NextRespons
   });
 }
 
-/**
- * Minimal in-memory fixed-window rate limiter (per key, per windowMs).
- * A real distributed limiter belongs behind the gateway in Gate 3; this
- * covers the local two-server demo.
- */
 export function createRateLimiter(limit: number, windowMs: number) {
   const hits = new Map<string, { count: number; resetAt: number }>();
-  return (key: string): boolean => {
+
+  function isAllowed(key: string): boolean {
     const now = Date.now();
     const entry = hits.get(key);
+
     if (!entry || now >= entry.resetAt) {
-      hits.set(key, { count: 1, resetAt: now + windowMs });
       return true;
     }
+
+    return entry.count < limit;
+  }
+
+  function recordFailure(key: string): void {
+    const now = Date.now();
+    const entry = hits.get(key);
+
+    if (!entry || now >= entry.resetAt) {
+      hits.set(key, {
+        count: 1,
+        resetAt: now + windowMs,
+      });
+
+      return;
+    }
+
     entry.count += 1;
-    return entry.count <= limit;
+  }
+
+  function reset(key: string): void {
+    hits.delete(key);
+  }
+
+  return {
+    isAllowed,
+    recordFailure,
+    reset,
   };
 }

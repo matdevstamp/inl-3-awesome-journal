@@ -63,6 +63,10 @@ export function roleLabel(role: Role): string {
   return labels[role];
 }
 
+export function getMockUserDisplayName(user: SessionUser): string {
+  return MOCK_USERS.find((candidate) => candidate.id === user.id)?.displayName ?? user.username;
+}
+
 export function signInWithMockUser(username: string, password: string): SessionUser | null {
   const user = MOCK_USERS.find(
     (candidate) => candidate.username === username && candidate.password === password,
