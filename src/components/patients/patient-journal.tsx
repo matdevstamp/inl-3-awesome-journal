@@ -20,9 +20,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { apiRequest } from "@/lib/api/client";
 import type { JournalNotePreview, PatientJournalResponse, SessionUser } from "@/lib/types/api";
+import type { BlockchainAccessLog } from "@/lib/blockchain/access-log";
 
 export function PatientJournal({ patientId, user }: { patientId: string; user: SessionUser }) {
   const [journal, setJournal] = useState<PatientJournalResponse | null>(null);
+  const [blockchainAccessLogs, setBlockchainAccessLogs] = useState<BlockchainAccessLog[]>([]);
+  const [chainValid, setChainValid] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -34,8 +37,17 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
         const data = await apiRequest<PatientJournalResponse>(`/api/patients/${patientId}`, {
           headers: mockSessionHeaders(user),
         });
+        const accessLogData = await apiRequest<{
+          accessLogs: BlockchainAccessLog[];
+          chainValid: boolean;
+          viewerUserId: number;
+        }>("/api/access-log", {
+          headers: mockSessionHeaders(user),
+        });
         if (isMounted) {
           setJournal(data);
+          setBlockchainAccessLogs(accessLogData.accessLogs);
+          setChainValid(accessLogData.chainValid);
           setError(null);
         }
       } catch {
@@ -194,24 +206,26 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
                 <ActivityIcon className="size-5 text-muted-foreground" aria-hidden="true" />
                 <CardTitle>Access log</CardTitle>
                 <CardDescription>
-                  Mock blockchain verification status until task 15 connects the audit chain.
+                  Access events recorded and verified by the blockchain audit chain.{" "}
                 </CardDescription>
               </CardHeader>
               <CardContent className="grid gap-3">
-                {journal.accessLogs.map((log) => (
+                {blockchainAccessLogs.map((log) => (
                   <div
-                    key={log.id}
+                    key={log.eventId}
                     className="flex flex-col gap-2 rounded-lg border p-3 md:flex-row md:items-center md:justify-between"
                   >
                     <div>
-                      <p className="font-medium">{log.actorName}</p>
+                      <p className="font-medium">User {log.userId}</p>
                       <p className="text-sm text-muted-foreground">
-                        {log.action.replace("_", " ")} as {log.actorRole} - {log.timestamp}
+                        {log.action.replace("_", " ")} - {log.timestamp}
                       </p>
+                      <p className="text-xs text-muted-foreground">Server: {log.serverId}</p>
                     </div>
+
                     <Badge variant="secondary" className="w-fit">
                       <CheckCircle2Icon className="size-3" aria-hidden="true" />
-                      {log.verified ? "Verified" : "Unverified"}
+                      {chainValid ? "Blockchain verified" : "Blockchain verification failed"}
                     </Badge>
                   </div>
                 ))}

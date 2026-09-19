@@ -1,6 +1,9 @@
 import { AuthError } from "@/lib/auth";
 import { fail, ok } from "@/lib/api/http";
 import { requireRoleOrMock } from "@/lib/api/mock-auth";
+import { createAccessLog } from "@/lib/blockchain/access-log-service";
+import { env } from "@/lib/env";
+import { sendAccessLogToPeer } from "@/lib/p2p/transport";
 import {
   findPatient,
   getJournalForPatient,
@@ -27,15 +30,44 @@ export async function GET(request: Request, context: RouteContext) {
     const canOpenJournal = isStaffRole(user.role) || ownPatientId === patientId;
 
     if (!canOpenJournal) {
+      const block = createAccessLog({
+        userId: user.id,
+        patientId,
+        recordId: null,
+        action: "view_denied",
+        serverId: env.serverId,
+      });
+
+      await sendAccessLogToPeer(block.data);
+
       return fail("UNAUTHORIZED", "Patients can only open their own journal.", 403);
     }
 
     const patient = findPatient(patientId);
+
     if (!patient) {
+      const block = createAccessLog({
+        userId: user.id,
+        patientId,
+        recordId: null,
+        action: "view_not_found",
+        serverId: env.serverId,
+      });
+
+      await sendAccessLogToPeer(block.data);
+
       return fail("PATIENT_NOT_FOUND", "Patient could not be found.", 404);
     }
 
     const journal = getJournalForPatient(patientId, user);
+    const block = createAccessLog({
+      userId: user.id,
+      patientId,
+      recordId: null,
+      action: "view",
+      serverId: env.serverId,
+    });
+    await sendAccessLogToPeer(block.data);
 
     return ok({
       patient,

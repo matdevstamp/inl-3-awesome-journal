@@ -18,7 +18,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "postinstall": "prisma generate",
-    "dev:server2": "next dev -p 3002",
+    "dev:server2": "SERVER_ID=ambulance-a next dev -p 3002",
     "test": "playwright test",
     "test:e2e": "playwright test",
     "test:install": "playwright install chromium"
