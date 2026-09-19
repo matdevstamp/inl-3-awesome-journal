@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-14
-- **Status:** In progress
+- **Status:** DONE
 - **Assignee:** umoraghad0-del (huvudansvar, Stream D)
 - **Tags:** blockchain, logging, gdpr, required, gate:3-features, stream:D-audit
 - **Dependencies:** 04-database-design.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
@@ -161,28 +161,28 @@ function verifyBlockchain(chain) {
 
 ## Tasks
 
-- [ ] Implement basic blockchain class
-- [ ] Create access log structure
-- [ ] Integrate blockchain with access logging
-- [ ] Add verification system
-- [ ] Create API to query access logs
-- [ ] Implement blockchain sync between servers
-- [ ] Add tamper detection
-- [ ] Create access log viewer for patients
-- [ ] Log all access attempts (success and failure)
-- [ ] Add blockchain status monitoring
+- [x] Implement basic blockchain class
+- [x] Create access log structure
+- [x] Integrate blockchain with access logging
+- [x] Add verification system
+- [x] Create API to query access logs
+- [x] Implement blockchain sync between servers
+- [x] Add tamper detection
+- [x] Create access log viewer for patients
+- [x] Log all access attempts (success and failure)
+- [x] Add blockchain status monitoring
 
 ## Done Criteria
 
-- [ ] Access logs are stored in blockchain
-- [ ] Blockchain is immutable and verifiable
-- [ ] Medical records are NOT on blockchain
-- [ ] Access logs sync between servers
-- [ ] Patients can view who accessed their data
-- [ ] Tampering is detected and reported
-- [ ] All access attempts are logged
-- [ ] Blockchain status can be monitored
-- [ ] GDPR compliance is maintained
+- [x] Access logs are stored in blockchain
+- [x] Blockchain is immutable and verifiable
+- [x] Medical records are NOT on blockchain
+- [x] Access logs sync between servers
+- [x] Patients can view who accessed their data
+- [x] Tampering is detected and reported
+- [x] All access attempts are logged
+- [x] Blockchain status can be monitored
+- [x] GDPR compliance is maintained
 
 ## Notes
 

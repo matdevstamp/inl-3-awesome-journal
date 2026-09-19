@@ -7,6 +7,7 @@
 - **Assignee:** matdevstamp
 - **Tags:** documentation, readme, required, gate:5-delivery
 - **Dependencies:** 01-project-setup-group-contract.md
+- **GitHub Issue:** #30 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/30)
 - **Related:** 03-graphify-architecture-artifacts.md, 19-testing.md
 - **Estimated Effort:** 4h
 

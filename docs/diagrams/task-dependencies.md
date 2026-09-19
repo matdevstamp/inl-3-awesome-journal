@@ -30,7 +30,7 @@ flowchart TD
     %% Dotted line A -. related .- B: A and B are related
     %% Colors: green done · blue in progress · dashed gray todo (not started)
     subgraph decisions["Gate 1-Decisions"]
-    T01["01 Project Setup & Group Contract (96% · 25/26 · doing)"]
+    T01["01 Project Setup & Group Contract ✓"]
     T02["02 Database Choice Discussion ✓"]
     T03["03 Graphify Architecture Artifacts ✓"]
     end
@@ -44,12 +44,12 @@ flowchart TD
     T10["10 GitHub Actions CI/CD Workflow ✓"]
     end
     subgraph features["Gate 3-Features"]
-    T11["11 Backend API & Authentication (25% · 6/24 · doing)"]
-    T12["12 Frontend UI Development (87% · 26/30 · doing)"]
+    T11["11 Backend API & Authentication ✓"]
+    T12["12 Frontend UI Development (90% · 27/30 · doing)"]
     T13["13 Patient View & Search ✓"]
-    T14["14 Medical Notes with Visibility Control (0% · 0/23 · todo)"]
-    T15["15 Blockchain Access Logging (0% · 0/23 · doing)"]
-    T16["16 P2P Network Implementation (0% · 0/24 · todo)"]
+    T14["14 Medical Notes with Visibility Control (22% · 5/23 · doing)"]
+    T15["15 Blockchain Access Logging ✓"]
+    T16["16 P2P Network Implementation ✓"]
     end
     subgraph integration["Gate 4-Integration"]
     T17["17 User Roles & Access Control (0% · 0/20 · todo)"]
@@ -124,7 +124,7 @@ flowchart TD
     classDef done fill:#dcedc8,stroke:#558b2f,color:#1b5e20
     classDef doing fill:#dbe9fb,stroke:#1565c0,color:#0d47a1
     classDef todo fill:#ffffff,stroke:#b0bec5,color:#546e7a,stroke-dasharray:5 4
-    class T01 doing;
+    class T01 done;
     class T02 done;
     class T03 done;
     class T04 done;
@@ -134,12 +134,12 @@ flowchart TD
     class T08 done;
     class T09 done;
     class T10 done;
-    class T11 doing;
+    class T11 done;
     class T12 doing;
     class T13 done;
-    class T14 todo;
-    class T15 doing;
-    class T16 todo;
+    class T14 doing;
+    class T15 done;
+    class T16 done;
     class T17 todo;
     class T18 todo;
     class T19 todo;
