@@ -26,15 +26,38 @@ export async function sendAccessLogToPeer(accessLog: BlockchainAccessLog): Promi
     console.warn("Peer sync unavailable; access log remains stored locally.", error);
   }
 }
+export interface PeerHealthInfo {
+  healthy: boolean;
+  serverId: string;
+  lastCheckedAt: string;
+}
+
+/** Probe a peer's /api/health and return its identity + liveness in one round-trip. */
+export async function fetchPeerHealth(peerUrl = env.peerUrl): Promise<PeerHealthInfo> {
+  const response = await fetch(`${peerUrl}/api/health`, {
+    signal: AbortSignal.timeout(3_000),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Peer health check failed with status ${response.status}`);
+  }
+
+  const body = (await response.json()) as { data?: { status?: string; server?: string } };
+
+  if (body.data?.status !== "ok") {
+    throw new Error("Peer reported an unhealthy status");
+  }
+
+  return {
+    healthy: true,
+    serverId: body.data.server ?? "",
+    lastCheckedAt: new Date().toISOString(),
+  };
+}
+
 export async function checkPeerHealth(peerUrl = env.peerUrl): Promise<boolean> {
   try {
-    const response = await fetch(`${peerUrl}/api/health`);
-
-    if (!response.ok) {
-      return false;
-    }
-
-    return true;
+    return (await fetchPeerHealth(peerUrl)).healthy;
   } catch {
     return false;
   }

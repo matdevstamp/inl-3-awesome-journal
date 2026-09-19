@@ -29,6 +29,12 @@ export interface HealthData {
   status: "ok";
   server: string;
   timestamp: string;
+  /** Last-known status of the configured peer, kept fresh by the heartbeat. */
+  peer?: {
+    healthy: boolean | null;
+    serverId: string | null;
+    lastCheckedAt: string | null;
+  };
 }
 
 /** POST /api/auth/login request payload. */
