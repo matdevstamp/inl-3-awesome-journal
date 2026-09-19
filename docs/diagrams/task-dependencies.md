@@ -30,26 +30,26 @@ flowchart TD
     %% Dotted line A -. related .- B: A and B are related
     %% Colors: green done · blue in progress · dashed gray todo (not started)
     subgraph decisions["Gate 1-Decisions"]
-    T01["01 Project Setup & Group Contract (23% · 6/26 · todo)"]
-    T02["02 Database Choice Discussion (27% · 4/15 · todo)"]
-    T03["03 Graphify Architecture Artifacts (100% · 7/7 · todo)"]
+    T01["01 Project Setup & Group Contract (96% · 25/26 · doing)"]
+    T02["02 Database Choice Discussion ✓"]
+    T03["03 Graphify Architecture Artifacts ✓"]
     end
     subgraph scaffold["Gate 2-Scaffold"]
-    T04["04 Database Design & Setup (50% · 10/20 · doing)"]
-    T05["05 Next.js + Tailwind CSS + shadcn/ui Setup (0% · 0/21 · doing)"]
-    T06["06 Backend Project Setup (Next.js Route Handlers & Services) (48% · 11/23 · doing)"]
-    T07["07 TypeScript Strict Configuration (45% · 10/22 · doing)"]
-    T08["08 ESLint + Prettier Configuration (32% · 7/22 · doing)"]
-    T09["09 Playwright E2E Testing (11% · 3/27 · doing)"]
-    T10["10 GitHub Actions CI/CD Workflow (21% · 7/33 · doing)"]
+    T04["04 Database Design & Setup ✓"]
+    T05["05 Next.js + Tailwind CSS + shadcn/ui Setup ✓"]
+    T06["06 Backend Project Setup (Next.js Route Handlers & Services) ✓"]
+    T07["07 TypeScript Strict Configuration ✓"]
+    T08["08 ESLint + Prettier Configuration ✓"]
+    T09["09 Playwright E2E Testing ✓"]
+    T10["10 GitHub Actions CI/CD Workflow ✓"]
     end
     subgraph features["Gate 3-Features"]
-    T11["11 Backend API & Authentication (8% · 2/24 · todo)"]
-    T12["12 Frontend UI Development (13% · 4/30 · todo)"]
-    T13["13 Patient View & Search (0% · 0/25 · todo)"]
-    T14["14 Medical Notes with Visibility Control (0% · 0/23 · todo)"]
-    T15["15 Blockchain Access Logging (0% · 0/23 · todo)"]
-    T16["16 P2P Network Implementation (0% · 0/24 · todo)"]
+    T11["11 Backend API & Authentication (71% · 17/24 · doing)"]
+    T12["12 Frontend UI Development (93% · 28/30 · doing)"]
+    T13["13 Patient View & Search ✓"]
+    T14["14 Medical Notes with Visibility Control (21% · 5/24 · doing)"]
+    T15["15 Blockchain Access Logging (52% · 12/23 · doing)"]
+    T16["16 P2P Network Implementation (67% · 16/24 · doing)"]
     end
     subgraph integration["Gate 4-Integration"]
     T17["17 User Roles & Access Control (0% · 0/20 · todo)"]
@@ -124,22 +124,22 @@ flowchart TD
     classDef done fill:#dcedc8,stroke:#558b2f,color:#1b5e20
     classDef doing fill:#dbe9fb,stroke:#1565c0,color:#0d47a1
     classDef todo fill:#ffffff,stroke:#b0bec5,color:#546e7a,stroke-dasharray:5 4
-    class T01 todo;
-    class T02 todo;
-    class T03 todo;
-    class T04 doing;
-    class T05 doing;
-    class T06 doing;
-    class T07 doing;
-    class T08 doing;
-    class T09 doing;
-    class T10 doing;
-    class T11 todo;
-    class T12 todo;
-    class T13 todo;
-    class T14 todo;
-    class T15 todo;
-    class T16 todo;
+    class T01 doing;
+    class T02 done;
+    class T03 done;
+    class T04 done;
+    class T05 done;
+    class T06 done;
+    class T07 done;
+    class T08 done;
+    class T09 done;
+    class T10 done;
+    class T11 doing;
+    class T12 doing;
+    class T13 done;
+    class T14 doing;
+    class T15 doing;
+    class T16 doing;
     class T17 todo;
     class T18 todo;
     class T19 todo;

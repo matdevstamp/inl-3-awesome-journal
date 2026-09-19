@@ -1,28 +1,22 @@
 datum,typ,vad_gjorde_jag,blockerare,nasta_steg,relaterat,anteckning_eller_lank
-2026-09-04,,,,,,
-2026-09-05,,,,,,
-2026-09-06,,,,,,
-2026-09-07,,,,,,
-2026-09-08,,,,,,
-2026-09-09,,,,,,
-2026-09-10,,,,,,
-2026-09-11,,,,,,
-2026-09-12,,,,,,
-2026-09-13,,,,,,
-2026-09-14,,,,,,
-2026-09-15,,,,,,
-2026-09-16,,,,,,
-2026-09-17,,,,,,
+2026-09-02,kodning,"Projektuppstart: satte upp mötesmall, .gitignore, raw-requirements, projektplan och draft-tasks, byggde projektlednings-scripts (bug→task-pipeline) och formaterade Python-koden med ruff",-,Förbered kolloquiet (kickoff) på fredag,-,
+2026-09-03,dokumentation,"Utökade projektledningsdokumentationen: Gantt-tidslinje + dependency-graf, validerade mermaid-diagram och tog bort en duplicerad availability-doc",-,Slutför kickoff-planeringen 4 sep,-,
+2026-09-04,möte,"Ledde kickoff-mötet: agenda, stackval (Next.js), pressat tidsschema, PR-regler; gruppkontrakt v0.3 + signering och kickoff-anteckningar; gjorde om Gate-2-draft-tasks till issues (4–11) och skapade Gate-3-issues (13–18); full-stack-skeleton (PR #12) med Next.js/Tailwind/TS, shadcn-ui, Prisma, Playwright, CI-workflow och Graphify-arkitekturdokumentation; CI-fixar för eslint false positive och prettier",-,Merge och review av teamets PR:er,12,docs/meetings/2026-09-04-kickoff-agenda.md
+2026-09-07,daily,"Daglig koordinering: hjälpte till med blockers, stämde av vem som gör vad härnäst och att alla har något att arbeta med; uppdaterade kanbanbordet",-,Förbered standup 8 sep,-,
+2026-09-08,möte,"Ledde standup-mötet 8 sep och skrev mötesanteckningarna; docs-uppdatering (PR #21): taskdrafts, diagram, gruppkontrakt och availability-dokumentet",-,Förbered nästa standup,21,docs/meetings/2026-09-08-standup.md
+2026-09-09,dokumentation,Skrev standup-anteckningar från 8 sep; granskade PR #22 (frontend-auth) och begärde ändringar; daglig koordinering + skötte kanbanbordet,-,Följ upp revideringen av PR #22,22,docs/meetings/2026-09-08-standup.md
+2026-09-10,möte,Ledde mötet och skrev anteckningarna om Task 15/16; godkände PR #22 efter revidering,-,Fortsätt följa Task 13/15,22,docs/meetings/10_step_2026.md
+2026-09-11,möte,Ledde mötet och skrev anteckningarna om framstegen i Task 13 och 15,-,,-,docs/meetings/10_step_2026.md
+2026-09-14,daily,"Daglig koordinering: hjälpte till med blockers, stämde av vad var och en vill fortsätta med; förberedde kanbanbordet inför veckomötet 15 sep",-,Förbered och led veckomötet 15 sep,-,
+2026-09-15,möte,"Ledde mötet 15 sep och skrev anteckningarna; granskade task-checkboxarna mot koden i main och regenererade diagrammen; skapade Gate-5-issues (#28–31); granskade PR #24 (patient search, godkänd) och PR #25 (notes UI, godkänd efter revidering)",-,,-,"docs/meetings/2026-sep-15.md, PR #24/#25"
+2026-09-16,dokumentation,"Recenserade PR #32 (blockchain access-logging, Task 15) med kommentarer och begärde ändringar; daglig koordinering + skötte kanbanbordet",-,Följ upp revideringen av PR #32 och gör en ny bedömning,32,
+2026-09-17,möte,"Ledde mötet 17 sep: statusrunda, review-återkoppling, delegering av resterande delar av issue #13 och påbörjad presentation-outline; granskade task-checkboxarna mot main och öppna PR:er #32/#33 + regenererade diagram; markerade Task 15/16 som i review; godkände PR #23 (backend-auth); granskade PR #33 (P2P, Task 16) och begärde ändringar; skrev mötesanteckningarna",-,"Stötta avslut av Gate 3, presentation-outline, återstående punkter i issue #13",13 23 32 33,docs/meetings/2026-sep-17.md
 2026-09-18,,,,,,
-2026-09-19,,,,,,
-2026-09-20,,,,,,
 2026-09-21,,,,,,
 2026-09-22,,,,,,
 2026-09-23,,,,,,
 2026-09-24,,,,,,
 2026-09-25,,,,,,
-2026-09-26,,,,,,
-2026-09-27,,,,,,
 2026-09-28,,,,,,
 2026-09-29,,,,,,
 2026-09-30,,,,,,

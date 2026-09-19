@@ -2,7 +2,7 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-18
+- **Deadline:** 2026-09-24
 - **Status:** TODO
 - **Assignee:** Kassim10
 - **Tags:** security, roles, access-control, required, gate:4-integration

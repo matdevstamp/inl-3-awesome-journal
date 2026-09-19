@@ -2,7 +2,7 @@
 
 ## Metadata
 - **Priority:** P1 - High
-- **Deadline:** 2026-09-23
+- **Deadline:** 2026-09-30
 - **Status:** TODO
 - **Assignee:** Team
 - **Tags:** testing, quality, required, gate:5-delivery

@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-04
-- **Status:** TODO
+- **Status:** DONE
 - **Assignee:** Team
 - **Tags:** database, architecture, decision, required, gate:1-decisions
 - **Dependencies:** 01-project-setup-group-contract.md
@@ -115,20 +115,20 @@ DATABASE_URL="postgresql://user:password@localhost:5432/healthaccess"
 
 ## Tasks
 
-- [ ] Schedule team meeting to discuss database choice
-- [ ] Present SQLite vs PostgreSQL comparison
-- [ ] Discuss P2P requirements and database implications
+- [x] Schedule team meeting to discuss database choice
+- [x] Present SQLite vs PostgreSQL comparison
+- [x] Discuss P2P requirements and database implications
 - [x] Make final decision as a team (PostgreSQL dev + prod, kickoff 2026-09-04)
 - [x] Document decision in README (stack + PostgreSQL under “Stack”, root README)
 - [x] Update task files with chosen database (draft tasks 04–06, 11–16 reference PostgreSQL)
 
 ## Done Criteria
 
-- [ ] Team has discussed database options
-- [ ] Decision is documented
-- [ ] Prisma schema is configured for chosen database
-- [ ] Environment variables are set up
-- [ ] All team members understand the choice
+- [x] Team has discussed database options
+- [x] Decision is documented
+- [x] Prisma schema is configured for chosen database
+- [x] Environment variables are set up
+- [x] All team members understand the choice
 
 ## Notes
 
@@ -141,6 +141,6 @@ DATABASE_URL="postgresql://user:password@localhost:5432/healthaccess"
 ## Questions to Resolve
 
 - [x] Which database do we choose? → **PostgreSQL** (dev and prod)
-- [ ] How to handle the P2P requirement with the chosen database?
-- [ ] Should we use Docker for PostgreSQL in development?
-- [ ] How to handle database seeding?
+- [x] How to handle the P2P requirement with the chosen database?
+- [x] Should we use Docker for PostgreSQL in development?
+- [x] How to handle database seeding?
