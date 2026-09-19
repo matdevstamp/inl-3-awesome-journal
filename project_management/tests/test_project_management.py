@@ -995,18 +995,49 @@ class TestPakoMermaidLiveUrl(unittest.TestCase):
         self.assertEqual(raw[0], 0x78)
 
     def test_payload_matches_python_zlib_golden_vector(self):
-        # Golden vector: this exact source must compress to this exact payload,
+        # Golden vector: the payload must be exactly
+        # base64url(zlib(level 9, JSON.stringify of the mermaid.live State)),
         # so any drift in the compression scheme is caught by the test.
         import base64
         import zlib
 
         source = "flowchart TD\n    A --> B\n"
+        # Rebuild mermaid.live's defaultState envelope the same way the site does.
+        state = json.dumps(
+            {
+                "code": source,
+                "grid": True,
+                "mermaid": "{}",
+                "panZoom": True,
+                "rough": False,
+                "updateDiagram": True,
+            },
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
         expected = (
-            base64.urlsafe_b64encode(zlib.compress(source.encode("utf-8")))
+            base64.urlsafe_b64encode(zlib.compress(state.encode("utf-8"), 9))
             .rstrip(b"=")
             .decode("ascii")
         )
         self.assertEqual(compress(source), expected)
+
+    def test_payload_inflates_to_mermaid_live_state_json(self):
+        # What mermaid.live actually receives: HTML "#pako:<payload>" -> it does
+        # base64url decode, pako.inflate, JSON.parse. The result must be a State
+        # object carrying `code` plus the defaultState booleans.
+        import base64
+        import zlib
+
+        payload = compress(self.SAMPLE)
+        b64 = payload + "=" * (-len(payload) % 4)
+        state = json.loads(zlib.decompress(base64.urlsafe_b64decode(b64)).decode("utf-8"))
+        self.assertEqual(state["code"], self.SAMPLE)
+        self.assertEqual(state["mermaid"], "{}")
+        self.assertEqual(state["grid"], True)
+        self.assertEqual(state["panZoom"], True)
+        self.assertEqual(state["rough"], False)
+        self.assertEqual(state["updateDiagram"], True)
 
     def test_corrupt_payload_raises(self):
         payload = compress(self.SAMPLE)
