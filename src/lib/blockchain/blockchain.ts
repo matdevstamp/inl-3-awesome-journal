@@ -9,15 +9,38 @@ export class Blockchain {
   }
 
   addAccessLog(data: BlockchainAccessLog): Block {
-    const previousBlock = this.chain[this.chain.length - 1];
-    const previousHash = previousBlock?.hash ?? "0";
+    const accessLogs = [...this.chain.map((block) => block.data), data];
 
-    const block = new Block(this.chain.length, data.timestamp, data, previousHash);
+    accessLogs.sort((a, b) => {
+      const timestampComparison = a.timestamp.localeCompare(b.timestamp);
 
-    this.chain.push(block);
+      if (timestampComparison !== 0) {
+        return timestampComparison;
+      }
 
-    return block;
+      return a.eventId.localeCompare(b.eventId);
+    });
+
+    this.chain = [];
+
+    for (const accessLog of accessLogs) {
+      const previousBlock = this.chain[this.chain.length - 1];
+      const previousHash = previousBlock?.hash ?? "0";
+
+      const block = new Block(this.chain.length, accessLog.timestamp, accessLog, previousHash);
+
+      this.chain.push(block);
+    }
+
+    const addedBlock = this.chain.find((block) => block.data.eventId === data.eventId);
+
+    if (!addedBlock) {
+      throw new Error("Failed to add access log to blockchain");
+    }
+
+    return addedBlock;
   }
+
   isValid(): boolean {
     for (let i = 0; i < this.chain.length; i++) {
       const currentBlock = this.chain[i];

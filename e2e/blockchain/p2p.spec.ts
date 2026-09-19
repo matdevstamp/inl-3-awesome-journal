@@ -214,19 +214,9 @@ test("P2P endpoint stores the received access log in the server blockchain", asy
   expect(body.stored).toBe(true);
 });
 
-test("syncs a real patient access log from Hospital S to Ambulance A", async ({ request }) => {
-  const eventBefore = await request.get("http://localhost:3002/api/access-log", {
-    headers: {
-      "x-mock-role": "doctor",
-      "x-mock-user-id": "1",
-    },
-  });
-
-  expect(
-    eventBefore.ok(),
-    `Ambulance /api/access-log returned ${eventBefore.status()}: ${await eventBefore.text()}`,
-  ).toBeTruthy();
-
+test("syncs a real patient access log and keeps both server chains consistent", async ({
+  request,
+}) => {
   const patientResponse = await request.get("http://localhost:3001/api/patients/1", {
     headers: {
       "x-mock-role": "doctor",
@@ -245,15 +235,38 @@ test("syncs a real patient access log from Hospital S to Ambulance A", async ({ 
 
   expect(ambulanceResponse.ok()).toBeTruthy();
 
-  const body = await ambulanceResponse.json();
+  const hospitalSyncResponse = await request.get("http://localhost:3001/api/access-log", {
+    headers: {
+      "x-mock-role": "doctor",
+      "x-mock-user-id": "1",
+    },
+  });
 
-  const syncedLog = body.data.accessLogs.find(
-    (log: { patientId: number; action: string; serverId: string }) =>
-      log.patientId === 1 && log.action === "view" && log.serverId === "hospital-s",
-  );
+  expect(hospitalSyncResponse.ok()).toBeTruthy();
 
-  expect(syncedLog).toBeDefined();
-  expect(body.data.chainValid).toBe(true);
+  const finalAmbulanceSyncResponse = await request.get("http://localhost:3002/api/access-log", {
+    headers: {
+      "x-mock-role": "doctor",
+      "x-mock-user-id": "1",
+    },
+  });
+
+  expect(finalAmbulanceSyncResponse.ok()).toBeTruthy();
+
+  const hospitalResponse = await request.get("http://localhost:3001/api/p2p/access-log");
+
+  const ambulanceChainResponse = await request.get("http://localhost:3002/api/p2p/access-log");
+
+  expect(hospitalResponse.ok()).toBeTruthy();
+  expect(ambulanceChainResponse.ok()).toBeTruthy();
+
+  const hospitalChain = await hospitalResponse.json();
+  const ambulanceChain = await ambulanceChainResponse.json();
+
+  expect(hospitalChain.data.chainValid).toBe(true);
+  expect(ambulanceChain.data.chainValid).toBe(true);
+
+  expect(ambulanceChain.data.accessLogs).toEqual(hospitalChain.data.accessLogs);
 });
 
 test("rejects a P2P message with a forged server identity", () => {
