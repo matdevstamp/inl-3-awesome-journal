@@ -16,6 +16,7 @@ from ..cli import (
     build_parser,
     issue_line,
     output,
+    plan_sync,
     status_report,
 )
 from ..github import GitHubClient, GitHubError
@@ -24,14 +25,18 @@ from ..planner import (
     KICKOFF_ASSIGNMENTS,
     TEAM_MEMBERS,
     Task,
+    board_status_to_status,
     draft_task_clean_body,
     draft_task_to_project_fields,
     gantt_unscheduled,
+    issue_checkboxes_from_draft,
     load_tasks,
     parse_task_refs,
     read_task,
     resolve_issue_stamps,
     schedule_warnings,
+    sync_checkboxes,
+    sync_task_text,
     task_gantt_mermaid,
     task_graph_mermaid,
     task_issue_stamp,
@@ -527,6 +532,14 @@ class TestBuildParser(unittest.TestCase):
         self.assertEqual(args.command, "plan")
         self.assertEqual(args.plan_command, "show")
 
+    def test_plan_sync(self):
+        parser = build_parser()
+        args = parser.parse_args(["plan", "sync", "--dry-run", "--directory", "docs/draft_tasks"])
+        self.assertEqual(args.command, "plan")
+        self.assertEqual(args.plan_command, "sync")
+        self.assertTrue(args.dry_run)
+        self.assertEqual(args.directory, "docs/draft_tasks")
+
     def test_task_create_with_draft(self):
         parser = build_parser()
         args = parser.parse_args(
@@ -948,6 +961,271 @@ class TestMermaidValidation(unittest.TestCase):
             "    A --> B\n    class A todo;\n"
         )
         self.assertEqual(validate_mermaid(flow, "flowchart"), [])
+
+
+# ── Planner: board-status mapping (plan sync) ───────────────────────────────
+
+
+class TestBoardStatusToStatus(unittest.TestCase):
+    def test_maps_board_values(self):
+        self.assertEqual(board_status_to_status("Done", "open"), "DONE")
+        self.assertEqual(board_status_to_status("In progress", "open"), "IN PROGRESS")
+        self.assertEqual(board_status_to_status("In review", "open"), "IN REVIEW")
+        self.assertEqual(board_status_to_status("Ready", "open"), "READY")
+        self.assertEqual(board_status_to_status("Backlog", "open"), "TODO")
+
+    def test_closed_issue_without_board_status_is_done(self):
+        self.assertEqual(board_status_to_status(None, "closed"), "DONE")
+        self.assertEqual(board_status_to_status("", "closed"), "DONE")
+
+    def test_open_issue_without_board_status_is_undecided(self):
+        self.assertIsNone(board_status_to_status(None, "open"))
+        self.assertIsNone(board_status_to_status(None, None))
+
+
+# ── Planner: sync_checkboxes ────────────────────────────────────────────────
+
+
+class TestSyncCheckboxes(unittest.TestCase):
+    def test_flips_unchecked_to_checked(self):
+        draft = "## Tasks\n- [ ] do the thing\n"
+        issue = "## Tasks\n- [x] do the thing\n"
+        new_text, changed = sync_checkboxes(draft, issue)
+        self.assertEqual(changed, 1)
+        self.assertIn("- [x] do the thing", new_text)
+
+    def test_checked_box_on_draft_wins_over_unchecked_issue(self):
+        """Checked always wins: an unchecked issue box must not uncheck the draft."""
+        draft = "## Tasks\n- [x] do the thing\n"
+        issue = "## Tasks\n- [ ] do the thing\n"
+        new_text, changed = sync_checkboxes(draft, issue)
+        self.assertEqual(changed, 0)
+        self.assertIn("- [x] do the thing", new_text)
+
+    def test_no_change_when_aligned(self):
+        draft = "## Tasks\n- [x] a\n- [ ] b\n"
+        issue = "## Tasks\n- [x] a\n- [ ] b\n"
+        new_text, changed = sync_checkboxes(draft, issue)
+        self.assertEqual(changed, 0)
+        self.assertEqual(new_text, draft)
+
+    def test_tolerates_strikethrough_suffix_on_issue(self):
+        draft = "## Tasks\n- [ ] Create medical records CRUD route handlers\n"
+        issue = (
+            "## Tasks\n"
+            "- [ ] ~~Create medical records CRUD route handlers~~ — moved to task 14 (#16)\n"
+            "- [x] Implement the requireRole() guard\n"
+        )
+        new_text, changed = sync_checkboxes(draft, issue)
+        self.assertEqual(changed, 0)
+        new_text, changed = sync_checkboxes(
+            draft,
+            "## Tasks\n"
+            "- [x] ~~Create medical records CRUD route handlers~~ — moved to task 14 (#16)\n",
+        )
+        self.assertEqual(changed, 1)
+        self.assertIn("- [x] Create medical records CRUD route handlers", new_text)
+
+    def test_preserves_unmatched_and_duplicate_lines(self):
+        draft = "## Tasks\n- [ ] only in draft\n- [x] shared\n- [x] shared\n"
+        issue = "## Tasks\n- [x] shared\n- [x] only on github\n- [x] shared\n"
+        new_text, changed = sync_checkboxes(draft, issue)
+        self.assertEqual(changed, 0)  # duplicates are ambiguous, "only in draft" unmatched
+        self.assertIn("- [ ] only in draft", new_text)
+
+    def test_punctuation_insensitive_match(self):
+        draft = "## Tasks\n- [ ] Note access is logged to the access-log chain\n"
+        issue = "## Tasks\n- [x] Note access is logged to the access-log chain!\n"
+        new_text, changed = sync_checkboxes(draft, issue)
+        self.assertEqual(changed, 1)
+        self.assertIn("- [x] Note access is logged to the access-log chain", new_text)
+
+
+# ── Planner: issue_checkboxes_from_draft (checked wins on GitHub) ───────────
+
+
+class TestIssueCheckboxesFromDraft(unittest.TestCase):
+    def test_promotes_draft_checked_box_to_issue(self):
+        issue = "## Tasks\n- [ ] do the thing\n"
+        draft = "## Tasks\n- [x] do the thing\n"
+        new_issue, changed = issue_checkboxes_from_draft(issue, draft)
+        self.assertEqual(changed, 1)
+        self.assertIn("- [x] do the thing", new_issue)
+
+    def test_checks_already_checked_issue_box_untouched(self):
+        issue = "## Tasks\n- [x] do the thing\n"
+        draft = "## Tasks\n- [ ] do the thing\n"
+        new_issue, changed = issue_checkboxes_from_draft(issue, draft)
+        self.assertEqual(changed, 0)
+        self.assertEqual(new_issue, issue)
+
+    def test_unchecked_draft_does_not_uncheck_issue(self):
+        issue = "## Tasks\n- [x] a\n- [ ] b\n"
+        draft = "## Tasks\n- [ ] a\n- [ ] b\n"
+        new_issue, changed = issue_checkboxes_from_draft(issue, draft)
+        self.assertEqual(changed, 0)
+        self.assertEqual(new_issue, issue)
+
+    def test_promotes_via_strikethrough_suffix(self):
+        issue = "## Tasks\n- [ ] ~~Create medical records CRUD route handlers~~ — moved to task 14 (#16)\n"
+        draft = "## Tasks\n- [x] Create medical records CRUD route handlers\n"
+        new_issue, changed = issue_checkboxes_from_draft(issue, draft)
+        self.assertEqual(changed, 1)
+        self.assertIn(
+            "- [x] ~~Create medical records CRUD route handlers~~ — moved to task 14 (#16)",
+            new_issue,
+        )
+
+
+# ── Planner: sync_task_text ─────────────────────────────────────────────────
+
+
+class TestSyncTaskText(unittest.TestCase):
+    def test_updates_status_and_returns_change(self):
+        text = "- **Status:** TODO\n\n## Tasks\n- [ ] a\n"
+        new_text, changes = sync_task_text(text, "open", "## Tasks\n- [x] a\n", "In progress")
+        self.assertIn("- **Status:** IN PROGRESS", new_text)
+        self.assertIn("- [x] a", new_text)
+        self.assertTrue(any("Status" in change for change in changes))
+        self.assertTrue(any("checkboxes" in change for change in changes))
+
+    def test_no_changes_when_aligned(self):
+        text = "- **Status:** IN PROGRESS\n\n## Tasks\n- [x] a\n"
+        new_text, changes = sync_task_text(text, "open", "## Tasks\n- [x] a\n", "In progress")
+        self.assertEqual(changes, [])
+        self.assertEqual(new_text, text)
+
+    def test_closed_issue_sets_done_even_without_board(self):
+        text = "- **Status:** TODO\n## Tasks\n- [ ] a\n"
+        new_text, changes = sync_task_text(text, "closed", "## Tasks\n- [x] a\n", None)
+        self.assertIn("- **Status:** DONE", new_text)
+
+
+# ── CLI: plan_sync ──────────────────────────────────────────────────────────
+
+
+class TestPlanSync(unittest.TestCase):
+    def _write_draft(self, tmp, content, name="01-sample.md"):
+        path = Path(tmp) / name
+        path.write_text(content)
+        return path
+
+    def test_writes_updated_drafts(self):
+        client = MagicMock()
+        client.issue_board_statuses.return_value = {1: "In progress"}
+        client.issue.return_value = {"state": "open", "body": "## Tasks\n- [x] do the thing\n"}
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._write_draft(
+                tmp,
+                "# Task: Sample\n\n- **GitHub Issue:** #1\n- **Status:** TODO\n\n## Tasks\n- [ ] do the thing\n",
+            )
+            summary = plan_sync(client, tmp, dry_run=False)
+            text = path.read_text()
+        self.assertEqual(summary["updated"], 1)
+        self.assertIn("- **Status:** IN PROGRESS", text)
+        self.assertIn("- [x] do the thing", text)
+
+    def test_dry_run_does_not_touch_files(self):
+        client = MagicMock()
+        client.issue_board_statuses.return_value = {1: "In progress"}
+        client.issue.return_value = {"state": "open", "body": "## Tasks\n- [x] do the thing\n"}
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._write_draft(
+                tmp, "# Task: Sample\n\n- **GitHub Issue:** #1\n- **Status:** TODO\n\n## Tasks\n- [ ] do the thing\n"
+            )
+            summary = plan_sync(client, tmp, dry_run=True)
+            text = path.read_text()
+        self.assertEqual(summary["updated"], 1)
+        self.assertIn("- **Status:** TODO", text)
+        self.assertIn("- [ ] do the thing", text)
+
+    def test_skips_unstamped_drafts(self):
+        client = MagicMock()
+        client.issue_board_statuses.return_value = {}
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write_draft(tmp, "# Task: Sample\n\n- **Status:** TODO\n")
+            summary = plan_sync(client, tmp, dry_run=False)
+        self.assertEqual(summary["updated"], 0)
+        self.assertEqual(len(summary["skipped"]), 1)
+        self.assertIn("unstamped", summary["skipped"][0])
+
+    def test_no_changes_leave_file_untouched(self):
+        client = MagicMock()
+        client.issue_board_statuses.return_value = {1: "Done"}
+        client.issue.return_value = {"state": "closed", "body": "## Tasks\n- [x] a\n"}
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._write_draft(
+                tmp, "# Task: Sample\n\n- **GitHub Issue:** #1\n- **Status:** DONE\n\n## Tasks\n- [x] a\n"
+            )
+            summary = plan_sync(client, tmp, dry_run=False)
+        self.assertEqual(summary["updated"], 0)
+
+    def test_promotes_draft_checked_box_to_issue(self):
+        client = MagicMock()
+        client.issue_board_statuses.return_value = {1: "Done"}
+        client.issue.return_value = {"state": "closed", "body": "## Tasks\n- [ ] a\n"}
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write_draft(
+                tmp, "# Task: Sample\n\n- **GitHub Issue:** #1\n- **Status:** DONE\n\n## Tasks\n- [x] a\n"
+            )
+            summary = plan_sync(client, tmp, dry_run=False)
+            (number,), kwargs = client.update_issue.call_args
+        self.assertEqual(summary["updated"], 1)
+        self.assertEqual(number, 1)
+        self.assertIn("- [x] a", kwargs["body"])
+        self.assertIn("promoted to GitHub", summary["results"][0]["changes"][0])
+
+    def test_dry_run_promotion_does_not_call_github(self):
+        client = MagicMock()
+        client.issue_board_statuses.return_value = {1: "Done"}
+        client.issue.return_value = {"state": "closed", "body": "## Tasks\n- [ ] a\n"}
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write_draft(
+                tmp, "# Task: Sample\n\n- **GitHub Issue:** #1\n- **Status:** DONE\n\n## Tasks\n- [x] a\n"
+            )
+            summary = plan_sync(client, tmp, dry_run=True)
+        client.update_issue.assert_not_called()
+        self.assertEqual(summary["updated"], 1)
+
+
+# ── GitHub: issue_board_statuses ────────────────────────────────────────────
+
+
+class TestIssueBoardStatuses(unittest.TestCase):
+    @patch("project_management.github.GitHubClient.graphql")
+    def test_extracts_status_per_issue(self, mock_graphql):
+        mock_graphql.return_value = {
+            "repository": {
+                "projectsV2": {
+                    "nodes": [
+                        {
+                            "items": {
+                                "nodes": [
+                                    {
+                                        "content": {"number": 5},
+                                        "fieldValues": {
+                                            "nodes": [
+                                                {"name": "In progress", "field": {"name": "Status"}}
+                                            ]
+                                        },
+                                    },
+                                    {
+                                        "content": {"number": 9},
+                                        "fieldValues": {
+                                            "nodes": [
+                                                {"name": "P1", "field": {"name": "Priority"}}
+                                            ]
+                                        },
+                                    },
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+        statuses = GitHubClient().issue_board_statuses()
+        self.assertEqual(statuses, {5: "In progress"})  # #9 has no Status -> omitted
 
 
 if __name__ == "__main__":

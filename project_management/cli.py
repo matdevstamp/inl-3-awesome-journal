@@ -14,6 +14,7 @@ from .planner import (
     draft_task_clean_body,
     draft_task_to_project_fields,
     gantt_unscheduled,
+    issue_checkboxes_from_draft,
     load_tasks,
     read_task,
     resolve_issue_stamps,
@@ -25,6 +26,7 @@ from .planner import (
     task_state,
     update_related_line,
     update_task_reference,
+    sync_task_text,
 )
 from .reporting import (
     build_report,
@@ -109,6 +111,14 @@ def build_parser():
     gantt = plan_commands.add_parser("gantt", help="Print a Mermaid Gantt chart of the timeline.")
     gantt.add_argument("--directory", default="docs/draft_tasks")
     gantt.add_argument("--output", help="Write the diagram to this file instead of stdout.")
+    plan_sync = plan_commands.add_parser(
+        "sync",
+        help="Reconcile draft task files with the GitHub project board and issue checkboxes.",
+    )
+    plan_sync.add_argument("--directory", default="docs/draft_tasks")
+    plan_sync.add_argument(
+        "--dry-run", action="store_true", help="Show what would change without writing."
+    )
 
     deps = commands.add_parser(
         "deps", help="Synchronize issue relationships (blocked by / related) on GitHub."
@@ -257,6 +267,50 @@ def status_report(client, state):
     return {"repository": client.repository, "issues": issues, "count": len(issues)}
 
 
+def plan_sync(client, draft_directory, dry_run=False):
+    """Reconcile draft task files with the GitHub project board.
+
+    GitHub is the source of truth for the ``Status`` metadata line, and a
+    checkbox checked on *either* side wins on *both*: boxes checked on the
+    issue land in the draft, boxes checked in the draft are promoted to the
+    issue (never unchecking anything). The local drafts — and the % progress
+    in the dependency graph — therefore always reflect the board, and the
+    board never loses a locally-ticked box. Idempotent; writes only on change.
+
+    Returns a summary dict for reporting.
+    """
+    results, skipped = [], []
+    updated = 0
+    board_statuses = client.issue_board_statuses()
+    for task in load_tasks(draft_directory):
+        issue_number = task_issue_stamp(task.path)
+        if issue_number is None:
+            skipped.append(f"{task.path.name} (unstamped)")
+            continue
+        try:
+            issue = client.issue(issue_number)
+            text = task.path.read_text(encoding="utf-8")
+        except (OSError, ValueError, GitHubError) as exc:
+            skipped.append(f"#{issue_number} {task.title} ({exc})")
+            continue
+        issue_body = issue.get("body") or ""
+        board_status = board_statuses.get(issue_number)
+        new_text, changes = sync_task_text(
+            text, issue.get("state"), issue_body, board_status
+        )
+        new_issue, promoted = issue_checkboxes_from_draft(issue_body, new_text)
+        if promoted:
+            changes.append(f"checkboxes: {promoted} promoted to GitHub")
+            if not dry_run:
+                client.update_issue(issue_number, body=new_issue)
+        if new_text != text and not dry_run:
+            task.path.write_text(new_text, encoding="utf-8")
+        if new_text != text or changes:
+            updated += 1
+            results.append({"issue": issue_number, "title": task.title, "changes": changes})
+    return {"results": results, "updated": updated, "skipped": skipped}
+
+
 def deps_sync(client, draft_directory, dry_run=False):
     """Apply draft Dependencies/Related metadata to stamped GitHub issues.
 
@@ -315,6 +369,18 @@ def main():
     args = build_parser().parse_args()
     try:
         if args.command == "plan":
+            if args.plan_command == "sync":
+                summary = plan_sync(GitHubClient(), args.directory, args.dry_run)
+                if args.json:
+                    output(summary, True)
+                else:
+                    verb = "Would update" if args.dry_run else "Updated"
+                    for entry in summary["results"]:
+                        print(f"#{entry['issue']} {entry['title']}: " + "; ".join(entry["changes"]))
+                    for skip in summary["skipped"]:
+                        print(f"  skipped: {skip}")
+                    print(f"{verb} {summary['updated']} task draft(s)")
+                return
             tasks = load_tasks(args.directory)
             if args.plan_command in ("graph", "gantt"):
                 if args.plan_command == "graph":
