@@ -1,5 +1,6 @@
 // prisma/seed.js — fictional seed data for local development.
-// Run with: npm run db:seed   (after `npm run db:up && npm run db:migrate`)
+// Run with: npm run db:seed
+
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
 
@@ -14,28 +15,64 @@ async function main() {
     prisma.organization.upsert({
       where: { id: 1 },
       update: {},
-      create: { id: 1, name: "Stadsjukhuset", type: "hospital" },
+      create: {
+        id: 1,
+        name: "Stadsjukhuset",
+        type: "hospital",
+      },
     }),
     prisma.organization.upsert({
       where: { id: 2 },
       update: {},
-      create: { id: 2, name: "Ambulans Syd", type: "ambulance service" },
+      create: {
+        id: 2,
+        name: "Ambulans Syd",
+        type: "ambulance service",
+      },
     }),
   ]);
 
   const users = [
-    { id: 1, username: "dr_test", role: "doctor", organizationId: hospital.id },
-    { id: 2, username: "nurse_test", role: "nurse", organizationId: hospital.id },
-    { id: 3, username: "amb_test", role: "ambulance", organizationId: ambulance.id },
-    { id: 4, username: "patient_test", role: "patient", organizationId: null },
-    { id: 5, username: "unauth_test", role: "unauthorized", organizationId: null },
+    {
+      id: 1,
+      username: "dr_test",
+      role: "doctor",
+      organizationId: hospital.id,
+    },
+    {
+      id: 2,
+      username: "nurse_test",
+      role: "nurse",
+      organizationId: hospital.id,
+    },
+    {
+      id: 3,
+      username: "amb_test",
+      role: "ambulance",
+      organizationId: ambulance.id,
+    },
+    {
+      id: 4,
+      username: "patient_test",
+      role: "patient",
+      organizationId: null,
+    },
+    {
+      id: 5,
+      username: "unauth_test",
+      role: "unauthorized",
+      organizationId: null,
+    },
   ];
 
   for (const user of users) {
     await prisma.user.upsert({
       where: { id: user.id },
       update: {},
-      create: { ...user, passwordHash },
+      create: {
+        ...user,
+        passwordHash,
+      },
     });
   }
 
@@ -63,9 +100,15 @@ async function main() {
     },
   });
 
+  // Healthcare note — visible to healthcare staff.
   await prisma.note.upsert({
     where: { id: 1 },
-    update: {},
+    update: {
+      content: "Follow-up in six months.",
+      visibility: "healthcare",
+      recordId: record.id,
+      authorId: 2,
+    },
     create: {
       id: 1,
       content: "Follow-up in six months.",
@@ -75,7 +118,52 @@ async function main() {
     },
   });
 
-  console.log("Seeded organizations, users (pw: test123), patient Anna, one record + note.");
+  // Private note — only visible to its author (doctor, user 1).
+  await prisma.note.upsert({
+    where: { id: 2 },
+    update: {
+      content: "Private doctor note.",
+      visibility: "private",
+      recordId: record.id,
+      authorId: 1,
+    },
+    create: {
+      id: 2,
+      content: "Private doctor note.",
+      visibility: "private",
+      recordId: record.id,
+      authorId: 1,
+    },
+  });
+
+  // Public-to-authorized-users note — patient can see this.
+  await prisma.note.upsert({
+    where: { id: 3 },
+    update: {
+      content: "Visible to everyone with journal access.",
+      visibility: "all",
+      recordId: record.id,
+      authorId: 2,
+    },
+    create: {
+      id: 3,
+      content: "Visible to everyone with journal access.",
+      visibility: "all",
+      recordId: record.id,
+      authorId: 2,
+    },
+  });
+
+  // Keep PostgreSQL's autoincrement sequence above the manually seeded IDs.
+  await prisma.$queryRaw`
+    SELECT setval(
+      pg_get_serial_sequence('notes', 'id'),
+      COALESCE((SELECT MAX(id) FROM notes), 1),
+      true
+    )
+  `;
+
+  console.log("Seeded organizations, users (pw: test123), patient Anna, one record + three notes.");
 }
 
 main()
