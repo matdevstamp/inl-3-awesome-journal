@@ -92,6 +92,47 @@ export interface JournalNotePreview {
   text: string;
 }
 
+/** A single note returned by the notes API. */
+export interface Note {
+  id: number;
+  recordId: number;
+  text: string;
+  visibility: NoteVisibility;
+  authorUserId: number;
+  author: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** GET /api/notes payload. */
+export interface NoteListResponse {
+  notes: Note[];
+  hiddenNotesCount: number;
+}
+
+/** POST /api/notes request payload. */
+export interface CreateNoteRequest {
+  recordId: number;
+  text: string;
+  visibility: NoteVisibility;
+}
+
+/** PATCH /api/notes/[id] request payload (at least one field is required). */
+export interface UpdateNoteRequest {
+  text?: string;
+  visibility?: NoteVisibility;
+}
+
+/** POST /api/notes and PATCH /api/notes/[id] payload. */
+export interface NoteMutationResponse {
+  note: Note;
+}
+
+/** DELETE /api/notes/[id] payload. */
+export interface NoteDeleteResponse {
+  deletedId: number;
+}
+
 /** Access event preview for patient and staff views. */
 export interface AccessLogPreview {
   id: number;
