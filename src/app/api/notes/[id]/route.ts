@@ -1,54 +1,27 @@
 import { z } from "zod";
 
+import { AuthError, requireRole } from "@/lib/auth";
 import { fail, ok } from "@/lib/api/http";
-import { getSessionOrMock } from "@/lib/api/mock-auth";
-import { createAccessLog } from "@/lib/blockchain/access-log-service";
-import { env } from "@/lib/env";
-import { sendAccessLogToPeer } from "@/lib/p2p/transport";
+import { logNoteAccess } from "@/lib/notes/log";
+import { serializeNote } from "@/lib/notes/serialization";
 import { prisma } from "@/lib/prisma";
 import { NOTE_VISIBILITIES } from "@/lib/types/api";
-
-const HEALTHCARE_ROLES = ["doctor", "nurse", "ambulance"] as const;
+import type { NoteDeleteResponse, NoteMutationResponse } from "@/lib/types/api";
 
 const updateNoteSchema = z
   .object({
-    content: z.string().trim().min(1).max(1000).optional(),
+    text: z.string().trim().min(1).max(1000).optional(),
     visibility: z.enum(NOTE_VISIBILITIES).optional(),
   })
-  .refine((data) => data.content !== undefined || data.visibility !== undefined);
+  .refine((data) => data.text !== undefined || data.visibility !== undefined);
 
 interface RouteContext {
   params: Promise<{ id: string }>;
 }
 
-async function logNoteOperation(
-  userId: number,
-  patientId: number,
-  recordId: number,
-  action: string,
-) {
-  const block = createAccessLog({
-    userId,
-    patientId,
-    recordId,
-    action,
-    serverId: env.serverId,
-  });
-
-  await sendAccessLogToPeer(block.data);
-}
-
 export async function PATCH(request: Request, context: RouteContext) {
   try {
-    const user = await getSessionOrMock(request);
-
-    if (!user) {
-      return fail("UNAUTHENTICATED", "Authentication required", 401);
-    }
-
-    if (!HEALTHCARE_ROLES.some((role) => role === user.role)) {
-      return fail("UNAUTHORIZED", "You cannot edit notes", 403);
-    }
+    const user = await requireRole("doctor", "nurse", "ambulance");
 
     const { id } = await context.params;
     const noteId = Number(id);
@@ -92,7 +65,10 @@ export async function PATCH(request: Request, context: RouteContext) {
 
     const updatedNote = await prisma.note.update({
       where: { id: noteId },
-      data: parsed.data,
+      data: {
+        ...(parsed.data.text !== undefined && { content: parsed.data.text }),
+        ...(parsed.data.visibility !== undefined && { visibility: parsed.data.visibility }),
+      },
       include: {
         author: {
           select: {
@@ -103,37 +79,23 @@ export async function PATCH(request: Request, context: RouteContext) {
       },
     });
 
-    await logNoteOperation(user.id, note.record.patientId, note.recordId, "edit");
+    await logNoteAccess(user.id, note.record.patientId, note.recordId, "edit");
 
     return ok({
-      note: {
-        id: updatedNote.id,
-        recordId: updatedNote.recordId,
-        content: updatedNote.content,
-        visibility: updatedNote.visibility,
-        authorUserId: updatedNote.authorId,
-        author: updatedNote.author.username,
-        createdAt: updatedNote.createdAt.toISOString(),
-        updatedAt: updatedNote.updatedAt.toISOString(),
-      },
-    });
+      note: serializeNote(updatedNote),
+    } satisfies NoteMutationResponse);
   } catch (error) {
+    if (error instanceof AuthError) {
+      return fail(error.code, error.message, error.code === "UNAUTHENTICATED" ? 401 : 403);
+    }
     console.error("Failed to edit note:", error);
     return fail("NOTE_EDIT_FAILED", "Could not edit note", 500);
   }
 }
 
-export async function DELETE(request: Request, context: RouteContext) {
+export async function DELETE(_request: Request, context: RouteContext) {
   try {
-    const user = await getSessionOrMock(request);
-
-    if (!user) {
-      return fail("UNAUTHENTICATED", "Authentication required", 401);
-    }
-
-    if (!HEALTHCARE_ROLES.some((role) => role === user.role)) {
-      return fail("UNAUTHORIZED", "You cannot delete notes", 403);
-    }
+    const user = await requireRole("doctor", "nurse", "ambulance");
 
     const { id } = await context.params;
     const noteId = Number(id);
@@ -165,12 +127,15 @@ export async function DELETE(request: Request, context: RouteContext) {
       where: { id: noteId },
     });
 
-    await logNoteOperation(user.id, note.record.patientId, note.recordId, "delete");
+    await logNoteAccess(user.id, note.record.patientId, note.recordId, "delete");
 
     return ok({
       deletedId: noteId,
-    });
+    } satisfies NoteDeleteResponse);
   } catch (error) {
+    if (error instanceof AuthError) {
+      return fail(error.code, error.message, error.code === "UNAUTHENTICATED" ? 401 : 403);
+    }
     console.error("Failed to delete note:", error);
     return fail("NOTE_DELETE_FAILED", "Could not delete note", 500);
   }

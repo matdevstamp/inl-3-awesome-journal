@@ -1,45 +1,24 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { AuthError, requireRole } from "@/lib/auth";
 import { fail, ok } from "@/lib/api/http";
-import { getSessionOrMock } from "@/lib/api/mock-auth";
-import { createAccessLog } from "@/lib/blockchain/access-log-service";
-import { env } from "@/lib/env";
-import { sendAccessLogToPeer } from "@/lib/p2p/transport";
+import { isStaffRole, patientIdForUser } from "@/lib/patients/mock-patients";
+import { logNoteAccess } from "@/lib/notes/log";
+import { serializeNote } from "@/lib/notes/serialization";
 import { prisma } from "@/lib/prisma";
 import { NOTE_VISIBILITIES } from "@/lib/types/api";
-
-const HEALTHCARE_ROLES = ["doctor", "nurse", "ambulance"] as const;
+import type { NoteListResponse, NoteMutationResponse } from "@/lib/types/api";
 
 const createNoteSchema = z.object({
   recordId: z.number().int().positive(),
-  content: z.string().trim().min(1).max(1000),
+  text: z.string().trim().min(1).max(1000),
   visibility: z.enum(NOTE_VISIBILITIES),
 });
 
-async function logNoteAccess(userId: number, patientId: number, recordId: number, action: string) {
-  const block = createAccessLog({
-    userId,
-    patientId,
-    recordId,
-    action,
-    serverId: env.serverId,
-  });
-
-  await sendAccessLogToPeer(block.data);
-}
-
 export async function GET(request: Request) {
   try {
-    const user = await getSessionOrMock(request);
-
-    if (!user) {
-      return fail("UNAUTHENTICATED", "Authentication required", 401);
-    }
-
-    if (user.role === "unauthorized") {
-      return fail("UNAUTHORIZED", "You do not have access to notes", 403);
-    }
+    const user = await requireRole("doctor", "nurse", "ambulance", "patient");
 
     const url = new URL(request.url);
     const recordIdParam = url.searchParams.get("recordId");
@@ -61,6 +40,13 @@ export async function GET(request: Request) {
       return fail("NOT_FOUND", "Medical record not found", 404);
     }
 
+    const canOpenJournal = isStaffRole(user.role) || patientIdForUser(user) === record.patientId;
+
+    if (!canOpenJournal) {
+      await logNoteAccess(user.id, record.patientId, record.id, "view_denied");
+      return fail("UNAUTHORIZED", "Patients can only read their own journal notes.", 403);
+    }
+
     const notes = await prisma.note.findMany({
       where: { recordId },
       include: {
@@ -76,7 +62,7 @@ export async function GET(request: Request) {
       },
     });
 
-    const isHealthcare = HEALTHCARE_ROLES.some((role) => role === user.role);
+    const isHealthcare = isStaffRole(user.role);
 
     const visibleNotes = notes.filter((note) => {
       if (note.visibility === "all") return true;
@@ -97,19 +83,13 @@ export async function GET(request: Request) {
     await logNoteAccess(user.id, record.patientId, record.id, "view");
 
     return ok({
-      notes: visibleNotes.map((note) => ({
-        id: note.id,
-        recordId: note.recordId,
-        content: note.content,
-        visibility: note.visibility,
-        authorUserId: note.authorId,
-        author: note.author.username,
-        createdAt: note.createdAt.toISOString(),
-        updatedAt: note.updatedAt.toISOString(),
-      })),
+      notes: visibleNotes.map(serializeNote),
       hiddenNotesCount,
-    });
+    } satisfies NoteListResponse);
   } catch (error) {
+    if (error instanceof AuthError) {
+      return fail(error.code, error.message, error.code === "UNAUTHENTICATED" ? 401 : 403);
+    }
     console.error("Failed to load notes:", error);
     return fail("NOTES_FAILED", "Could not load notes", 500);
   }
@@ -117,15 +97,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const user = await getSessionOrMock(request);
-
-    if (!user) {
-      return fail("UNAUTHENTICATED", "Authentication required", 401);
-    }
-
-    if (!HEALTHCARE_ROLES.some((role) => role === user.role)) {
-      return fail("UNAUTHORIZED", "Only healthcare staff can create notes", 403);
-    }
+    const user = await requireRole("doctor", "nurse", "ambulance");
 
     let body: unknown;
 
@@ -159,7 +131,7 @@ export async function POST(request: Request) {
       data: {
         recordId: record.id,
         authorId: user.id,
-        content: parsed.data.content,
+        content: parsed.data.text,
         visibility: parsed.data.visibility,
       },
       include: {
@@ -178,21 +150,15 @@ export async function POST(request: Request) {
       {
         ok: true,
         data: {
-          note: {
-            id: note.id,
-            recordId: note.recordId,
-            content: note.content,
-            visibility: note.visibility,
-            authorUserId: note.authorId,
-            author: note.author.username,
-            createdAt: note.createdAt.toISOString(),
-            updatedAt: note.updatedAt.toISOString(),
-          },
+          note: serializeNote(note),
         },
-      },
+      } satisfies { ok: true; data: NoteMutationResponse },
       { status: 201 },
     );
   } catch (error) {
+    if (error instanceof AuthError) {
+      return fail(error.code, error.message, error.code === "UNAUTHENTICATED" ? 401 : 403);
+    }
     console.error("Failed to create note:", error);
     return fail("NOTE_CREATE_FAILED", "Could not create note", 500);
   }

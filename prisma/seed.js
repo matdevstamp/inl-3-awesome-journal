@@ -1,7 +1,7 @@
 // prisma/seed.js — fictional seed data for local development.
 // Run with: npm run db:seed
 
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient, Prisma } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
 
 const prisma = new PrismaClient();
@@ -88,6 +88,19 @@ async function main() {
     },
   });
 
+  // A second patient so e2e can assert patients cannot open other patients' notes.
+  const otherPatient = await prisma.patient.upsert({
+    where: { id: 2 },
+    update: {},
+    create: {
+      id: 2,
+      personalNumber: "199207225678",
+      firstName: "Erik",
+      lastName: "Eriksson",
+      dateOfBirth: new Date("1992-07-22"),
+    },
+  });
+
   const record = await prisma.medicalRecord.upsert({
     where: { id: 1 },
     update: {},
@@ -96,6 +109,18 @@ async function main() {
       recordType: "diagnosis",
       content: "Mild asthma — inhaler prescribed.",
       patientId: patient.id,
+      authorId: 1,
+    },
+  });
+
+  await prisma.medicalRecord.upsert({
+    where: { id: 2 },
+    update: {},
+    create: {
+      id: 2,
+      recordType: "diagnosis",
+      content: "Erik's record — private to patient 2.",
+      patientId: otherPatient.id,
       authorId: 1,
     },
   });
@@ -154,16 +179,18 @@ async function main() {
     },
   });
 
-  // Keep PostgreSQL's autoincrement sequence above the manually seeded IDs.
-  await prisma.$queryRaw`
-    SELECT setval(
-      pg_get_serial_sequence('notes', 'id'),
-      COALESCE((SELECT MAX(id) FROM notes), 1),
-      true
-    )
-  `;
+  // Keep the PostgreSQL autoincrement sequences above the manually seeded IDs.
+  for (const table of ["patients", "medical_records", "notes"]) {
+    await prisma.$queryRaw(Prisma.sql`
+      SELECT setval(
+        pg_get_serial_sequence(${Prisma.raw(`'${table}'`)}, 'id'),
+        COALESCE((SELECT MAX(id) FROM ${Prisma.raw(table)}), 1),
+        true
+      )
+    `);
+  }
 
-  console.log("Seeded organizations, users (pw: test123), patient Anna, one record + three notes.");
+  console.log("Seeded organizations, users (pw: test123), patients, records + notes.");
 }
 
 main()
