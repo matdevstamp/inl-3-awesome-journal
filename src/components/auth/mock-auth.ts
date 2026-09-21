@@ -4,43 +4,38 @@ import { useSyncExternalStore } from "react";
 
 import type { Role, SessionUser } from "@/lib/types/api";
 
-export const MOCK_USERS: Array<SessionUser & { displayName: string; password: string }> = [
+export const MOCK_USERS: Array<SessionUser & { displayName: string }> = [
   {
     id: 1,
-    username: "doctor",
-    password: "demo123",
+    username: "dr_test",
     role: "doctor",
     organizationId: 1,
     displayName: "Dr. Sofia Berg",
   },
   {
     id: 2,
-    username: "nurse",
-    password: "demo123",
+    username: "nurse_test",
     role: "nurse",
     organizationId: 1,
     displayName: "Nurse Alex Lind",
   },
   {
     id: 3,
-    username: "ambulance",
-    password: "demo123",
+    username: "amb_test",
     role: "ambulance",
     organizationId: 2,
     displayName: "Ambulance Unit A",
   },
   {
     id: 4,
-    username: "patient",
-    password: "demo123",
+    username: "patient_test",
     role: "patient",
     organizationId: null,
     displayName: "Anna Andersson",
   },
   {
     id: 5,
-    username: "unauthorized",
-    password: "demo123",
+    username: "unauth_test",
     role: "unauthorized",
     organizationId: null,
     displayName: "Unauthorized visitor",
@@ -67,27 +62,12 @@ export function getMockUserDisplayName(user: SessionUser): string {
   return MOCK_USERS.find((candidate) => candidate.id === user.id)?.displayName ?? user.username;
 }
 
-export function signInWithMockUser(username: string, password: string): SessionUser | null {
-  const user = MOCK_USERS.find(
-    (candidate) => candidate.username === username && candidate.password === password,
-  );
-
-  if (!user) {
-    return null;
-  }
-
-  const sessionUser: SessionUser = {
-    id: user.id,
-    username: user.username,
-    role: user.role,
-    organizationId: user.organizationId,
-  };
+export function setMockSession(sessionUser: SessionUser): void {
   if (typeof window !== "undefined") {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionUser));
     cachedSessionValue = null;
     window.dispatchEvent(new Event(SESSION_EVENT));
   }
-  return sessionUser;
 }
 
 export function getMockSession(): SessionUser | null {

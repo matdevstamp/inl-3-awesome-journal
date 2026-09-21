@@ -15,9 +15,13 @@ type AppHeaderProps = {
 export function AppHeader({ title = "Awesome Journal" }: AppHeaderProps) {
   const router = useRouter();
 
-  function handleLogout() {
-    clearMockSession();
-    router.push("/login");
+  async function handleLogout() {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } finally {
+      clearMockSession();
+      router.push("/login");
+    }
   }
 
   return (
