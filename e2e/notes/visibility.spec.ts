@@ -1,96 +1,151 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type APIRequestContext } from "@playwright/test";
 
 const recordId = 1;
+const anotherRecordId = 2;
 
-function headers(role: string, userId: number) {
-  return {
-    "x-mock-role": role,
-    "x-mock-user-id": String(userId),
-  };
+// Every test that POSTs a note must register the returned id here.
+// test.afterEach deletes them all, so the suite is idempotent — reruns don't
+// accumulate throwaway private notes onto a shared record, which would
+// otherwise skew hiddenNotesCount.
+const createdNoteIds: number[] = [];
+
+test.afterEach(async ({ request }) => {
+  // All throwaway notes are authored by dr_test namesake, but a failed 403
+  // path (e.g. cross-user delete) can leave the session bound to nurse/patient.
+  // Re-assert the author's identity first so the drain actually succeeds.
+  if (createdNoteIds.length > 0) {
+    await loginAs(request, "dr_test");
+  }
+
+  while (createdNoteIds.length > 0) {
+    const id = createdNoteIds.pop()!;
+    await request.delete(`/api/notes/${id}`);
+  }
+});
+
+const CREDENTIALS: Record<string, { username: string; password: string }> = {
+  dr_test: { username: "dr_test", password: "test123" },
+  nurse_test: { username: "nurse_test", password: "test123" },
+  patient_test: { username: "patient_test", password: "test123" },
+};
+
+async function loginAs(request: APIRequestContext, user: keyof typeof CREDENTIALS) {
+  const credentials = CREDENTIALS[user];
+  if (!credentials) throw new Error(`No credentials for ${user}`);
+  const { username, password } = credentials;
+  const login = await request.post("/api/auth/login", {
+    data: { username, password },
+  });
+  expect(login.status()).toBe(200);
 }
 
 test.describe("note visibility", () => {
   test("private notes are visible to their author", async ({ request }) => {
-    const response = await request.get(`/api/notes?recordId=${recordId}`, {
-      headers: headers("doctor", 1),
-    });
+    await loginAs(request, "dr_test");
+
+    const response = await request.get(`/api/notes?recordId=${recordId}`);
 
     expect(response.status()).toBe(200);
 
     const body = await response.json();
-    const contents = body.data.notes.map((note: { content: string }) => note.content);
+    const contents = body.data.notes.map((note: { text: string }) => note.text);
 
     expect(contents).toContain("Private doctor note.");
   });
 
   test("private notes from another author are hidden", async ({ request }) => {
-    const response = await request.get(`/api/notes?recordId=${recordId}`, {
-      headers: headers("nurse", 2),
-    });
+    await loginAs(request, "nurse_test");
+
+    const response = await request.get(`/api/notes?recordId=${recordId}`);
 
     expect(response.status()).toBe(200);
 
     const body = await response.json();
-    const contents = body.data.notes.map((note: { content: string }) => note.content);
+    const contents = body.data.notes.map((note: { text: string }) => note.text);
 
     expect(contents).not.toContain("Private doctor note.");
   });
 
   test("healthcare notes are visible to healthcare staff", async ({ request }) => {
-    const response = await request.get(`/api/notes?recordId=${recordId}`, {
-      headers: headers("nurse", 2),
-    });
+    await loginAs(request, "nurse_test");
+
+    const response = await request.get(`/api/notes?recordId=${recordId}`);
 
     expect(response.status()).toBe(200);
 
     const body = await response.json();
-    const contents = body.data.notes.map((note: { content: string }) => note.content);
+    const contents = body.data.notes.map((note: { text: string }) => note.text);
 
     expect(contents).toContain("Follow-up in six months.");
   });
 
   test("patient cannot read private or healthcare notes", async ({ request }) => {
-    const response = await request.get(`/api/notes?recordId=${recordId}`, {
-      headers: headers("patient", 4),
-    });
+    await loginAs(request, "patient_test");
+
+    const response = await request.get(`/api/notes?recordId=${recordId}`);
 
     expect(response.status()).toBe(200);
 
     const body = await response.json();
-    const contents = body.data.notes.map((note: { content: string }) => note.content);
+    const contents = body.data.notes.map((note: { text: string }) => note.text);
 
     expect(contents).not.toContain("Private doctor note.");
     expect(contents).not.toContain("Follow-up in six months.");
     expect(body.data.hiddenNotesCount).toBe(2);
   });
 
-  test("all notes are visible to patient", async ({ request }) => {
-    const response = await request.get(`/api/notes?recordId=${recordId}`, {
-      headers: headers("patient", 4),
-    });
+  test("all notes are visible to everyone with journal access", async ({ request }) => {
+    await loginAs(request, "patient_test");
+
+    const response = await request.get(`/api/notes?recordId=${recordId}`);
 
     expect(response.status()).toBe(200);
 
     const body = await response.json();
-    const contents = body.data.notes.map((note: { content: string }) => note.content);
+    const contents = body.data.notes.map((note: { text: string }) => note.text);
 
     expect(contents).toContain("Visible to everyone with journal access.");
   });
 
-  test("unauthenticated GET is rejected", async ({ request }) => {
+  test("patient cannot read another patient's notes", async ({ request }) => {
+    await loginAs(request, "patient_test");
+
+    const response = await request.get(`/api/notes?recordId=${anotherRecordId}`);
+
+    expect(response.status()).toBe(403);
+
+    const body = await response.json();
+
+    expect(body.error.code).toBe("UNAUTHORIZED");
+  });
+
+  test("unauthenticated note listing is rejected", async ({ request }) => {
     const response = await request.get(`/api/notes?recordId=${recordId}`);
 
     expect(response.status()).toBe(401);
+  });
+
+  test("rejects forged mock headers without a session", async ({ request }) => {
+    const response = await request.get(`/api/notes?recordId=${recordId}`, {
+      headers: { "x-mock-role": "doctor", "x-mock-user-id": "1" },
+    });
+
+    expect(response.status()).toBe(401);
+
+    const body = await response.json();
+
+    expect(body.ok).toBe(false);
   });
 });
 
 test.describe("create notes", () => {
   test("healthcare staff can create a note", async ({ request }) => {
+    await loginAs(request, "dr_test");
+
     const response = await request.post("/api/notes", {
-      headers: headers("doctor", 1),
       data: {
         recordId,
-        content: "Created by Playwright.",
+        text: "Created by Playwright.",
         visibility: "private",
       },
     });
@@ -99,30 +154,34 @@ test.describe("create notes", () => {
 
     const body = await response.json();
 
-    expect(body.data.note.content).toBe("Created by Playwright.");
+    expect(body.data.note.text).toBe("Created by Playwright.");
     expect(body.data.note.visibility).toBe("private");
     expect(body.data.note.authorUserId).toBe(1);
+
+    createdNoteIds.push(body.data.note.id);
   });
 
   test("patient cannot create notes", async ({ request }) => {
+    await loginAs(request, "patient_test");
+
     const response = await request.post("/api/notes", {
-      headers: headers("patient", 4),
       data: {
         recordId,
-        content: "Patient should not create this.",
-        visibility: "all",
+        text: "Patient should not create this.",
+        visibility: "private",
       },
     });
 
     expect(response.status()).toBe(403);
   });
 
-  test("empty note content is rejected", async ({ request }) => {
+  test("empty note text is rejected", async ({ request }) => {
+    await loginAs(request, "dr_test");
+
     const response = await request.post("/api/notes", {
-      headers: headers("doctor", 1),
       data: {
         recordId,
-        content: "",
+        text: "",
         visibility: "private",
       },
     });
@@ -131,11 +190,12 @@ test.describe("create notes", () => {
   });
 
   test("invalid visibility is rejected", async ({ request }) => {
+    await loginAs(request, "dr_test");
+
     const response = await request.post("/api/notes", {
-      headers: headers("doctor", 1),
       data: {
         recordId,
-        content: "Invalid visibility.",
+        text: "Invalid visibility.",
         visibility: "secret",
       },
     });
@@ -147,7 +207,7 @@ test.describe("create notes", () => {
     const response = await request.post("/api/notes", {
       data: {
         recordId,
-        content: "Unauthenticated.",
+        text: "Unauthenticated.",
         visibility: "private",
       },
     });
@@ -158,37 +218,12 @@ test.describe("create notes", () => {
 
 test.describe("edit and delete notes", () => {
   test("author can edit own note", async ({ request }) => {
-    const response = await request.patch("/api/notes/2", {
-      headers: headers("doctor", 1),
-      data: {
-        content: "Updated private doctor note.",
-      },
-    });
+    await loginAs(request, "dr_test");
 
-    expect(response.status()).toBe(200);
-
-    const body = await response.json();
-
-    expect(body.data.note.content).toBe("Updated private doctor note.");
-  });
-
-  test("another user cannot edit the note", async ({ request }) => {
-    const response = await request.patch("/api/notes/2", {
-      headers: headers("nurse", 2),
-      data: {
-        content: "Should not work.",
-      },
-    });
-
-    expect(response.status()).toBe(403);
-  });
-
-  test("author can delete own note", async ({ request }) => {
     const createResponse = await request.post("/api/notes", {
-      headers: headers("doctor", 1),
       data: {
         recordId,
-        content: "Temporary note for deletion.",
+        text: "Temporary note for editing.",
         visibility: "private",
       },
     });
@@ -198,20 +233,81 @@ test.describe("edit and delete notes", () => {
     const createBody = await createResponse.json();
     const noteId = createBody.data.note.id;
 
-    const deleteResponse = await request.delete(`/api/notes/${noteId}`, {
-      headers: headers("doctor", 1),
+    createdNoteIds.push(noteId);
+
+    const response = await request.patch(`/api/notes/${noteId}`, {
+      data: {
+        text: "Updated temporary note.",
+      },
     });
 
-    expect(deleteResponse.status()).toBe(200);
+    expect(response.status()).toBe(200);
 
-    const deleteBody = await deleteResponse.json();
-    expect(deleteBody.data.deletedId).toBe(noteId);
+    const body = await response.json();
+
+    expect(body.data.note.text).toBe("Updated temporary note.");
+  });
+
+  test("another user cannot edit the note", async ({ request }) => {
+    await loginAs(request, "nurse_test");
+
+    const response = await request.patch("/api/notes/2", {
+      data: {
+        text: "Should not work.",
+      },
+    });
+
+    expect(response.status()).toBe(403);
+  });
+
+  test("author can delete own note", async ({ request }) => {
+    await loginAs(request, "dr_test");
+
+    const createResponse = await request.post("/api/notes", {
+      data: {
+        recordId,
+        text: "Temporary note for deletion.",
+        visibility: "private",
+      },
+    });
+
+    expect(createResponse.status()).toBe(201);
+
+    const createBody = await createResponse.json();
+    const noteId = createBody.data.note.id;
+
+    createdNoteIds.push(noteId);
+
+    const response = await request.delete(`/api/notes/${noteId}`);
+
+    expect(response.status()).toBe(200);
+
+    const body = await response.json();
+
+    expect(body.data.deletedId).toBe(noteId);
   });
 
   test("another user cannot delete the note", async ({ request }) => {
-    const response = await request.delete("/api/notes/1", {
-      headers: headers("doctor", 1),
+    await loginAs(request, "dr_test");
+
+    const createResponse = await request.post("/api/notes", {
+      data: {
+        recordId,
+        text: "Temporary note for cross-user delete.",
+        visibility: "private",
+      },
     });
+
+    expect(createResponse.status()).toBe(201);
+
+    const createBody = await createResponse.json();
+    const noteId = createBody.data.note.id;
+
+    createdNoteIds.push(noteId);
+
+    await loginAs(request, "nurse_test");
+
+    const response = await request.delete(`/api/notes/${noteId}`);
 
     expect(response.status()).toBe(403);
   });
