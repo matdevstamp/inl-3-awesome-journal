@@ -85,7 +85,7 @@ export default function PatientsPage() {
             </Link>
           </Button>
         </div>
-        <PatientSearch user={user} />
+        <PatientSearch />
       </section>
     </main>
   );

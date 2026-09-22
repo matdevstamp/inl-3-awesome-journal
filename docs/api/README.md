@@ -72,6 +72,19 @@ Endpointen används bland annat för att kontrollera att servern är igång.
 
 ## Journaler
 
+### GET /api/patients/:id
+
+Returnerar patient och journalvyn från SQL. Kräver JWT-cookie och rollen doctor, nurse,
+ambulance eller patient. Patientrollen får bara öppna sitt eget patient-ID. Svaret följer
+`PatientJournalResponse` i `src/lib/types/api.ts`. Privat anteckning visas bara för sin
+författare, healthcare för vårdpersonal och all även för patienten. En patient får bara
+antalet dolda healthcare-anteckningar, inte innehållet i dem.
+
+Ogiltigt ID ger 400, saknad session 401, nekad åtkomst 403 och okänt patient-ID 404.
+Patientens koppling till användar-ID ligger ännu i en tillfällig mappning; datamodellen
+saknar en relation mellan User och Patient. Vyns audit-händelser hanteras separat av
+access-log/API:t.
+
 Funktionalitet för medicinska journaler tillhör Task 14.
 
 Route-strukturen finns förberedd i API:t, men full CRUD-funktionalitet implementeras separat i Task 14.

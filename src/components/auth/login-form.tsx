@@ -4,7 +4,9 @@ import { useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { HeartPulseIcon, ShieldCheckIcon } from "lucide-react";
 
-import { signInWithMockUser, MOCK_USERS, roleLabel } from "@/components/auth/mock-auth";
+import { setMockSession, MOCK_USERS, roleLabel } from "@/components/auth/mock-auth";
+import { ApiClientError, apiRequest } from "@/lib/api/client";
+import type { LoginResponse } from "@/lib/types/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -20,30 +22,35 @@ import {
 export function LoginForm() {
   const router = useRouter();
   const [username, setUsername] = useState(MOCK_USERS[0]?.username ?? "");
-  const [password, setPassword] = useState("demo123");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const selectedUser = useMemo(
     () => MOCK_USERS.find((user) => user.username === username),
     [username],
   );
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-
-    const user = signInWithMockUser(username, password);
-    if (!user) {
-      setError("Invalid demo credentials. Try password demo123.");
-      return;
+    setIsSubmitting(true);
+    try {
+      const { user } = await apiRequest<LoginResponse>("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ username, password }),
+      });
+      setMockSession(user);
+      router.push(user.role === "unauthorized" ? "/access-denied" : "/dashboard");
+    } catch (cause) {
+      setError(
+        cause instanceof ApiClientError && cause.status === 401
+          ? "Invalid username or password."
+          : "Sign-in service is unavailable. Check that the database and app server are running.",
+      );
+    } finally {
+      setIsSubmitting(false);
     }
-
-    if (user.role === "unauthorized") {
-      router.push("/access-denied");
-      return;
-    }
-
-    router.push("/dashboard");
   }
 
   return (
@@ -56,12 +63,14 @@ export function LoginForm() {
           Secure journal access
         </div>
         <CardTitle className="text-2xl">Sign in to Awesome Journal</CardTitle>
-        <CardDescription>
-          Demo login for the role-based health record flow. Backend auth will replace this mock.
-        </CardDescription>
+        <CardDescription>Sign in with a seeded test account to access the journal.</CardDescription>
       </CardHeader>
       <CardContent className="px-0">
-        <form className="space-y-5 rounded-lg bg-muted/30 p-4 md:p-5" onSubmit={handleSubmit}>
+        <form
+          method="post"
+          className="space-y-5 rounded-lg bg-muted/30 p-4 md:p-5"
+          onSubmit={handleSubmit}
+        >
           <div className="space-y-2">
             <Label htmlFor="demo-user">Demo user</Label>
             <Select value={username} onValueChange={setUsername}>
@@ -82,6 +91,7 @@ export function LoginForm() {
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
+              name="password"
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
@@ -98,7 +108,7 @@ export function LoginForm() {
 
           {error ? <p className="text-sm font-medium text-destructive">{error}</p> : null}
 
-          <Button className="w-full" type="submit">
+          <Button className="w-full" type="submit" disabled={isSubmitting}>
             Sign in
           </Button>
         </form>

@@ -34,9 +34,7 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
 
     async function loadJournal() {
       try {
-        const data = await apiRequest<PatientJournalResponse>(`/api/patients/${patientId}`, {
-          headers: mockSessionHeaders(user),
-        });
+        const data = await apiRequest<PatientJournalResponse>(`/api/patients/${patientId}`);
         const accessLogData = await apiRequest<{
           accessLogs: BlockchainAccessLog[];
           chainValid: boolean;

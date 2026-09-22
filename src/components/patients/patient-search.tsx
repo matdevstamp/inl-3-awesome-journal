@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { SearchIcon, UserRoundIcon } from "lucide-react";
 
-import { mockSessionHeaders } from "@/components/auth/mock-auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,12 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiRequest } from "@/lib/api/client";
-import type {
-  PatientSearchFilter,
-  PatientSearchResponse,
-  PatientSummary,
-  SessionUser,
-} from "@/lib/types/api";
+import type { PatientSearchFilter, PatientSearchResponse, PatientSummary } from "@/lib/types/api";
 
 const FILTER_OPTIONS: Array<{ value: PatientSearchFilter; label: string }> = [
   { value: "name", label: "Name" },
@@ -32,7 +26,7 @@ const FILTER_OPTIONS: Array<{ value: PatientSearchFilter; label: string }> = [
   { value: "personalNumber", label: "Personal number" },
 ];
 
-export function PatientSearch({ user }: { user: SessionUser }) {
+export function PatientSearch() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<PatientSearchFilter>("name");
   const [result, setResult] = useState<PatientSearchResponse | null>(null);
@@ -54,9 +48,7 @@ export function PatientSearch({ user }: { user: SessionUser }) {
     });
 
     try {
-      const data = await apiRequest<PatientSearchResponse>(`/api/patients?${params}`, {
-        headers: mockSessionHeaders(user),
-      });
+      const data = await apiRequest<PatientSearchResponse>(`/api/patients?${params}`);
       setResult(data);
       setPage(data.page);
     } catch {

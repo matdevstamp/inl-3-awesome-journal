@@ -85,18 +85,71 @@ test.describe("patient search", () => {
   });
 
   test("refuses a patient opening another patient's identifier", async ({ request }) => {
-    const response = await request.get("/api/patients/2", {
-      headers: {
-        "x-mock-role": "patient",
-        "x-mock-user-id": "4",
-        "x-mock-username": "patient",
-      },
+    const login = await request.post("/api/auth/login", {
+      data: { username: "patient_test", password: "test123" },
     });
+    expect(login.status()).toBe(200);
+    const response = await request.get("/api/patients/2");
 
     const body = await response.json();
 
     expect(response.status()).toBe(403);
     expect(body.ok).toBe(false);
     expect(body.error.code).toBe("UNAUTHORIZED");
+  });
+
+  test("requires a JWT even when mock role headers are supplied", async ({ request }) => {
+    const response = await request.get("/api/patients/1", {
+      headers: { "x-mock-role": "doctor", "x-mock-user-id": "1" },
+    });
+    expect(response.status()).toBe(401);
+    expect((await response.json()).error.code).toBe("UNAUTHENTICATED");
+  });
+
+  test("loads SQL journal data for staff", async ({ request }) => {
+    const login = await request.post("/api/auth/login", {
+      data: { username: "dr_test", password: "test123" },
+    });
+    expect(login.status()).toBe(200);
+    const response = await request.get("/api/patients/1");
+    expect(response.status()).toBe(200);
+    const { data } = await response.json();
+    expect(data.patient).toMatchObject({
+      id: 1,
+      name: "Anna Andersson",
+      dateOfBirth: "1990-01-01",
+    });
+    expect(data.records).toContainEqual(
+      expect.objectContaining({ id: 1, title: "diagnosis", practitioner: "dr_test" }),
+    );
+    expect(data.notes).toContainEqual(
+      expect.objectContaining({ id: 1, visibility: "healthcare", author: "nurse_test" }),
+    );
+    expect(data.isOwnJournal).toBe(false);
+  });
+
+  test("patient sees only their own public notes", async ({ request }) => {
+    const login = await request.post("/api/auth/login", {
+      data: { username: "patient_test", password: "test123" },
+    });
+    expect(login.status()).toBe(200);
+    const response = await request.get("/api/patients/1");
+    expect(response.status()).toBe(200);
+    const { data } = await response.json();
+    expect(data.isOwnJournal).toBe(true);
+    expect(data.notes.every((note: { visibility: string }) => note.visibility === "all")).toBe(
+      true,
+    );
+    expect(data.notes).not.toContainEqual(expect.objectContaining({ id: 1 }));
+    expect(data.hiddenNotesCount).toBeGreaterThanOrEqual(1);
+  });
+
+  test("rejects invalid IDs and handles missing patients", async ({ request }) => {
+    const login = await request.post("/api/auth/login", {
+      data: { username: "dr_test", password: "test123" },
+    });
+    expect(login.status()).toBe(200);
+    expect((await request.get("/api/patients/abc")).status()).toBe(400);
+    expect((await request.get("/api/patients/999")).status()).toBe(404);
   });
 });
