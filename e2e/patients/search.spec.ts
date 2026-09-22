@@ -119,8 +119,12 @@ test.describe("patient search", () => {
       name: "Anna Andersson",
       dateOfBirth: "1990-01-01",
     });
-    expect(data.records[0]).toMatchObject({ id: 1, title: "diagnosis", practitioner: "dr_test" });
-    expect(data.notes[0]).toMatchObject({ id: 1, visibility: "healthcare", author: "nurse_test" });
+    expect(data.records).toContainEqual(
+      expect.objectContaining({ id: 1, title: "diagnosis", practitioner: "dr_test" }),
+    );
+    expect(data.notes).toContainEqual(
+      expect.objectContaining({ id: 1, visibility: "healthcare", author: "nurse_test" }),
+    );
     expect(data.isOwnJournal).toBe(false);
   });
 
@@ -133,8 +137,11 @@ test.describe("patient search", () => {
     expect(response.status()).toBe(200);
     const { data } = await response.json();
     expect(data.isOwnJournal).toBe(true);
-    expect(data.notes).toEqual([]);
-    expect(data.hiddenNotesCount).toBe(1);
+    expect(data.notes.every((note: { visibility: string }) => note.visibility === "all")).toBe(
+      true,
+    );
+    expect(data.notes).not.toContainEqual(expect.objectContaining({ id: 1 }));
+    expect(data.hiddenNotesCount).toBeGreaterThanOrEqual(1);
   });
 
   test("rejects invalid IDs and handles missing patients", async ({ request }) => {

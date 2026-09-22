@@ -63,12 +63,14 @@ export function LoginForm() {
           Secure journal access
         </div>
         <CardTitle className="text-2xl">Sign in to Awesome Journal</CardTitle>
-        <CardDescription>
-          Sign in with a seeded test account to access the journal.
-        </CardDescription>
+        <CardDescription>Sign in with a seeded test account to access the journal.</CardDescription>
       </CardHeader>
       <CardContent className="px-0">
-        <form method="post" className="space-y-5 rounded-lg bg-muted/30 p-4 md:p-5" onSubmit={handleSubmit}>
+        <form
+          method="post"
+          className="space-y-5 rounded-lg bg-muted/30 p-4 md:p-5"
+          onSubmit={handleSubmit}
+        >
           <div className="space-y-2">
             <Label htmlFor="demo-user">Demo user</Label>
             <Select value={username} onValueChange={setUsername}>

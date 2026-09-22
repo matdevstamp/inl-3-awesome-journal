@@ -18,11 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiRequest } from "@/lib/api/client";
-import type {
-  PatientSearchFilter,
-  PatientSearchResponse,
-  PatientSummary,
-} from "@/lib/types/api";
+import type { PatientSearchFilter, PatientSearchResponse, PatientSummary } from "@/lib/types/api";
 
 const FILTER_OPTIONS: Array<{ value: PatientSearchFilter; label: string }> = [
   { value: "name", label: "Name" },
