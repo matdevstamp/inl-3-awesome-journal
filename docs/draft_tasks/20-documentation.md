@@ -3,8 +3,8 @@
 ## Metadata
 - **Priority:** P0 - Required throughout
 - **Deadline:** 2026-09-29
-- **Status:** TODO
-- **Assignee:** matdevstamp
+- **Status:** IN PROGRESS
+- **Assignee:** Kassim10
 - **Tags:** documentation, readme, required, gate:5-delivery
 - **Dependencies:** 01-project-setup-group-contract.md
 - **GitHub Issue:** #30 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/30)
