@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-04
-- **Status:** TODO
+- **Status:** DONE
 - **Assignee:** Team
 - **Tags:** setup, documentation, required, gate:1-decisions
 - **Dependencies:** None
@@ -50,31 +50,31 @@ The contract should cover:
 
 ## Tasks
 
-- [ ] Create GitHub repository
-- [ ] Write gruppkontrakt.md using provided template
-- [ ] Add the per-member loggbok files under `docs/logbooks/` (or the format the group decides at kickoff)
-- [ ] Record branch rule (app code via PR + 1 review; docs/ + Python tooling push direct) and apply the GitHub ruleset later with task 10
+- [x] Create GitHub repository
+- [x] Write gruppkontrakt.md using provided template
+- [x] Add the per-member loggbok files under `docs/logbooks/` (or the format the group decides at kickoff)
+- [x] Record branch rule (app code via PR + 1 review; docs/ + Python tooling push direct) and apply the GitHub ruleset later with task 10
 - [x] Create README.md with initial project description
-- [ ] Set up project board (GitHub Projects or similar)
-- [ ] Establish meeting schedule (min 2 standups/week)
-- [ ] Assign the first meeting facilitator and note-taker; define a rotation for later meetings
-- [ ] Add the meeting agenda and note template from `docs/MEETING_TEMPLATE.md`
-- [ ] Add a requirements-checkpoint agenda item to every planning meeting and at least two meetings per week
+- [x] Set up project board (GitHub Projects or similar)
+- [x] Establish meeting schedule (min 2 standups/week)
+- [x] Assign the first meeting facilitator and note-taker; define a rotation for later meetings
+- [x] Add the meeting agenda and note template from `docs/MEETING_TEMPLATE.md`
+- [x] Add a requirements-checkpoint agenda item to every planning meeting and at least two meetings per week
 - [ ] Create a lightweight requirements traceability checklist linking each requirement to a task and later evidence
 - [x] Define PR review process (min 1 review; nobody reviews/merges their own PR — not even the lead; no fixed review time-frame) — decided at kickoff, in gruppkontrakt §7/§9
-- [ ] Set up development environment instructions
+- [x] Set up development environment instructions
 
 ## Done Criteria
 
-- [ ] gruppkontrakt.md exists and is committed
-- [ ] Logbook format decided at kickoff and each member's logbook file exists in `docs/logbooks/`
-- [ ] README.md exists with project description
-- [ ] Repository is public or postmodernistx is collaborator
-- [ ] Branch protection rules are configured
-- [ ] All team members have access
-- [ ] Meeting schedule is documented
-- [ ] Requirements checkpoint format is documented and used in the first meeting note
-- [ ] Meeting role rotation is documented and every scheduled meeting has an owner for facilitation and notes
+- [x] gruppkontrakt.md exists and is committed
+- [x] Logbook format decided at kickoff and each member's logbook file exists in `docs/logbooks/`
+- [x] README.md exists with project description
+- [x] Repository is public or postmodernistx is collaborator
+- [x] Branch protection rules are configured
+- [x] All team members have access
+- [x] Meeting schedule is documented
+- [x] Requirements checkpoint format is documented and used in the first meeting note
+- [x] Meeting role rotation is documented and every scheduled meeting has an owner for facilitation and notes
 
 ## Notes
 

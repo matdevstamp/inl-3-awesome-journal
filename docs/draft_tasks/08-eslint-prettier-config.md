@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-07
-- **Status:** In review
+- **Status:** DONE
 - **Assignee:** matdevstamp
 - **Tags:** tooling, linting, code-quality, required, gate:2-scaffold
 - **Dependencies:** 05-nextjs-tailwind-shadcn.md, 07-typescript-strict-config.md
@@ -186,23 +186,23 @@ echo "npx lint-staged" > .husky/pre-commit
 - [x] Install Prettier and plugins
 - [x] Create .prettierrc configuration
 - [x] Create .prettierignore
-- [ ] Setup VS Code settings and extensions
-- [ ] Install Husky for git hooks
-- [ ] Configure lint-staged
-- [ ] Create pre-commit hook
+- [x] Setup VS Code settings and extensions
+- [x] Install Husky for git hooks
+- [x] Configure lint-staged
+- [x] Create pre-commit hook
 - [x] Test linting on existing code
 - [x] Add npm scripts for linting
 
 ## Done Criteria
 
-- [ ] ESLint runs without errors
-- [ ] Prettier formats code correctly
-- [ ] VS Code auto-formats on save
-- [ ] Pre-commit hooks run linting
-- [ ] All team members have same config
-- [ ] CI/CD can run lint checks
-- [ ] Import sorting works
-- [ ] Unused imports are flagged
+- [x] ESLint runs without errors
+- [x] Prettier formats code correctly
+- [x] VS Code auto-formats on save
+- [x] Pre-commit hooks run linting
+- [x] All team members have same config
+- [x] CI/CD can run lint checks
+- [x] Import sorting works
+- [x] Unused imports are flagged
 
 ## Notes
 
@@ -226,6 +226,6 @@ echo "npx lint-staged" > .husky/pre-commit
 
 ## Questions to Resolve
 
-- [ ] Should we use Biome instead of ESLint + Prettier? (faster)
-- [ ] Which import sorting order do we prefer?
-- [ ] Should we enforce strict TypeScript rules?
+- [x] Should we use Biome instead of ESLint + Prettier? (faster)
+- [x] Which import sorting order do we prefer?
+- [x] Should we enforce strict TypeScript rules?

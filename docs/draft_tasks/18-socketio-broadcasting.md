@@ -2,8 +2,8 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-21
-- **Status:** TODO
+- **Deadline:** 2026-09-28
+- **Status:** IN PROGRESS
 - **Assignee:** umoraghad0-del (pair-programmering)
 - **Tags:** realtime, websocket, socketio, required, gate:4-integration
 - **Dependencies:** 17-user-roles-access-control.md, 14-medical-notes.md, 16-p2p-network.md, 12-frontend-ui.md

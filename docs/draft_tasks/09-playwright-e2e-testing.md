@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P1 - High
 - **Deadline:** 2026-09-07 (runner and fixtures), 2026-09-29 (critical flows)
-- **Status:** In review
+- **Status:** DONE
 - **Assignee:** matdevstamp
 - **Tags:** testing, e2e, playwright, required, gate:2-scaffold
 - **Dependencies:** 05-nextjs-tailwind-shadcn.md, 06-backend-project-setup.md, 07-typescript-strict-config.md, 08-eslint-prettier-config.md
@@ -392,31 +392,31 @@ e2e-tests:
 ## Tasks
 
 - [x] Install Playwright and configure
-- [ ] Write the login-entry smoke test before implementing the login screen
+- [x] Write the login-entry smoke test before implementing the login screen
 - [x] Make the smoke test green as the first executable scaffold check
 - [x] Create test fixtures for authentication
-- [ ] Write login/logout tests
-- [ ] Write patient search tests
-- [ ] Write patient view tests (role-based)
-- [ ] Write medical record tests
-- [ ] Write note creation tests
-- [ ] Write note visibility tests
-- [ ] Write access log tests
-- [ ] Write blockchain verification tests
-- [ ] Add E2E tests to CI/CD pipeline
-- [ ] Create test data seeding script
-- [ ] Document test procedures
+- [x] Write login/logout tests
+- [x] Write patient search tests
+- [x] Write patient view tests (role-based)
+- [x] Write medical record tests
+- [x] Write note creation tests
+- [x] Write note visibility tests
+- [x] Write access log tests
+- [x] Write blockchain verification tests
+- [x] Add E2E tests to CI/CD pipeline
+- [x] Create test data seeding script
+- [x] Document test procedures
 
 ## Done Criteria
 
-- [ ] Playwright is configured and working
-- [ ] All critical paths have E2E tests
-- [ ] Tests run for all 5 user roles
-- [ ] Note visibility is thoroughly tested
-- [ ] Real-time updates are tested
-- [ ] Tests run in CI/CD pipeline
-- [ ] Test reports are generated
-- [ ] Flaky tests are identified and fixed
+- [x] Playwright is configured and working
+- [x] All critical paths have E2E tests
+- [x] Tests run for all 5 user roles
+- [x] Note visibility is thoroughly tested
+- [x] Real-time updates are tested
+- [x] Tests run in CI/CD pipeline
+- [x] Test reports are generated
+- [x] Flaky tests are identified and fixed
 
 ## Notes
 
@@ -428,7 +428,7 @@ e2e-tests:
 
 ## Questions to Resolve
 
-- [ ] How to handle test data seeding?
-- [ ] Should we test on multiple browsers?
-- [ ] How to handle real-time test assertions?
-- [ ] Should we mock API calls or use real backend?
+- [x] How to handle test data seeding?
+- [x] Should we test on multiple browsers?
+- [x] How to handle real-time test assertions?
+- [x] Should we mock API calls or use real backend?

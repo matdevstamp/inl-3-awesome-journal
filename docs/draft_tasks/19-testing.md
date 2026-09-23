@@ -2,11 +2,12 @@
 
 ## Metadata
 - **Priority:** P1 - High
-- **Deadline:** 2026-09-23
+- **Deadline:** 2026-09-30
 - **Status:** TODO
 - **Assignee:** Team
 - **Tags:** testing, quality, required, gate:5-delivery
 - **Dependencies:** 17-user-roles-access-control.md, 15-blockchain-access-logging.md, 16-p2p-network.md, 18-socketio-broadcasting.md
+- **GitHub Issue:** #29 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/29)
 - **Related:** 09-playwright-e2e-testing.md, 20-documentation.md
 - **Estimated Effort:** 8h
 
