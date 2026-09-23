@@ -1,25 +1,23 @@
-import { AuthError } from "@/lib/auth";
+import { AuthError, requireRole } from "@/lib/auth";
 import { fail, ok } from "@/lib/api/http";
-import { requireRoleOrMock } from "@/lib/api/mock-auth";
-import {
-  findPatient,
-  getJournalForPatient,
-  isStaffRole,
-  patientIdForUser,
-} from "@/lib/patients/mock-patients";
+import { createAccessLog } from "@/lib/blockchain/access-log-service";
+import { env } from "@/lib/env";
+import { sendAccessLogToPeer } from "@/lib/p2p/transport";
+import { getDatabasePatientJournal } from "@/lib/patients/journal";
+import { isStaffRole, patientIdForUser } from "@/lib/patients/mock-patients";
 import type { PatientJournalResponse } from "@/lib/types/api";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
 }
 
-export async function GET(request: Request, context: RouteContext) {
+export async function GET(_request: Request, context: RouteContext) {
   try {
-    const user = await requireRoleOrMock(request, "doctor", "nurse", "ambulance", "patient");
+    const user = await requireRole("doctor", "nurse", "ambulance", "patient");
     const { id } = await context.params;
     const patientId = Number(id);
 
-    if (!Number.isInteger(patientId)) {
+    if (!Number.isSafeInteger(patientId) || patientId <= 0) {
       return fail("BAD_PATIENT_ID", "Patient id must be a number.", 400);
     }
 
@@ -27,23 +25,44 @@ export async function GET(request: Request, context: RouteContext) {
     const canOpenJournal = isStaffRole(user.role) || ownPatientId === patientId;
 
     if (!canOpenJournal) {
+      const block = createAccessLog({
+        userId: user.id,
+        patientId,
+        recordId: null,
+        action: "view_denied",
+        serverId: env.serverId,
+      });
+
+      await sendAccessLogToPeer(block.data);
+
       return fail("UNAUTHORIZED", "Patients can only open their own journal.", 403);
     }
 
-    const patient = findPatient(patientId);
-    if (!patient) {
+    const journal = await getDatabasePatientJournal(patientId, user);
+    if (!journal) {
+      const block = createAccessLog({
+        userId: user.id,
+        patientId,
+        recordId: null,
+        action: "view_not_found",
+        serverId: env.serverId,
+      });
+
+      await sendAccessLogToPeer(block.data);
+
       return fail("PATIENT_NOT_FOUND", "Patient could not be found.", 404);
     }
 
-    const journal = getJournalForPatient(patientId, user);
+    const block = createAccessLog({
+      userId: user.id,
+      patientId,
+      recordId: null,
+      action: "view",
+      serverId: env.serverId,
+    });
+    await sendAccessLogToPeer(block.data);
 
-    return ok({
-      patient,
-      viewerRole: user.role,
-      viewerUserId: user.id,
-      isOwnJournal: ownPatientId === patientId,
-      ...journal,
-    } satisfies PatientJournalResponse);
+    return ok(journal satisfies PatientJournalResponse);
   } catch (error) {
     if (error instanceof AuthError) {
       return fail(error.code, error.message, error.code === "UNAUTHENTICATED" ? 401 : 403);

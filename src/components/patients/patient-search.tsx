@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { SearchIcon, UserRoundIcon } from "lucide-react";
 
-import { mockSessionHeaders } from "@/components/auth/mock-auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,12 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiRequest } from "@/lib/api/client";
-import type {
-  PatientSearchFilter,
-  PatientSearchResponse,
-  PatientSummary,
-  SessionUser,
-} from "@/lib/types/api";
+import type { PatientSearchFilter, PatientSearchResponse, PatientSummary } from "@/lib/types/api";
 
 const FILTER_OPTIONS: Array<{ value: PatientSearchFilter; label: string }> = [
   { value: "name", label: "Name" },
@@ -32,7 +26,7 @@ const FILTER_OPTIONS: Array<{ value: PatientSearchFilter; label: string }> = [
   { value: "personalNumber", label: "Personal number" },
 ];
 
-export function PatientSearch({ user }: { user: SessionUser }) {
+export function PatientSearch() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<PatientSearchFilter>("name");
   const [result, setResult] = useState<PatientSearchResponse | null>(null);
@@ -54,9 +48,7 @@ export function PatientSearch({ user }: { user: SessionUser }) {
     });
 
     try {
-      const data = await apiRequest<PatientSearchResponse>(`/api/patients?${params}`, {
-        headers: mockSessionHeaders(user),
-      });
+      const data = await apiRequest<PatientSearchResponse>(`/api/patients?${params}`);
       setResult(data);
       setPage(data.page);
     } catch {
@@ -76,9 +68,7 @@ export function PatientSearch({ user }: { user: SessionUser }) {
       <Card>
         <CardHeader>
           <CardTitle>Find patient</CardTitle>
-          <CardDescription>
-            Search by name, date of birth, or personal number. Real data will come from SQL later.
-          </CardDescription>
+          <CardDescription>Search by name, date of birth, or personal number.</CardDescription>
         </CardHeader>
         <CardContent>
           <form className="grid gap-3 md:grid-cols-[1fr_190px_auto]" onSubmit={handleSubmit}>
@@ -173,9 +163,7 @@ function SearchResults({
       <Card>
         <CardContent className="py-8 text-center">
           <h2 className="font-medium">Start with a search</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Try Anna, Erik, Sara, a date like 1985-03-15, or a personal number.
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">No search results yet.</p>
         </CardContent>
       </Card>
     );

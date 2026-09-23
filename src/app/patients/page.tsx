@@ -51,9 +51,15 @@ export default function PatientsPage() {
   }
 
   return (
-    <main className="flex flex-1 flex-col">
-      <AppHeader />
-      <section className="border-b bg-muted/30 px-4 py-6 md:px-6">
+    <main className="relative flex flex-1 flex-col overflow-hidden">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-14 bottom-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.58),rgba(0,0,0,0.76)),url('/images/hospital.jpg')] bg-cover bg-center opacity-80"
+        aria-hidden="true"
+      />
+      <div className="relative z-20 bg-background">
+        <AppHeader />
+      </div>
+      <section className="relative z-10 border-b bg-background px-4 py-6 md:px-6">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-3">
           <RoleBadge role={user.role} />
           <div>
@@ -66,16 +72,20 @@ export default function PatientsPage() {
         </div>
       </section>
 
-      <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 p-4 md:p-6">
-        <div>
-          <Button asChild variant="outline">
+      <section className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 p-4 md:p-6">
+        <div className="w-fit rounded-lg shadow-sm">
+          <Button
+            asChild
+            variant="ghost"
+            className="border-2 bg-background hover:bg-red-900 hover:text-white"
+          >
             <Link href="/dashboard">
               <ArrowLeftIcon className="size-4" aria-hidden="true" />
               Back to dashboard
             </Link>
           </Button>
         </div>
-        <PatientSearch user={user} />
+        <PatientSearch />
       </section>
     </main>
   );

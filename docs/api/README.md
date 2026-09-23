@@ -36,7 +36,16 @@ Endpointen kräver en giltig autentiserad session.
 
 ## Patienter
 
-### GET /api/patients?name={name}
+### GET /api/patients?q={query}&filter={filter}&page={page}
+
+Patient search reads from SQL and requires a valid JWT cookie. Mock role headers are not accepted.
+`filter` supports `name` (default), `dob`, and `personalNumber`; repeated filters use OR matching.
+Names match case-insensitively, including full names. Date prefixes use `YYYY`, `YYYY-MM`, or
+`YYYY-MM-DD`. Personal numbers can include a hyphen. The legacy `name` query parameter is supported.
+Pages contain three results in stable name/ID order; pages beyond the last page are clamped.
+Invalid filters or page numbers return 400. Missing sessions return 401; forbidden roles return 403.
+The response uses `PatientSearchResponse` in `src/lib/types/api.ts`. Note counts exclude other
+authors' private notes. `lastVisit` is the latest record creation date, or `-` when no records exist.
 
 Söker efter patienter baserat på namn.
 
@@ -62,6 +71,19 @@ Returnerar information om API:ts och serverns status.
 Endpointen används bland annat för att kontrollera att servern är igång.
 
 ## Journaler
+
+### GET /api/patients/:id
+
+Returnerar patient och journalvyn från SQL. Kräver JWT-cookie och rollen doctor, nurse,
+ambulance eller patient. Patientrollen får bara öppna sitt eget patient-ID. Svaret följer
+`PatientJournalResponse` i `src/lib/types/api.ts`. Privat anteckning visas bara för sin
+författare, healthcare för vårdpersonal och all även för patienten. En patient får bara
+antalet dolda healthcare-anteckningar, inte innehållet i dem.
+
+Ogiltigt ID ger 400, saknad session 401, nekad åtkomst 403 och okänt patient-ID 404.
+Patientens koppling till användar-ID ligger ännu i en tillfällig mappning; datamodellen
+saknar en relation mellan User och Patient. Vyns audit-händelser hanteras separat av
+access-log/API:t.
 
 Funktionalitet för medicinska journaler tillhör Task 14.
 

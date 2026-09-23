@@ -1,23 +1,21 @@
 import { expect, test } from "@playwright/test";
 
-/**
- * Login flows — skipped until task 11 (Backend API & Authentication)
- * delivers the /login page and the JWT cookie round-trip.
- */
-test.describe.skip("auth", () => {
+test.describe("auth", () => {
   test("logs a doctor in and lands on the dashboard", async ({ page }) => {
     await page.goto("/login");
-    await page.fill('[name="username"]', "dr_test");
-    await page.fill('[name="password"]', "test123");
-    await page.click('button[type="submit"]');
-    await expect(page).toHaveURL("/dashboard");
+    await page.getByRole("combobox", { name: "Demo user" }).click();
+    await page.getByRole("option", { name: "Dr. Sofia Berg - Doctor" }).click();
+    await page.getByLabel("Password").fill("test123");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await expect(page).toHaveURL(/\/dashboard$/);
+    await expect(page.getByRole("heading", { name: "Care staff dashboard" })).toBeVisible();
   });
 
   test("shows an error for invalid credentials", async ({ page }) => {
     await page.goto("/login");
-    await page.fill('[name="username"]', "dr_test");
-    await page.fill('[name="password"]', "wrong-password");
-    await page.click('button[type="submit"]');
-    await expect(page.getByText("Invalid credentials")).toBeVisible();
+    await page.getByLabel("Password").fill("wrong-password");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await expect(page.getByText("Invalid username or password.")).toBeVisible();
+    await expect(page).toHaveURL(/\/login$/);
   });
 });

@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ActivityIcon, CheckCircle2Icon, FileTextIcon, LockIcon } from "lucide-react";
+import {
+  ActivityIcon,
+  CheckCircle2Icon,
+  FileTextIcon,
+  LockIcon,
+  NotebookPenIcon,
+} from "lucide-react";
 
 import { getMockUserDisplayName, mockSessionHeaders } from "@/components/auth/mock-auth";
 import { RoleBadge } from "@/components/common/role-badge";
@@ -14,9 +20,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { apiRequest } from "@/lib/api/client";
 import type { JournalNotePreview, PatientJournalResponse, SessionUser } from "@/lib/types/api";
+import type { BlockchainAccessLog } from "@/lib/blockchain/access-log";
 
 export function PatientJournal({ patientId, user }: { patientId: string; user: SessionUser }) {
   const [journal, setJournal] = useState<PatientJournalResponse | null>(null);
+  const [blockchainAccessLogs, setBlockchainAccessLogs] = useState<BlockchainAccessLog[]>([]);
+  const [chainValid, setChainValid] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -25,11 +34,18 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
 
     async function loadJournal() {
       try {
-        const data = await apiRequest<PatientJournalResponse>(`/api/patients/${patientId}`, {
+        const data = await apiRequest<PatientJournalResponse>(`/api/patients/${patientId}`);
+        const accessLogData = await apiRequest<{
+          accessLogs: BlockchainAccessLog[];
+          chainValid: boolean;
+          viewerUserId: number;
+        }>("/api/access-log", {
           headers: mockSessionHeaders(user),
         });
         if (isMounted) {
           setJournal(data);
+          setBlockchainAccessLogs(accessLogData.accessLogs);
+          setChainValid(accessLogData.chainValid);
           setError(null);
         }
       } catch {
@@ -95,7 +111,7 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
 
   return (
     <>
-      <section className="border-b bg-muted/30 px-4 py-6 md:px-6">
+      <section className="border-b bg-background px-4 py-6 md:px-6">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-3">
           <RoleBadge role={journal.viewerRole} />
           <div>
@@ -116,14 +132,41 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
           </div>
         ) : null}
 
-        <Tabs defaultValue="records">
-          <TabsList className="flex-wrap">
-            <TabsTrigger value="records">Records</TabsTrigger>
-            <TabsTrigger value="notes">Notes</TabsTrigger>
-            <TabsTrigger value="access">Access log</TabsTrigger>
+        <Tabs defaultValue="records" className="flex-col gap-4">
+          <TabsList className="grid h-auto w-full grid-cols-1 gap-3 bg-transparent p-0 md:grid-cols-3">
+            <TabsTrigger
+              value="records"
+              className="h-auto justify-start gap-3 rounded-lg border bg-card p-4 text-left data-active:bg-primary data-active:text-primary-foreground"
+            >
+              <FileTextIcon className="size-5" aria-hidden="true" />
+              <span>
+                <span className="block font-medium">Records</span>
+                <span className="block text-xs opacity-75">{journal.records.length} entries</span>
+              </span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="notes"
+              className="h-auto justify-start gap-3 rounded-lg border bg-card p-4 text-left data-active:bg-primary data-active:text-primary-foreground"
+            >
+              <NotebookPenIcon className="size-5" aria-hidden="true" />
+              <span>
+                <span className="block font-medium">Notes</span>
+                <span className="block text-xs opacity-75">{journal.notes.length} visible</span>
+              </span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="access"
+              className="h-auto justify-start gap-3 rounded-lg border bg-card p-4 text-left data-active:bg-primary data-active:text-primary-foreground"
+            >
+              <ActivityIcon className="size-5" aria-hidden="true" />
+              <span>
+                <span className="block font-medium">Access log</span>
+                <span className="block text-xs opacity-75">{journal.accessLogs.length} events</span>
+              </span>
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="records" className="mt-4">
+          <TabsContent value="records">
             <Card>
               <CardHeader>
                 <FileTextIcon className="size-5 text-muted-foreground" aria-hidden="true" />
@@ -147,7 +190,7 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
             </Card>
           </TabsContent>
 
-          <TabsContent value="notes" className="mt-4">
+          <TabsContent value="notes">
             <PatientNotesPanel
               authorName={getMockUserDisplayName(user)}
               journal={journal}
@@ -155,30 +198,32 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
             />
           </TabsContent>
 
-          <TabsContent value="access" className="mt-4">
+          <TabsContent value="access">
             <Card>
               <CardHeader>
                 <ActivityIcon className="size-5 text-muted-foreground" aria-hidden="true" />
                 <CardTitle>Access log</CardTitle>
                 <CardDescription>
-                  Mock blockchain verification status until task 15 connects the audit chain.
+                  Access events recorded and verified by the blockchain audit chain.{" "}
                 </CardDescription>
               </CardHeader>
               <CardContent className="grid gap-3">
-                {journal.accessLogs.map((log) => (
+                {blockchainAccessLogs.map((log) => (
                   <div
-                    key={log.id}
+                    key={log.eventId}
                     className="flex flex-col gap-2 rounded-lg border p-3 md:flex-row md:items-center md:justify-between"
                   >
                     <div>
-                      <p className="font-medium">{log.actorName}</p>
+                      <p className="font-medium">User {log.userId}</p>
                       <p className="text-sm text-muted-foreground">
-                        {log.action.replace("_", " ")} as {log.actorRole} - {log.timestamp}
+                        {log.action.replace("_", " ")} - {log.timestamp}
                       </p>
+                      <p className="text-xs text-muted-foreground">Server: {log.serverId}</p>
                     </div>
+
                     <Badge variant="secondary" className="w-fit">
                       <CheckCircle2Icon className="size-3" aria-hidden="true" />
-                      {log.verified ? "Verified" : "Unverified"}
+                      {chainValid ? "Blockchain verified" : "Blockchain verification failed"}
                     </Badge>
                   </div>
                 ))}

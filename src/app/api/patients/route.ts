@@ -1,20 +1,34 @@
-import { AuthError } from "@/lib/auth";
+import { z } from "zod";
+
+import { AuthError, requireRole } from "@/lib/auth";
 import { fail, ok } from "@/lib/api/http";
-import { requireRoleOrMock } from "@/lib/api/mock-auth";
-import { DEFAULT_PATIENT_FILTERS, searchPatients } from "@/lib/patients/mock-patients";
+import { searchDatabasePatients } from "@/lib/patients/search";
 import type { PatientSearchFilter, PatientSearchResponse } from "@/lib/types/api";
 
-const VALID_FILTERS = new Set<PatientSearchFilter>(["name", "dob", "personalNumber"]);
+const searchSchema = z.object({
+  query: z.string().trim().max(200),
+  page: z.coerce.number().int().min(1).max(100000).default(1),
+  filters: z.array(z.enum(["name", "dob", "personalNumber"])).max(3),
+});
 
 export async function GET(request: Request) {
   try {
-    await requireRoleOrMock(request, "doctor", "nurse", "ambulance");
+    const user = await requireRole("doctor", "nurse", "ambulance");
 
     const url = new URL(request.url);
-    const query = url.searchParams.get("q") ?? "";
-    const page = Number(url.searchParams.get("page") ?? "1");
-    const filters = parseFilters(url.searchParams.getAll("filter"));
-    const result = searchPatients(query, filters, Number.isFinite(page) ? page : 1);
+    const parsed = searchSchema.safeParse({
+      query: url.searchParams.get("q") ?? url.searchParams.get("name") ?? "",
+      page: url.searchParams.get("page") ?? undefined,
+      filters: url.searchParams.getAll("filter"),
+    });
+    if (!parsed.success) {
+      return fail("INVALID_REQUEST", "Invalid patient search parameters.", 400);
+    }
+    const { query, page } = parsed.data;
+    const filters: PatientSearchFilter[] = parsed.data.filters.length
+      ? parsed.data.filters
+      : ["name"];
+    const result = await searchDatabasePatients(query, filters, page, user.id);
 
     return ok({
       ...result,
@@ -27,11 +41,4 @@ export async function GET(request: Request) {
     }
     return fail("PATIENT_SEARCH_FAILED", "Could not search patients.", 500);
   }
-}
-
-function parseFilters(values: string[]): PatientSearchFilter[] {
-  const filters = values.filter((value): value is PatientSearchFilter =>
-    VALID_FILTERS.has(value as PatientSearchFilter),
-  );
-  return filters.length > 0 ? filters : DEFAULT_PATIENT_FILTERS;
 }

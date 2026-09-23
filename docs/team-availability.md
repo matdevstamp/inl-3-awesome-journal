@@ -42,7 +42,7 @@ Example: `ALL` = free all day, `AM+PM` = morning and afternoon, `EVE` = only eve
 | ------- | -------------- | ---------------- | ---------------- | ---------------- | ------ | ------ | ------ | ------ |
 | Kassim  | Kassim10       |                  |                  |                  |        |        |        |        |
 | Ramadan | rcilomba       | 09–15            |                  |                  |        |        | 09–15  |        |
-| Najma   | umoraghad0-del |                  |                  |                  |        |        |        |        |
+| Najma   | umoraghad0-del | 9-12 + 14-16.    |    9-12+14-15    |                  |        |        |9-12+14-15 | 
 | Matias  | matdevstamp    | 17–17:30 + 19–21 | 17–17:30 + 19–21 | 17–17:30 + 19–21 |        |        |        |        |
 
 **Stream owners start their feature branches.**
@@ -53,7 +53,7 @@ Example: `ALL` = free all day, `AM+PM` = morning and afternoon, `EVE` = only eve
 | ------- | -------------- | ---------------- | ---------------- | ---------------- | ------ | ------ | ------ | ------------- |
 | Kassim  | Kassim10       |                  |                  |                  |        |        |        |               |
 | Ramadan | rcilomba       | 09–15            |                  |                  |        |        | 09–15  | 09–10 + 12–22 |
-| Najma   | umoraghad0-del |                  |                  |                  |        |        |        |               |
+| Najma   | umoraghad0-del | 9-12+14-15       |                  |  9-12+14-15      |        |        |        |  9-12+14-15   |
 | Matias  | matdevstamp    | 17–17:30 + 19–21 | 17–17:30 + 19–21 | 17–17:30 + 19–21 |        |        |        |               |
 
 **Gate 4 exit:** By end of Mon Sep 21 — vertical flow works on two servers.
@@ -64,7 +64,7 @@ Example: `ALL` = free all day, `AM+PM` = morning and afternoon, `EVE` = only eve
 | ------- | -------------- | ---------------- | ---------------- | ---------------- | ------ | ------ | ------ | ------------- |
 | Kassim  | Kassim10       |                  |                  |                  |        |        |        |               |
 | Ramadan | rcilomba       | 09–15            | 09–10 + 12–22?   |                  |        |        | 09–15  | 09–10 + 12–22 |
-| Najma   | umoraghad0-del |                  |                  |                  |        |        |        |               |
+| Najma   | umoraghad0-del |9-12+14-15        |                  |                  |        |        |9-12+14-15|  9-12+14-15 |
 | Matias  | matdevstamp    | 17–17:30 + 19–21 | 17–17:30 + 19–21 | 17–17:30 + 19–21 |        |        |        |               |
 
 **Focus:** Tests, docs, screenshots, demo rehearsal.
@@ -75,7 +75,7 @@ Example: `ALL` = free all day, `AM+PM` = morning and afternoon, `EVE` = only eve
 | ------- | -------------- | ---------------- | ---------------- | ------------------ |
 | Kassim  | Kassim10       |                  |                  | **DEADLINE 11:00** |
 | Ramadan | rcilomba       | 09–15            | 09–10 + 12–22?   | **DEADLINE 11:00** |
-| Najma   | umoraghad0-del |                  |                  | **DEADLINE 11:00** |
+| Najma   | umoraghad0-del |9-12+14-15        |  9-12+14-15      | **DEADLINE 11:00** |
 | Matias  | matdevstamp    | 17–17:30 + 19–21 | 17–17:30 + 19–21 | **DEADLINE 11:00** |
 
 ---
