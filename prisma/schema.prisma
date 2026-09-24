@@ -62,6 +62,7 @@ model User {
   authoredRecords MedicalRecord[] @relation("record_author")
   authoredNotes   Note[]          @relation("note_author")
   accessLogs      AccessLog[]
+  patient         Patient?
 
   @@map("users")
 }
@@ -73,6 +74,8 @@ model Patient {
   lastName       String   @map("last_name")
   dateOfBirth    DateTime @db.Date @map("date_of_birth")
   createdAt      DateTime @default(now()) @map("created_at")
+  user           User?    @relation(fields: [userId], references: [id])
+  userId         Int?     @unique @map("user_id")
 
   records    MedicalRecord[]
   accessLogs AccessLog[]

@@ -15,11 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  DEFAULT_NOTE_VISIBILITY,
-  isStaffRole,
-  NOTE_VISIBILITY_LABELS,
-} from "@/lib/patients/mock-patients";
+import { isStaffRole } from "@/lib/auth/permissions";
+import { DEFAULT_NOTE_VISIBILITY, NOTE_VISIBILITY_LABELS } from "@/lib/patients/mock-patients";
 import type { JournalNotePreview, NoteVisibility, PatientJournalResponse } from "@/lib/types/api";
 
 const VISIBILITY_OPTIONS: Array<{

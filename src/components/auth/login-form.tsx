@@ -4,7 +4,7 @@ import { useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { HeartPulseIcon, ShieldCheckIcon } from "lucide-react";
 
-import { setMockSession, MOCK_USERS, roleLabel } from "@/components/auth/mock-auth";
+import { MOCK_USERS, roleLabel } from "@/components/auth/mock-auth";
 import { ApiClientError, apiRequest } from "@/lib/api/client";
 import type { LoginResponse } from "@/lib/types/api";
 import { Button } from "@/components/ui/button";
@@ -40,7 +40,6 @@ export function LoginForm() {
         method: "POST",
         body: JSON.stringify({ username, password }),
       });
-      setMockSession(user);
       router.push(user.role === "unauthorized" ? "/access-denied" : "/dashboard");
     } catch (cause) {
       setError(

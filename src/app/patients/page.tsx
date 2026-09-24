@@ -5,17 +5,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeftIcon } from "lucide-react";
 
-import { useMockSession } from "@/components/auth/mock-auth";
+import { useSession } from "@/components/auth/mock-auth";
 import { AppHeader } from "@/components/common/app-header";
 import { RoleBadge } from "@/components/common/role-badge";
 import { PatientSearch } from "@/components/patients/patient-search";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { isStaffRole, patientIdForUser } from "@/lib/patients/mock-patients";
+import { isStaffRole } from "@/lib/auth/permissions";
 
 export default function PatientsPage() {
   const router = useRouter();
-  const user = useMockSession();
+  const user = useSession();
 
   useEffect(() => {
     if (user === undefined) {
@@ -33,7 +33,7 @@ export default function PatientsPage() {
     }
 
     if (user.role === "patient") {
-      const patientId = patientIdForUser(user);
+      const patientId = user.patientId;
       router.push(patientId ? `/patients/${patientId}` : "/dashboard");
     }
   }, [router, user]);

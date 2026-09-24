@@ -122,12 +122,8 @@ test.describe("blockchain access logging", () => {
       await doctor.dispose();
     }
 
-    const response = await request.get("/api/access-log", {
-      headers: {
-        "x-mock-role": "patient",
-        "x-mock-user-id": "4",
-      },
-    });
+    await login(request, "patient_test");
+    const response = await request.get("/api/access-log");
 
     expect(response.status()).toBe(200);
 
@@ -145,12 +141,7 @@ test.describe("blockchain access logging", () => {
     expect((await request.get("/api/patients/1")).status()).toBe(200);
     expect((await request.get("/api/patients/999")).status()).toBe(404);
 
-    const response = await request.get("/api/access-log", {
-      headers: {
-        "x-mock-role": "doctor",
-        "x-mock-user-id": "1",
-      },
-    });
+    const response = await request.get("/api/access-log");
 
     expect(response.status()).toBe(200);
 
@@ -175,12 +166,8 @@ test.describe("blockchain access logging", () => {
 
     expect(response.status()).toBe(403);
 
-    const logResponse = await request.get("/api/access-log", {
-      headers: {
-        "x-mock-role": "doctor",
-        "x-mock-user-id": "1",
-      },
-    });
+    await login(request, "dr_test");
+    const logResponse = await request.get("/api/access-log");
 
     expect(logResponse.status()).toBe(200);
 
@@ -199,12 +186,7 @@ test.describe("blockchain access logging", () => {
 
     expect(response.status()).toBe(404);
 
-    const logResponse = await request.get("/api/access-log", {
-      headers: {
-        "x-mock-role": "doctor",
-        "x-mock-user-id": "1",
-      },
-    });
+    const logResponse = await request.get("/api/access-log");
 
     expect(logResponse.status()).toBe(200);
 

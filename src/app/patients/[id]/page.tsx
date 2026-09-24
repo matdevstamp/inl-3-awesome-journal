@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 
-import { useMockSession } from "@/components/auth/mock-auth";
+import { useSession } from "@/components/auth/mock-auth";
 import { AppHeader } from "@/components/common/app-header";
 import { PatientJournal } from "@/components/patients/patient-journal";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function PatientJournalPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
-  const user = useMockSession();
+  const user = useSession();
 
   useEffect(() => {
     if (user === undefined) {

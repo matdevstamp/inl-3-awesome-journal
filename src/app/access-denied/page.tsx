@@ -3,7 +3,7 @@ import { LockKeyholeIcon } from "lucide-react";
 
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 
 export default function AccessDeniedPage() {
   return (
@@ -20,10 +20,8 @@ export default function AccessDeniedPage() {
             <div className="mb-2 flex size-10 items-center justify-center rounded-lg bg-destructive/10 text-destructive">
               <LockKeyholeIcon className="size-5" aria-hidden="true" />
             </div>
-            <CardTitle>Access denied</CardTitle>
-            <CardDescription>
-              This account is not allowed to view patient records in the demo flow.
-            </CardDescription>
+            <h1 className="text-base leading-snug font-medium">Access denied</h1>
+            <CardDescription>This account is not allowed to view patient records.</CardDescription>
           </CardHeader>
           <CardContent>
             <Button asChild className="w-full">
