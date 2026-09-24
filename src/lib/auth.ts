@@ -3,6 +3,7 @@ import jwt, { type SignOptions } from "jsonwebtoken";
 
 import { env } from "@/lib/env";
 import type { Role, SessionUser } from "@/lib/types/api";
+import { hasPermission, type Permission } from "@/lib/auth/permissions";
 
 const COOKIE_NAME = "token";
 
@@ -44,5 +45,12 @@ export async function requireRole(...roles: Role[]): Promise<SessionUser> {
   if (roles.length > 0 && !roles.includes(session.role)) {
     throw new AuthError("UNAUTHORIZED");
   }
+  return session;
+}
+
+export async function requirePermission(permission: Permission): Promise<SessionUser> {
+  const session = await getSession();
+  if (!session) throw new AuthError("UNAUTHENTICATED");
+  if (!hasPermission(session.role, permission)) throw new AuthError("UNAUTHORIZED");
   return session;
 }

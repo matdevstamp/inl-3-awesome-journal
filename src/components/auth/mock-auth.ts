@@ -10,6 +10,7 @@ export const MOCK_USERS: Array<SessionUser & { displayName: string }> = [
     username: "dr_test",
     role: "doctor",
     organizationId: 1,
+    patientId: null,
     displayName: "Dr. Sofia Berg",
   },
   {
@@ -17,6 +18,7 @@ export const MOCK_USERS: Array<SessionUser & { displayName: string }> = [
     username: "nurse_test",
     role: "nurse",
     organizationId: 1,
+    patientId: null,
     displayName: "Nurse Alex Lind",
   },
   {
@@ -24,6 +26,7 @@ export const MOCK_USERS: Array<SessionUser & { displayName: string }> = [
     username: "amb_test",
     role: "ambulance",
     organizationId: 2,
+    patientId: null,
     displayName: "Ambulance Unit A",
   },
   {
@@ -31,6 +34,7 @@ export const MOCK_USERS: Array<SessionUser & { displayName: string }> = [
     username: "patient_test",
     role: "patient",
     organizationId: null,
+    patientId: 1,
     displayName: "Anna Andersson",
   },
   {
@@ -38,6 +42,7 @@ export const MOCK_USERS: Array<SessionUser & { displayName: string }> = [
     username: "unauth_test",
     role: "unauthorized",
     organizationId: null,
+    patientId: null,
     displayName: "Unauthorized visitor",
   },
 ];
@@ -107,14 +112,6 @@ export function clearMockSession() {
   cachedSessionValue = null;
   cachedSession = null;
   window.dispatchEvent(new Event(SESSION_EVENT));
-}
-
-export function mockSessionHeaders(user: SessionUser): HeadersInit {
-  return {
-    "x-mock-role": user.role,
-    "x-mock-user-id": String(user.id),
-    "x-mock-username": user.username,
-  };
 }
 
 export function useMockSession(): SessionUser | null | undefined {

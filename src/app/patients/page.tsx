@@ -11,7 +11,7 @@ import { RoleBadge } from "@/components/common/role-badge";
 import { PatientSearch } from "@/components/patients/patient-search";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { isStaffRole, patientIdForUser } from "@/lib/patients/mock-patients";
+import { isStaffRole } from "@/lib/auth/permissions";
 
 export default function PatientsPage() {
   const router = useRouter();
@@ -33,7 +33,7 @@ export default function PatientsPage() {
     }
 
     if (user.role === "patient") {
-      const patientId = patientIdForUser(user);
+      const patientId = user.patientId;
       router.push(patientId ? `/patients/${patientId}` : "/dashboard");
     }
   }, [router, user]);

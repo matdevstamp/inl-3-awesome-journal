@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { AuthError, requireRole } from "@/lib/auth";
+import { AuthError, requirePermission } from "@/lib/auth";
+import { canAccessPatient, isStaffRole } from "@/lib/auth/permissions";
 import { fail, ok } from "@/lib/api/http";
-import { isStaffRole, patientIdForUser } from "@/lib/patients/mock-patients";
 import { logNoteAccess } from "@/lib/notes/log";
 import { serializeNote } from "@/lib/notes/serialization";
 import { prisma } from "@/lib/prisma";
@@ -18,7 +18,7 @@ const createNoteSchema = z.object({
 
 export async function GET(request: Request) {
   try {
-    const user = await requireRole("doctor", "nurse", "ambulance", "patient");
+    const user = await requirePermission("readPatient");
 
     const url = new URL(request.url);
     const recordIdParam = url.searchParams.get("recordId");
@@ -40,9 +40,7 @@ export async function GET(request: Request) {
       return fail("NOT_FOUND", "Medical record not found", 404);
     }
 
-    const canOpenJournal = isStaffRole(user.role) || patientIdForUser(user) === record.patientId;
-
-    if (!canOpenJournal) {
+    if (!canAccessPatient(user, record.patientId)) {
       await logNoteAccess(user.id, record.patientId, record.id, "view_denied");
       return fail("UNAUTHORIZED", "Patients can only read their own journal notes.", 403);
     }
@@ -97,7 +95,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const user = await requireRole("doctor", "nurse", "ambulance");
+    const user = await requirePermission("createNote");
 
     let body: unknown;
 

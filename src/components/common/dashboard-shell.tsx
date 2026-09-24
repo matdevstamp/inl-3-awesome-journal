@@ -11,7 +11,6 @@ import { AppHeader } from "@/components/common/app-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { patientIdForUser } from "@/lib/patients/mock-patients";
 
 const staffRoles = new Set(["doctor", "nurse", "ambulance"]);
 
@@ -53,7 +52,7 @@ export function DashboardShell() {
   }
 
   const isStaff = staffRoles.has(user.role);
-  const ownPatientId = patientIdForUser(user);
+  const ownPatientId = user.patientId;
 
   return (
     <main className="flex flex-1 flex-col">

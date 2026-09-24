@@ -42,6 +42,7 @@ all all
     String last_name 
     DateTime date_of_birth 
     DateTime created_at 
+    Int user_id "❓"
     }
   
 
@@ -80,6 +81,7 @@ all all
   
     "users" |o--|| "Role" : "enum:role"
     "users" }o--|o "organizations" : "organization"
+    "patients" |o--|o "users" : "user"
     "medical_records" }o--|| "patients" : "patient"
     "medical_records" }o--|| "users" : "author"
     "notes" |o--|| "NoteVisibility" : "enum:visibility"

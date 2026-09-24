@@ -3,8 +3,8 @@
 ## Metadata
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-18
-- **Status:** TODO
-- **Assignee:** Kassim10
+- **Status:** DOING
+- **Assignee:** rcilomba
 - **Tags:** security, roles, access-control, required, gate:4-integration
 - **Dependencies:** 11-backend-api-auth.md, 12-frontend-ui.md, 13-patient-view-search.md, 14-medical-notes.md
 - **Estimated Effort:** 6h
@@ -122,25 +122,34 @@ app.get('/api/patients/:id', authenticate, (req, res) => {
 
 ## Tasks
 
-- [ ] Define role permissions in database
-- [ ] Create role-based middleware for backend
-- [ ] Implement patient ownership validation
-- [ ] Create frontend role guards
-- [ ] Implement "Access Denied" page for unauthorized
-- [ ] Test URL manipulation attempts
-- [ ] Document all permission rules
-- [ ] Create role-based seed data
+- [x] Define role permissions in database
+- [x] Create role-based middleware for backend
+- [x] Implement patient ownership validation
+- [x] Create frontend role guards
+- [x] Implement "Access Denied" page for unauthorized
+- [x] Test URL manipulation attempts
+- [x] Document all permission rules
+- [x] Create role-based seed data
 
 ## Done Criteria
 
-- [ ] All 5 roles have defined permissions
-- [ ] Backend enforces role-based access
-- [ ] Patients cannot access other patients' data
-- [ ] URL manipulation is prevented
-- [ ] Unauthorized users see proper error page
-- [ ] Frontend adapts to user role
-- [ ] All permission rules are documented
-- [ ] Test cases cover all role combinations
+- [x] All 5 roles have defined permissions
+- [x] Backend enforces role-based access
+- [x] Patients cannot access other patients' data
+- [x] URL manipulation is prevented
+- [x] Unauthorized users see proper error page
+- [x] Frontend adapts to user role
+- [x] All permission rules are documented
+- [x] Test cases cover all role combinations
+
+## Implementation
+
+- Role permissions are centralized in `src/lib/auth/permissions.ts`.
+- Protected API routes authorize the JWT session with `requirePermission`.
+- Patient ownership comes from the SQL relation between `users` and `patients`.
+- Mock authentication headers are no longer accepted by protected routes.
+- The role matrix, URL tampering, forged headers, and Access Denied flow are covered in
+  `e2e/auth/access-control.spec.ts`.
 
 ## Notes
 

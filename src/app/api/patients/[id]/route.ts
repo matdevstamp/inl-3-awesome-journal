@@ -1,10 +1,10 @@
-import { AuthError, requireRole } from "@/lib/auth";
+import { AuthError, requirePermission } from "@/lib/auth";
+import { canAccessPatient } from "@/lib/auth/permissions";
 import { fail, ok } from "@/lib/api/http";
 import { createAccessLog } from "@/lib/blockchain/access-log-service";
 import { env } from "@/lib/env";
 import { sendAccessLogToPeer } from "@/lib/p2p/transport";
 import { getDatabasePatientJournal } from "@/lib/patients/journal";
-import { isStaffRole, patientIdForUser } from "@/lib/patients/mock-patients";
 import type { PatientJournalResponse } from "@/lib/types/api";
 
 interface RouteContext {
@@ -13,7 +13,7 @@ interface RouteContext {
 
 export async function GET(_request: Request, context: RouteContext) {
   try {
-    const user = await requireRole("doctor", "nurse", "ambulance", "patient");
+    const user = await requirePermission("readPatient");
     const { id } = await context.params;
     const patientId = Number(id);
 
@@ -21,10 +21,7 @@ export async function GET(_request: Request, context: RouteContext) {
       return fail("BAD_PATIENT_ID", "Patient id must be a number.", 400);
     }
 
-    const ownPatientId = patientIdForUser(user);
-    const canOpenJournal = isStaffRole(user.role) || ownPatientId === patientId;
-
-    if (!canOpenJournal) {
+    if (!canAccessPatient(user, patientId)) {
       const block = createAccessLog({
         userId: user.id,
         patientId,
