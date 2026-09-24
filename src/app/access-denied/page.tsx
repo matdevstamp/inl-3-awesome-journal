@@ -21,9 +21,7 @@ export default function AccessDeniedPage() {
               <LockKeyholeIcon className="size-5" aria-hidden="true" />
             </div>
             <h1 className="text-base leading-snug font-medium">Access denied</h1>
-            <CardDescription>
-              This account is not allowed to view patient records in the demo flow.
-            </CardDescription>
+            <CardDescription>This account is not allowed to view patient records.</CardDescription>
           </CardHeader>
           <CardContent>
             <Button asChild className="w-full">

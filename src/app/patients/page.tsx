@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeftIcon } from "lucide-react";
 
-import { useMockSession } from "@/components/auth/mock-auth";
+import { useSession } from "@/components/auth/mock-auth";
 import { AppHeader } from "@/components/common/app-header";
 import { RoleBadge } from "@/components/common/role-badge";
 import { PatientSearch } from "@/components/patients/patient-search";
@@ -15,7 +15,7 @@ import { isStaffRole } from "@/lib/auth/permissions";
 
 export default function PatientsPage() {
   const router = useRouter();
-  const user = useMockSession();
+  const user = useSession();
 
   useEffect(() => {
     if (user === undefined) {

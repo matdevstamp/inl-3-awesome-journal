@@ -1,56 +1,18 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ActivityIcon, FileTextIcon, SearchIcon, ShieldCheckIcon } from "lucide-react";
 
-import { roleLabel, useMockSession } from "@/components/auth/mock-auth";
+import { roleLabel } from "@/components/auth/mock-auth";
 import { AppHeader } from "@/components/common/app-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import type { SessionUser } from "@/lib/types/api";
 
 const staffRoles = new Set(["doctor", "nurse", "ambulance"]);
 
-export function DashboardShell() {
-  const router = useRouter();
-  const user = useMockSession();
-
-  useEffect(() => {
-    if (user === undefined) {
-      return;
-    }
-
-    if (user === null) {
-      router.push("/login");
-      return;
-    }
-
-    if (user.role === "unauthorized") {
-      router.push("/access-denied");
-    }
-  }, [router, user]);
-
-  if (user === undefined || user === null) {
-    return (
-      <DashboardLoading>
-        <Skeleton className="h-32" />
-        <Skeleton className="h-32" />
-        <Skeleton className="h-32" />
-      </DashboardLoading>
-    );
-  }
-
-  if (user.role === "unauthorized") {
-    return (
-      <DashboardLoading>
-        <Skeleton className="h-32 md:col-span-3" />
-      </DashboardLoading>
-    );
-  }
-
+export function DashboardShell({ user }: { user: SessionUser }) {
   const isStaff = staffRoles.has(user.role);
   const ownPatientId = user.patientId;
 
@@ -80,8 +42,8 @@ export function DashboardShell() {
                 {isStaff ? "Care staff dashboard" : "My health record"}
               </h1>
               <p className="mt-5 max-w-[500px] text-base leading-7 text-primary-foreground/82 md:text-lg">
-                Signed in as {roleLabel(user.role)}. This mock dashboard lets the frontend move
-                while backend authentication and patient data are being finished.
+                Signed in as {roleLabel(user.role)}. Access to journal features is based on your
+                authenticated role.
               </p>
             </div>
           </div>
@@ -157,15 +119,6 @@ export function DashboardShell() {
           </CardContent>
         </Card>
       </section>
-    </main>
-  );
-}
-
-function DashboardLoading({ children }: { children: ReactNode }) {
-  return (
-    <main className="flex flex-1 flex-col">
-      <AppHeader />
-      <section className="grid gap-4 p-4 md:grid-cols-3 md:p-6">{children}</section>
     </main>
   );
 }

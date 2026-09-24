@@ -2,12 +2,12 @@ import { cookies } from "next/headers";
 import jwt, { type SignOptions } from "jsonwebtoken";
 
 import { env } from "@/lib/env";
-import type { Role, SessionUser } from "@/lib/types/api";
+import type { SessionUser } from "@/lib/types/api";
 import { hasPermission, type Permission } from "@/lib/auth/permissions";
 
 const COOKIE_NAME = "token";
 
-/** Thrown by getSession/requireRole; route handlers map these to HTTP errors. */
+/** Thrown by session guards; route handlers map these to HTTP errors. */
 export class AuthError extends Error {
   constructor(
     readonly code: "UNAUTHENTICATED" | "UNAUTHORIZED",
@@ -36,16 +36,6 @@ export async function getSession(): Promise<SessionUser | null> {
   } catch {
     return null;
   }
-}
-
-/** Guard for protected route handlers: requires a session with one of the roles. */
-export async function requireRole(...roles: Role[]): Promise<SessionUser> {
-  const session = await getSession();
-  if (!session) throw new AuthError("UNAUTHENTICATED");
-  if (roles.length > 0 && !roles.includes(session.role)) {
-    throw new AuthError("UNAUTHORIZED");
-  }
-  return session;
 }
 
 export async function requirePermission(permission: Permission): Promise<SessionUser> {

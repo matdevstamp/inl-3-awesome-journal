@@ -1,11 +1,32 @@
 import { expect, test } from "@playwright/test";
 
 const roleMatrix = [
-  { username: "dr_test", search: 200, ownJournal: 200, otherJournal: 404 },
-  { username: "nurse_test", search: 200, ownJournal: 200, otherJournal: 404 },
-  { username: "amb_test", search: 200, ownJournal: 200, otherJournal: 404 },
-  { username: "patient_test", search: 403, ownJournal: 200, otherJournal: 403 },
-  { username: "unauth_test", search: 403, ownJournal: 403, otherJournal: 403 },
+  { username: "dr_test", search: 200, ownJournal: 200, otherJournal: 404, notes: 201, logs: 200 },
+  {
+    username: "nurse_test",
+    search: 200,
+    ownJournal: 200,
+    otherJournal: 404,
+    notes: 201,
+    logs: 200,
+  },
+  { username: "amb_test", search: 200, ownJournal: 200, otherJournal: 404, notes: 201, logs: 200 },
+  {
+    username: "patient_test",
+    search: 403,
+    ownJournal: 200,
+    otherJournal: 403,
+    notes: 403,
+    logs: 200,
+  },
+  {
+    username: "unauth_test",
+    search: 403,
+    ownJournal: 403,
+    otherJournal: 403,
+    notes: 403,
+    logs: 403,
+  },
 ] as const;
 
 test.describe("role access control", () => {
@@ -19,6 +40,21 @@ test.describe("role access control", () => {
       expect((await request.get("/api/patients?q=Anna")).status()).toBe(expected.search);
       expect((await request.get("/api/patients/1")).status()).toBe(expected.ownJournal);
       expect((await request.get("/api/patients/999")).status()).toBe(expected.otherJournal);
+
+      const createNote = await request.post("/api/notes", {
+        data: {
+          recordId: 1,
+          text: `Permission matrix test for ${expected.username}`,
+          visibility: "healthcare",
+        },
+      });
+      expect(createNote.status()).toBe(expected.notes);
+      expect((await request.get("/api/access-log")).status()).toBe(expected.logs);
+
+      if (createNote.status() === 201) {
+        const { data } = await createNote.json();
+        expect((await request.delete(`/api/notes/${data.note.id}`)).status()).toBe(200);
+      }
     });
   }
 
@@ -33,11 +69,13 @@ test.describe("role access control", () => {
     const login = await page.request.post("/api/auth/login", {
       data: { username: "unauth_test", password: "test123" },
     });
-    const { data } = await login.json();
-    await page.goto("/");
-    await page.evaluate((user) => {
-      window.localStorage.setItem("awesome-journal.mock-user", JSON.stringify(user));
-    }, data.user);
+    expect(login.status()).toBe(200);
+
+    const token = login.headers()["set-cookie"]?.match(/token=([^;]+)/)?.[1];
+    expect(token).toBeDefined();
+    await page
+      .context()
+      .addCookies([{ name: "token", value: token!, domain: "localhost", path: "/" }]);
 
     await page.goto("/dashboard");
     await expect(page).toHaveURL(/\/access-denied$/);

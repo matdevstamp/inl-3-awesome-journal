@@ -3,7 +3,6 @@ import type { Role, SessionUser } from "@/lib/types/api";
 export const PERMISSIONS = [
   "searchPatients",
   "readPatient",
-  "createRecord",
   "createNote",
   "readAccessLogs",
 ] as const;
@@ -11,7 +10,7 @@ export const PERMISSIONS = [
 export type Permission = (typeof PERMISSIONS)[number];
 
 const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
-  doctor: ["searchPatients", "readPatient", "createRecord", "createNote", "readAccessLogs"],
+  doctor: ["searchPatients", "readPatient", "createNote", "readAccessLogs"],
   nurse: ["searchPatients", "readPatient", "createNote", "readAccessLogs"],
   ambulance: ["searchPatients", "readPatient", "createNote", "readAccessLogs"],
   patient: ["readPatient", "readAccessLogs"],
