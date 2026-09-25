@@ -25,6 +25,14 @@ export function signSessionToken(user: SessionUser): string {
   };
   return jwt.sign(user, env.jwtSecret, options);
 }
+/** Verify a raw session token, used outside Next.js request handlers (e.g. Socket.io). */
+export function verifySessionToken(token: string): SessionUser | null {
+  try {
+    return jwt.verify(token, env.jwtSecret) as SessionUser;
+  } catch {
+    return null;
+  }
+}
 
 /** Read the session from the httpOnly cookie, or null when absent/invalid. */
 export async function getSession(): Promise<SessionUser | null> {
