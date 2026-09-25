@@ -1,5 +1,5 @@
 import type { BlockchainAccessLog } from "@/lib/blockchain/access-log";
-import { isStaffRole, patientIdForUser } from "@/lib/patients/mock-patients";
+import { isStaffRole } from "@/lib/patients/mock-patients";
 import { getSocketServer } from "@/lib/realtime/socket-server";
 import type { Note, SessionUser } from "@/lib/types/api";
 
@@ -23,8 +23,8 @@ function canReceiveNote(
   }
 
   if (note.visibility === "all") {
-    return isStaffRole(user.role) || patientIdForUser(user) === patientId;
-  }
+
+return isStaffRole(user.role) || user.patientId === patientId;  }
 
   return false;
 }
@@ -54,8 +54,7 @@ export async function broadcastAccessLogCreated(accessLog: BlockchainAccessLog):
       continue;
     }
 
-    const canReceive = isStaffRole(user.role) || patientIdForUser(user) === accessLog.patientId;
-
+    const canReceive = isStaffRole(user.role) || user.patientId === accessLog.patientId;
     if (canReceive) {
       socket.emit("access-log-created", {
         accessLog,

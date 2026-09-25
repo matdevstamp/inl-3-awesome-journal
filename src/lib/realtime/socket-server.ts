@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
 import { createServer } from "node:http";
-import { isStaffRole, patientIdForUser } from "@/lib/patients/mock-patients";
+import { isStaffRole } from "@/lib/patients/mock-patients";
 
 import { verifySessionToken } from "@/lib/auth";
 import type { SessionUser } from "@/lib/types/api";
@@ -47,9 +47,7 @@ export function getSocketServer(): Server {
         console.log("[socket] joining patient room:", patientId);
 
         const user = socket.data.user as SessionUser;
-
-        const canJoinPatientRoom = isStaffRole(user.role) || patientIdForUser(user) === patientId;
-
+        const canJoinPatientRoom = isStaffRole(user.role) || user.patientId === patientId;
         if (!canJoinPatientRoom) {
           socket.emit("socket-error", {
             code: "UNAUTHORIZED",
