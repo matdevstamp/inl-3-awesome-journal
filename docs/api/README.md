@@ -74,32 +74,76 @@ Endpointen används bland annat för att kontrollera att servern är igång.
 
 ### GET /api/patients/:id
 
-Returnerar patient och journalvyn från SQL. Kräver JWT-cookie och rollen doctor, nurse,
-ambulance eller patient. Patientrollen får bara öppna sitt eget patient-ID. Svaret följer
-`PatientJournalResponse` i `src/lib/types/api.ts`. Privat anteckning visas bara för sin
-författare, healthcare för vårdpersonal och all även för patienten. En patient får bara
-antalet dolda healthcare-anteckningar, inte innehållet i dem.
+Returnerar patient och journalvyn från SQL. Kräver JWT-cookie och rollen `doctor`,
+`nurse`, `ambulance` eller `patient`.
+
+Patientrollen får endast öppna sitt eget patient-ID.
+
+Svaret följer `PatientJournalResponse` i `src/lib/types/api.ts`.
+
+Synligheten för anteckningar styrs av deras `visibility`:
+
+- `private` visas endast författaren
+- `healthcare` visas för vårdpersonal
+- `all` kan visas för behöriga användare inklusive patienten
+
+En patient får information om att healthcare-anteckningar finns, men inte deras innehåll.
 
 Ogiltigt ID ger 400, saknad session 401, nekad åtkomst 403 och okänt patient-ID 404.
-Patientens koppling till användar-ID ligger ännu i en tillfällig mappning; datamodellen
-saknar en relation mellan User och Patient. Vyns audit-händelser hanteras separat av
-access-log/API:t.
-
-Funktionalitet för medicinska journaler tillhör Task 14.
-
-Route-strukturen finns förberedd i API:t, men full CRUD-funktionalitet implementeras separat i Task 14.
 
 ## Anteckningar
 
-Funktionalitet för anteckningar och synlighetsnivåer tillhör Task 14.
+Anteckningar är kopplade till medicinska journalposter och har tre
+synlighetsnivåer:
 
-Route-strukturen finns förberedd, medan full CRUD och kontroll av synlighetsnivåer implementeras separat i Task 14.
+- `private`
+- `healthcare`
+- `all`
+
+Anteckningar lagras i SQL-databasen och innehåller aldrig patientdata på blockkedjan.
+
+API:t använder gemensamma TypeScript-typer i:
+
+`src/lib/types/api.ts`
+
+Implementation och visibility-kontroller finns i:
+
+- `src/app/api/notes/route.ts`
+- `src/app/api/notes/[id]/route.ts`
+
+### GET /api/notes
+
+Hämtar anteckningar som användaren har rätt att se.
+
+Åtkomsten kontrolleras server-side utifrån den autentiserade användarens
+roll och anteckningens synlighetsnivå.
+
+### POST /api/notes
+
+Skapar en ny anteckning.
+
+Endpointen kräver autentisering och kontrollerar användarens behörighet innan
+anteckningen skapas.
+
+### PATCH /api/notes/:id
+
+Uppdaterar en befintlig anteckning efter server-side behörighetskontroll.
+
+### DELETE /api/notes/:id
+
+Tar bort en befintlig anteckning efter server-side behörighetskontroll.
 
 ## Access logs
 
-Blockchain-baserad access-loggning tillhör Task 15.
+Access-loggar används för att registrera åtkomst till patientdata.
 
-Route-strukturen finns förberedd, men den fullständiga implementationen görs i Task 15.
+Access-loggen sparas i SQL och synkroniseras sedan med projektets blockchain
+access-log chain.
+
+Medicinsk information lagras aldrig på blockkedjan.
+
+Blockchain-relaterad implementation finns i projektets access-loggning och
+P2P-lager.
 
 ## Roller och behörighet
 
