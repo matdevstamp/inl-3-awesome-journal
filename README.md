@@ -159,11 +159,24 @@ Kontrollera även att `.env` är korrekt konfigurerad.
 
 ### Två-server-demo fungerar inte
 
-Kontrollera att serverinstanserna körs på `http://localhost:3001` och `http://localhost:3002`.
+Kontrollera att serverinstanserna körs på `http://localhost:3001` och
+`http://localhost:3002`.
 
-För server 2 kan projektets script användas med `npm run dev:server2`.
+Bygg projektet först:
 
-Om P2P- eller Socket.IO-synkroniseringen inte fungerar, starta om båda serverinstanserna.
+`npm run build`
+
+Starta sedan de två serverinstanserna:
+
+`SERVER_ID=hospital-s npm run start -- -p 3001 &`
+
+`SERVER_ID=ambulance-a npm run start -- -p 3002 &`
+
+Kontrollera att båda servrarna körs och att `PEER_URL` pekar mot rätt
+peer-server.
+
+Om P2P- eller Socket.IO-synkroniseringen inte fungerar, starta om båda
+serverinstanserna och kontrollera därefter peer-anslutningen.
 
 ## Bug workflow
 
@@ -250,6 +263,28 @@ Grunddatan är fiktiv (GDPR: inga journaler på blockkedjan, bara access-loggar)
 | GET | `/api/access-log` | Visa access-loggar och kontrollera blockchainens giltighet | doctor, nurse, ambulance, patient |
 | GET | `/api/p2p/access-log` | Hämta lokal blockchain-access-logg | P2P |
 | POST | `/api/p2p/access-log` | Ta emot och validera access-logg från peer-server | P2P |
+
+### P2P-endpoints
+
+P2P-endpoints används endast för intern kommunikation mellan projektets två
+serverinstanser.
+
+Dessa endpoints använder inte användarens JWT-session och har ingen separat
+peer-secret-autentisering i den nuvarande implementationen. De ska därför
+betraktas som interna server-till-server-endpoints och inte exponeras som ett
+publikt klient-API.
+
+Nätverksgränsen är att endast de två betrodda serverinstanserna ska kunna nå
+P2P-endpoints. `PEER_URL` konfigurerar vilken peer-server som används för
+synkronisering.
+
+`POST /api/p2p/access-log` validerar att inkommande meddelanden har rätt
+struktur innan de accepteras. `GET /api/p2p/access-log` används för att hämta
+peer-serverns access-loggar och kontrollera blockchainens giltighet.
+
+Om projektet körs utanför ett isolerat/trusted nätverk krävs ytterligare
+peer-autentisering eller annan nätverkskontroll innan P2P-endpoints kan
+betraktas som exponerade mot ett otillförlitligt nätverk.
 
 `GET /api/records` finns som route men är ännu inte implementerad och returnerar `501 Not Implemented`.
 

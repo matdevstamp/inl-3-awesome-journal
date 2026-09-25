@@ -296,8 +296,6 @@ Prisma-klienten och ER-diagrammet genereras med:
 
 `npx prisma generate`
 
----
-
 ## Seed data
 
 Projektet använder fiktiv testdata.
