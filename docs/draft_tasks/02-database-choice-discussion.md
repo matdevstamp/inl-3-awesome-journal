@@ -79,7 +79,7 @@
 
 ## Decision (kickoff 2026-09-04)
 
-**PostgreSQL for both development and production** (Option B). Recorded in `docs/meetings/2026-09-04-kickoff-agenda.md`.
+**PostgreSQL for both development and production** (Option B). Recorded in `docs/meetings/2026-09-04-kickoff.md`.
 
 **Rationale:**
 1. **Two fullstack servers share it** — both Next.js instances connect to the same PostgreSQL, matching the P2P demo

@@ -28,14 +28,15 @@ Därför ligger en CSV per person här. Det är vår dagliga logg över vad vi g
 Exempelrad:
 
 ```
-2026-09-04,daily,Intro + setup check på kickoff,-,Skriv klart gruppkontraktet,#1,docs/meetings/2026-09-04-kickoff-agenda.md
+2026-09-04,daily,Intro + setup check på kickoff,-,Skriv klart gruppkontraktet,#1,docs/meetings/2026-09-04-kickoff.md
 ```
 
 ## Rutin
 
 1. **Varje vardag:** lägg en rad med `typ=daily` (det som kom upp på dagens standup — se [gruppkontraktet](../../gruppkontrakt.md#6-loggbok-dokumentation)).
 2. **Efter varje möte:** lägg en rad med `typ=mote` och länka anteckningen i `docs/meetings/`.
-3. Commit:a samma dag så loggen ligger i git-historiken.
+3. **På lördag och söndag:** logga endast när det finns dokumenterad aktivitet; annars lämnar du dagen tom.
+4. Commit:a samma dag så loggen ligger i git-historiken.
 
 ## Vecko-koll (kurskrav: minst 2 dokumenterade möten/vecka)
 

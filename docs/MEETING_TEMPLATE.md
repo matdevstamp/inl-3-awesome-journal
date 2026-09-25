@@ -1,11 +1,15 @@
 # Meeting Notes - YYYY-MM-DD
 
-**Meeting type:** Planning / Standup / Review / Retrospective  
-**Facilitator:** Name  
-**Timekeeper:** Name  
-**Note-taker:** Name  
-**Attendees:** Names  
-**Absent:** Names and reason, if relevant
+> **Filename convention:** `YYYY-MM-DD-<meeting-type>.md`
+>
+> Use `standup` for Tuesday quick syncs, `progress-review` for Thursday progress reviews, and `kickoff` for kickoff meetings. Raw recordings and transcripts belong in `docs/meetings/archive/` and are not the source of truth. MatDevstamp is the note-taker for this project's meeting notes. Do not list attendance or absence unless everyone affected has consented; otherwise write `Not recorded`.
+
+- **Meeting type:** Planning / Standup / Progress review / Retrospective
+- **Facilitator:** Not recorded
+- **Timekeeper:** Not recorded
+- **Note-taker:** MatDevstamp
+- **Attendees:** Not recorded
+- **Absent:** Not recorded
 
 ## Agenda
 

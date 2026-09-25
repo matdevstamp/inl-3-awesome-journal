@@ -21,7 +21,7 @@ Vi bygger HealthAccess: ett system där medicinska journaler ligger i en SQL-dat
 
 ## 2. Roller & ansvarsområden
 
-Vi avviker från exempelfördelningen Person 1–4 i `docs/Raw_Requirements.md` — vi delar i stället på backend/UI/koordinering (beslut på kickoff 4 sep, se `docs/meetings/2026-09-04-kickoff-agenda.md`). Stream D (chain core + P2P) tilldelades Najma 5 sep (se statusraden ovan).
+Vi avviker från exempelfördelningen Person 1–4 i `docs/Raw_Requirements.md` — vi delar i stället på backend/UI/koordinering (beslut på kickoff 4 sep, se `docs/meetings/2026-09-04-kickoff.md`). Stream D (chain core + P2P) tilldelades Najma 5 sep (se statusraden ovan).
 
 | Person | Ansvarsområde | Streams |
 |---|---|---|
