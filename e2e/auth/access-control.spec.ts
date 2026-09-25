@@ -81,4 +81,27 @@ test.describe("role access control", () => {
     await expect(page).toHaveURL(/\/access-denied$/);
     await expect(page.getByRole("heading", { name: "Access denied" })).toBeVisible();
   });
+
+  test("patient URL tampering is stopped before journal data loads", async ({ page }) => {
+    const login = await page.request.post("/api/auth/login", {
+      data: { username: "patient_test", password: "test123" },
+    });
+    expect(login.status()).toBe(200);
+
+    const token = login.headers()["set-cookie"]?.match(/token=([^;]+)/)?.[1];
+    expect(token).toBeDefined();
+    await page
+      .context()
+      .addCookies([{ name: "token", value: token!, domain: "localhost", path: "/" }]);
+
+    let journalRequests = 0;
+    page.on("request", (request) => {
+      if (new URL(request.url()).pathname === "/api/patients/2") journalRequests += 1;
+    });
+
+    await page.goto("/patients/2");
+    await expect(page.getByRole("heading", { name: "Access denied" })).toBeVisible();
+    await expect(page.getByText("Patients can only open their own journal.")).toBeVisible();
+    expect(journalRequests).toBe(0);
+  });
 });
