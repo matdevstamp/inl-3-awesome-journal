@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { Peer } from "../../src/lib/p2p/peer";
 import { serverPeer, syncServerPeer } from "../../src/app/api/p2p/server-peer";
+import { peerAuthHeaders } from "../../src/lib/p2p/peer-auth";
 import { checkPeerHealth, fetchAccessLogsFromPeer } from "../../src/lib/p2p/transport";
 
 test("propagates an access log from Hospital S to Ambulance A", () => {
@@ -133,6 +134,7 @@ test("P2P access-log endpoint accepts an access log message", async ({ request }
   const eventId = `event-network-${crypto.randomUUID()}`;
 
   const response = await request.post("/api/p2p/access-log", {
+    headers: peerAuthHeaders(),
     data: {
       type: "access_log",
       from: "hospital-s",
@@ -169,6 +171,7 @@ test("P2P endpoint returns the received access log", async ({ request }) => {
   };
 
   const response = await request.post("/api/p2p/access-log", {
+    headers: peerAuthHeaders(),
     data: {
       type: "access_log",
       from: "hospital-s",
@@ -200,6 +203,7 @@ test("P2P endpoint stores the received access log in the server blockchain", asy
   };
 
   const response = await request.post("/api/p2p/access-log", {
+    headers: peerAuthHeaders(),
     data: {
       type: "access_log",
       from: "hospital-s",
@@ -360,7 +364,74 @@ test("handles simultaneous access-log events", () => {
   expect(ambulance.blockchain.chain[1]?.data.eventId).toBe(
     hospital.blockchain.chain[1]?.data.eventId,
   );
-
   expect(hospital.blockchain.isValid()).toBe(true);
   expect(ambulance.blockchain.isValid()).toBe(true);
+});
+
+test("rejects an unauthenticated P2P note post", async ({ request }) => {
+  const response = await request.post("/api/p2p/note", {
+    data: {
+      type: "note_created",
+      from: "hospital-s",
+      timestamp: new Date().toISOString(),
+      patientId: 1,
+      data: {
+        id: 999999,
+        recordId: 1,
+        text: "fabricated note",
+        visibility: "all",
+        authorUserId: 1,
+        author: "dr_test",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    },
+  });
+
+  expect(response.status()).toBe(401);
+});
+
+test("rejects an unauthenticated P2P access-log post", async ({ request }) => {
+  const response = await request.post("/api/p2p/access-log", {
+    data: {
+      type: "access_log",
+      from: "hospital-s",
+      timestamp: new Date().toISOString(),
+      data: {
+        eventId: `event-noauth-${crypto.randomUUID()}`,
+        userId: 1,
+        patientId: 2,
+        recordId: null,
+        action: "view",
+        serverId: "hospital-s",
+        timestamp: new Date().toISOString(),
+      },
+    },
+  });
+
+  expect(response.status()).toBe(401);
+});
+
+test("rejects a P2P note post with a wrong peer secret", async ({ request }) => {
+  const response = await request.post("/api/p2p/note", {
+    headers: { "x-peer-secret": "wrong-secret" },
+    data: {
+      type: "note_created",
+      from: "hospital-s",
+      timestamp: new Date().toISOString(),
+      patientId: 1,
+      data: {
+        id: 999999,
+        recordId: 1,
+        text: "fabricated note",
+        visibility: "all",
+        authorUserId: 1,
+        author: "dr_test",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    },
+  });
+
+  expect(response.status()).toBe(401);
 });

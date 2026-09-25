@@ -1,9 +1,21 @@
 import { NextResponse } from "next/server";
 import { serverPeer } from "@/app/api/p2p/server-peer";
 import type { P2PAccessLogMessage } from "@/lib/p2p/message";
+import { isPeerAuthorized } from "@/lib/p2p/peer-auth";
 import { getAccessLogBlockchain } from "@/lib/blockchain/access-log-service";
 
 export async function POST(request: Request) {
+  if (!isPeerAuthorized(request)) {
+    return NextResponse.json(
+      {
+        ok: false,
+        stored: false,
+        error: "Unauthorized peer",
+      },
+      { status: 401 },
+    );
+  }
+
   let message: P2PAccessLogMessage;
 
   try {

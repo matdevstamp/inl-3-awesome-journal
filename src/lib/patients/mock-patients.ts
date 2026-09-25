@@ -23,10 +23,6 @@ export const NOTE_VISIBILITY_LABELS: Record<NoteVisibility, string> = {
   all: "All",
 };
 
-const USER_PATIENT_IDS: Record<number, number> = {
-  4: 1,
-};
-
 export const MOCK_PATIENTS: PatientSummary[] = [
   {
     id: 1,
@@ -224,10 +220,6 @@ const ACCESS_LOGS: Record<number, AccessLogPreview[]> = {
 
 export function isStaffRole(role: Role): boolean {
   return STAFF_ROLES.includes(role as (typeof STAFF_ROLES)[number]);
-}
-
-export function patientIdForUser(user: SessionUser): number | null {
-  return USER_PATIENT_IDS[user.id] ?? null;
 }
 
 export function findPatient(patientId: number): PatientSummary | null {

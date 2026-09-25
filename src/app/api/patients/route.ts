@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { AuthError, requireRole } from "@/lib/auth";
+import { AuthError, requirePermission } from "@/lib/auth";
 import { fail, ok } from "@/lib/api/http";
 import { searchDatabasePatients } from "@/lib/patients/search";
 import type { PatientSearchFilter, PatientSearchResponse } from "@/lib/types/api";
@@ -13,7 +13,7 @@ const searchSchema = z.object({
 
 export async function GET(request: Request) {
   try {
-    const user = await requireRole("doctor", "nurse", "ambulance");
+    const user = await requirePermission("searchPatients");
 
     const url = new URL(request.url);
     const parsed = searchSchema.safeParse({

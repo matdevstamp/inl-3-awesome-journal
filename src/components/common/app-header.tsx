@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LogOutIcon } from "lucide-react";
 
-import { clearMockSession } from "@/components/auth/mock-auth";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 
@@ -19,7 +18,6 @@ export function AppHeader({ title = "Awesome Journal" }: AppHeaderProps) {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
     } finally {
-      clearMockSession();
       router.push("/login");
     }
   }
