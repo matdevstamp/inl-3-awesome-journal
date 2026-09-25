@@ -1,6 +1,7 @@
 import type { BlockchainAccessLog } from "@/lib/blockchain/access-log";
 import { env } from "@/lib/env";
-import type { P2PAccessLogMessage } from "@/lib/p2p/message";
+import type { P2PAccessLogMessage, P2PNoteMessage } from "@/lib/p2p/message";
+import type { Note } from "@/lib/types/api";
 
 export async function sendAccessLogToPeer(accessLog: BlockchainAccessLog): Promise<void> {
   const message: P2PAccessLogMessage = {
@@ -24,6 +25,35 @@ export async function sendAccessLogToPeer(accessLog: BlockchainAccessLog): Promi
     }
   } catch (error) {
     console.warn("Peer sync unavailable; access log remains stored locally.", error);
+  }
+}
+export async function sendNoteToPeer(patientId: number, note: Note): Promise<void> {
+  const message: P2PNoteMessage = {
+    type: "note_created",
+    from: env.serverId,
+    timestamp: new Date().toISOString(),
+    patientId,
+    data: note,
+  };
+
+  try {
+    console.log(
+      `[realtime] Sending note ${note.id} from ${env.serverId} to ${env.peerUrl}/api/p2p/note`,
+    );
+
+    const response = await fetch(`${env.peerUrl}/api/p2p/note`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(message),
+    });
+
+    if (!response.ok) {
+      console.warn(`Peer note sync failed with status ${response.status}`);
+    }
+  } catch (error) {
+    console.warn("Peer unavailable; note was not broadcast to peer.", error);
   }
 }
 export interface PeerHealthInfo {

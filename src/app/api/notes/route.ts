@@ -9,6 +9,8 @@ import { serializeNote } from "@/lib/notes/serialization";
 import { prisma } from "@/lib/prisma";
 import { NOTE_VISIBILITIES } from "@/lib/types/api";
 import type { NoteListResponse, NoteMutationResponse } from "@/lib/types/api";
+import { sendNoteToPeer } from "@/lib/p2p/transport";
+import { broadcastNoteCreated } from "@/lib/realtime/broadcast";
 
 const createNoteSchema = z.object({
   recordId: z.number().int().positive(),
@@ -146,11 +148,16 @@ export async function POST(request: Request) {
 
     await logNoteAccess(user.id, record.patientId, record.id, "create");
 
+    const serializedNote = serializeNote(note);
+
+    await broadcastNoteCreated(record.patientId, serializedNote);
+    await sendNoteToPeer(record.patientId, serializedNote);
+
     return NextResponse.json(
       {
         ok: true,
         data: {
-          note: serializeNote(note),
+          note: serializedNote,
         },
       } satisfies { ok: true; data: NoteMutationResponse },
       { status: 201 },

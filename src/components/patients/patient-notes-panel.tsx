@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { InfoIcon, NotebookPenIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -43,21 +43,18 @@ const VISIBILITY_OPTIONS: Array<{
 const MAX_NOTE_LENGTH = 1000;
 
 export function PatientNotesPanel({
-  authorName,
   journal,
   onCreateNote,
 }: {
-  authorName: string;
   journal: PatientJournalResponse;
-  onCreateNote: (note: JournalNotePreview) => void;
+  onCreateNote: (text: string, visibility: NoteVisibility) => Promise<void>;
 }) {
   const canCreateNote = isStaffRole(journal.viewerRole);
-  const nextLocalNoteId = useRef(10_000);
   const [noteText, setNoteText] = useState("");
   const [visibility, setVisibility] = useState<NoteVisibility>(DEFAULT_NOTE_VISIBILITY);
   const [formError, setFormError] = useState<string | null>(null);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const trimmedText = noteText.trim();
@@ -71,14 +68,7 @@ export function PatientNotesPanel({
       return;
     }
 
-    onCreateNote({
-      id: nextLocalNoteId.current++,
-      createdAt: formatNow(),
-      author: authorName,
-      authorUserId: journal.viewerUserId,
-      visibility,
-      text: trimmedText,
-    });
+    await onCreateNote(trimmedText, visibility);
 
     setNoteText("");
     setVisibility(DEFAULT_NOTE_VISIBILITY);
@@ -206,11 +196,4 @@ function NoteCard({ note }: { note: JournalNotePreview }) {
       <p className="mt-2 whitespace-pre-wrap text-sm">{note.text}</p>
     </div>
   );
-}
-
-function formatNow(): string {
-  const now = new Date();
-  const date = now.toISOString().slice(0, 10);
-  const time = now.toTimeString().slice(0, 5);
-  return `${date} ${time}`;
 }
