@@ -23,8 +23,8 @@ function canReceiveNote(
   }
 
   if (note.visibility === "all") {
-
-return isStaffRole(user.role) || user.patientId === patientId;  }
+    return isStaffRole(user.role) || user.patientId === patientId;
+  }
 
   return false;
 }
