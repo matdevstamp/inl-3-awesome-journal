@@ -11,7 +11,6 @@ import {
   NotebookPenIcon,
 } from "lucide-react";
 
-import { mockSessionHeaders } from "@/components/auth/mock-auth";
 import { RoleBadge } from "@/components/common/role-badge";
 import { PatientNotesPanel } from "@/components/patients/patient-notes-panel";
 import { Badge } from "@/components/ui/badge";
@@ -108,9 +107,7 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
           accessLogs: BlockchainAccessLog[];
           chainValid: boolean;
           viewerUserId: number;
-        }>("/api/access-log", {
-          headers: mockSessionHeaders(user),
-        });
+        }>("/api/access-log");
         if (isMounted) {
           setJournal(data);
           setBlockchainAccessLogs(accessLogData.accessLogs);
