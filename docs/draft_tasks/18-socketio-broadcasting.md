@@ -171,7 +171,7 @@ function createNote(patientId, content, visibility) {
 }
 ```
 
-## Done Criteria
+## Implementation Checklist
 
 - [x] Set up Socket.io server
 - [x] Implement room-based messaging
@@ -182,20 +182,20 @@ function createNote(patientId, content, visibility) {
 - [x] Add connection status indicator
 - [x] Implement reconnection logic
 - [x] Add error handling for socket events
-- [ ] Test with multiple browsers/tabs
+- [x] Test with multiple browsers/tabs (Playwright e2e covers cross-server delivery)
 
 ## Done Criteria
 
-- [ ] Notes appear in real-time across servers
-- [ ] Multiple users can view same patient simultaneously
-- [ ] Real-time updates work for notes and access logs
-- [ ] Connection status is shown to users
-- [ ] Disconnections are handled gracefully
-- [ ] Reconnection works automatically
-- [ ] Multiple server instances work together
-- [ ] Socket events are properly authenticated
-- [ ] Error messages are displayed to users
-- [ ] Performance is acceptable with many connections
+- [x] Notes appear in real-time across servers
+- [x] Multiple users can view same patient simultaneously
+- [x] Real-time updates work for notes and access logs
+- [x] Connection status is shown to users
+- [x] Disconnections are handled gracefully
+- [x] Reconnection works automatically
+- [x] Multiple server instances work together
+- [x] Socket events are properly authenticated
+- [x] Error messages are displayed to users
+- [ ] Performance is acceptable with many connections (not load-tested)
 
 ## Notes
 
@@ -207,7 +207,7 @@ function createNote(patientId, content, visibility) {
 
 ## Questions to Resolve
 
-- [ ] Should we use Redis adapter for scaling?
-- [ ] How to handle socket authentication?
-- [ ] What's the reconnection strategy?
-- [ ] Should we implement message acknowledgments?
+- [ ] Should we use Redis adapter for scaling? (open — single-pair demo works without it)
+- [x] How to handle socket authentication? (JWT session cookie verified at handshake + peer shared secret for P2P calls)
+- [x] What's the reconnection strategy? (socket.io-client auto-reconnect, 5 attempts, client-side note dedup on resync)
+- [ ] Should we implement message acknowledgments? (open — current flow relies on client-side dedup instead)

@@ -35,6 +35,7 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [socketConnected, setSocketConnected] = useState(false);
+  const [socketError, setSocketError] = useState<string | null>(null);
   useEffect(() => {
     const socketPort =
       process.env.NEXT_PUBLIC_SOCKET_PORT ?? String(Number(window.location.port || "3000") + 1000);
@@ -47,6 +48,7 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
 
     function joinPatientRoom() {
       setSocketConnected(true);
+      setSocketError(null);
       socket.emit("join-patient", Number(patientId));
     }
 
@@ -85,12 +87,12 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
     });
     socket.on("socket-error", ({ message }: { code: string; message: string }) => {
       console.error("[socket-error]", message);
-      setError(message);
+      setSocketError(message);
     });
 
     socket.on("connect_error", (connectError) => {
       console.error("[socket] connection error:", connectError.message);
-      setError(`Realtime connection error: ${connectError.message}`);
+      setSocketError(`Realtime connection error: ${connectError.message}`);
     });
     return () => {
       socket.disconnect();
@@ -195,6 +197,17 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
         return currentJournal;
       }
 
+      // The room broadcast usually beats the POST response (it fires mid-
+      // request), so the socket handler has already added this note. Skip
+      // when the id is already in the list, or the author sees duplicates.
+      const alreadyExists = currentJournal.notes.some(
+        (existingNote) => existingNote.id === note.id,
+      );
+
+      if (alreadyExists) {
+        return currentJournal;
+      }
+
       return {
         ...currentJournal,
         notes: [note, ...currentJournal.notes],
@@ -217,7 +230,7 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
             </span>
           </div>
           <Badge variant={socketConnected ? "secondary" : "outline"}>
-            {socketConnected ? "Live connected" : "Reconnecting..."}
+            {socketConnected ? "Live connected" : (socketError ?? "Reconnecting...")}
           </Badge>
           <div>
             <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{title}</h1>

@@ -1,6 +1,7 @@
 import type { BlockchainAccessLog } from "@/lib/blockchain/access-log";
 import { env } from "@/lib/env";
 import type { P2PAccessLogMessage, P2PNoteMessage } from "@/lib/p2p/message";
+import { peerAuthHeaders } from "@/lib/p2p/peer-auth";
 import type { Note } from "@/lib/types/api";
 
 export async function sendAccessLogToPeer(accessLog: BlockchainAccessLog): Promise<void> {
@@ -16,6 +17,7 @@ export async function sendAccessLogToPeer(accessLog: BlockchainAccessLog): Promi
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...peerAuthHeaders(),
       },
       body: JSON.stringify(message),
     });
@@ -45,6 +47,7 @@ export async function sendNoteToPeer(patientId: number, note: Note): Promise<voi
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...peerAuthHeaders(),
       },
       body: JSON.stringify(message),
     });

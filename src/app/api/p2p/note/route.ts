@@ -1,9 +1,20 @@
 import { NextResponse } from "next/server";
 
+import { isPeerAuthorized } from "@/lib/p2p/peer-auth";
 import type { P2PNoteMessage } from "@/lib/p2p/message";
 import { broadcastNoteCreated } from "@/lib/realtime/broadcast";
 
 export async function POST(request: Request) {
+  if (!isPeerAuthorized(request)) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Unauthorized peer",
+      },
+      { status: 401 },
+    );
+  }
+
   let message: P2PNoteMessage;
 
   try {
