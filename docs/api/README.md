@@ -90,6 +90,9 @@ Synligheten för anteckningar styrs av deras `visibility`:
 En patient får information om att healthcare-anteckningar finns, men inte deras innehåll.
 
 Ogiltigt ID ger 400, saknad session 401, nekad åtkomst 403 och okänt patient-ID 404.
+Patientens koppling till användar-ID valideras genom relationen mellan `User` och
+`Patient` i databasen (`users.patient` ↔ `patients.user_id`). Vyns audit-händelser
+hanteras separat av access-log/API:t.
 
 ## Anteckningar
 
@@ -198,9 +201,24 @@ Systemet har fem roller:
 | patient      | Patient                   |
 | unauthorized | Användare utan behörighet |
 
-Skyddade API-routes kontrollerar autentisering och behörighet server-side.
+Skyddade API-routes kontrollerar autentisering och behörighet server-side med
+`requirePermission()`. Behörighetsmatrisen finns i `src/lib/auth/permissions.ts`; databasen lagrar
+användarens roll och organisationskoppling, men inte en separat lista med permissions.
 
-Funktionen `requireRole()` används för att kontrollera att en autentiserad användare har rätt roll för en skyddad endpoint.
+| Roll         | Patientsökning | Journaler           | Skapa/ändra egna anteckningar | Accessloggar              |
+| ------------ | -------------- | ------------------- | ----------------------------- | ------------------------- |
+| doctor       | Alla patienter | Alla patienter      | Ja                            | Alla loggar               |
+| nurse        | Alla patienter | Alla patienter      | Ja                            | Alla loggar               |
+| ambulance    | Alla patienter | Alla patienter      | Ja                            | Alla loggar               |
+| patient      | Nej            | Endast egen journal | Nej                           | Endast egna patientloggar |
+| unauthorized | Nej            | Nej                 | Nej                           | Nej                       |
+
+Vårdcentral är inte en implementerad inloggningsroll. Organisationskopplingar finns i datamodellen,
+men organisationsbaserad filtrering är ännu inte implementerad.
+
+En saknad eller ogiltig JWT-session ger `401`. En autentiserad användare utan rätt permission ger
+`403`. Patienter som försöker öppna ett annat patient-ID stoppas både av API:t och av frontend innan
+journaldata hämtas. Mock-headers ger aldrig behörighet.
 
 ## JWT och sessionshantering
 
