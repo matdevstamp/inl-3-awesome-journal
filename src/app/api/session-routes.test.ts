@@ -155,7 +155,9 @@ describe("GET /api/records", () => {
       error: { code: string; message: string };
     };
 
+    expect(response.status).toBe(501);
     expect(body.ok).toBe(false);
+    expect(body.error.code).toBe("NOT_IMPLEMENTED");
     expect(body.error.message).toMatch(/task 14/i);
   });
 });
