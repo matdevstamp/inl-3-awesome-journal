@@ -148,6 +148,21 @@ Medicinsk information lagras aldrig på blockkedjan.
 Blockchain-relaterad implementation finns i projektets access-loggning och
 P2P-lager.
 
+### GET /api/access-log
+
+Returnerar access-loggen tillsammans med `chainValid` och `viewerUserId`, och
+försöker först hämta peer-servarns loggar via `syncServerPeer()` (misslyckas det
+faller API:t tillbaka på den lokala loggen).
+
+Kräver `readAccessLogs`, alltså `doctor`, `nurse`, `ambulance` eller `patient`.
+En `patient` får endast loggar för sitt eget `patientId`; vårdpersonal får alla.
+Utan giltig session `401`, utan rätt behörighet `403`.
+
+### GET /api/records
+
+Finns som route men är inte implementerad och returnerar `501 Not Implemented`.
+Funktionen tillhör Task 14.
+
 ## P2P-endpoints
 
 Server-till-server-kommunikation mellan projektets två instanser. Dessa routes
