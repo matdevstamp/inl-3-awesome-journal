@@ -145,6 +145,47 @@ Medicinsk information lagras aldrig på blockkedjan.
 Blockchain-relaterad implementation finns i projektets access-loggning och
 P2P-lager.
 
+## P2P-endpoints
+
+Server-till-server-kommunikation mellan projektets två instanser. Dessa routes
+använder **inte** användarens JWT-session.
+
+### GET /api/p2p/access-log
+
+Hämtar den lokala blockchain-access-loggen, inklusive kontroll av kedjans
+giltighet.
+
+### POST /api/p2p/access-log
+
+Tar emot en access-logg från peer-servern. Meddelandet valideras strukturellt
+innan det accepteras.
+
+### POST /api/p2p/note
+
+Tar emot en anteckningsnotis från peer-servern och vidarebefordrar den till den
+andra instansens klienter. Meddelandet valideras strukturellt innan det
+accepteras.
+
+### Peer-autentisering
+
+P2P-routsen kräver `x-peer-secret`-header med rätt värde. Kontrollen görs av
+`isPeerAuthorized()` i `src/lib/p2p/peer-auth.ts`:
+
+| Route                          | Auth-krav                     |
+| ------------------------------ | ----------------------------- |
+| `POST /api/p2p/access-log`     | `x-peer-secret`, annars `401` |
+| `POST /api/p2p/note`           | `x-peer-secret`, annars `401` |
+| `GET /api/p2p/access-log`      | **ingen kontroll**            |
+
+Värdet läses ur `PEER_SECRET` (standard `dev-peer-secret-change-me`) och måste
+vara identiskt i båda instanserna.
+
+`GET /api/p2p/access-log` är det enda undantaget: handler`n
+(`src/app/api/p2p/access-log/route.ts:96`) tar emot `GET` utan
+`isPeerAuthorized`-kontroll och returnerar access-loggen direkt. Detta är en
+känd begränsning i demoläge — endpointen ska inte exponeras publikt. Att lägga
+till samma kontroll där är en möjlig uppföljning.
+
 ## Roller och behörighet
 
 Systemet har fem roller:

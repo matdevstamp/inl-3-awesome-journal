@@ -280,21 +280,31 @@ Efter att projektets dependencies och miljövariabler har konfigurerats kan data
 
 ```bash
 npm run db:up
+```
+
 Applicera sparade migrationer:
 
-`npm run db:deploy`
+```bash
+npm run db:deploy
+```
 
 eller använd utvecklingsmigrationen:
 
-`npm run db:migrate`
+```bash
+npm run db:migrate
+```
 
 Seed-data kan skapas med:
 
-`npm run db:seed`
+```bash
+npm run db:seed
+```
 
 Prisma-klienten och ER-diagrammet genereras med:
 
-`npx prisma generate`
+```bash
+npx prisma generate
+```
 
 ## Seed data
 
