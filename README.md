@@ -83,15 +83,45 @@ peer-anropen mellan servrarna (se [P2P-endpoints](#p2p-endpoints)). Värdet i
 | `db:migrate` / `db:deploy` | migrationer (dev) / tillämpa sparade migrationer |
 | `db:seed` | testdata (users, patient, journal, anteckning) |
 
-## Testing (Playwright)
+## Testing (Vitest + Playwright)
 
-Projektet använder Playwright för E2E-testning under `e2e/`. Testerna är organiserade efter funktioner som autentisering, patienter, journaler, medicinska anteckningar, access-loggar och blockchain.
+Testerna är uppdelade i två lager:
+
+| Lager | Verktyg | Kommando | Täcker |
+| --- | --- | --- | --- |
+| Unit + integration | Vitest | `npm run test:unit` | Auktorisering, synlighetsregler, blockchain, P2P, patient-API:er |
+| E2E | Playwright | `npm run test:e2e` | Hela användarflöden mot två riktiga serverinstanser |
+
+Testerna är organiserade efter funktioner som autentisering, patienter, journaler, medicinska anteckningar, access-loggar och blockchain.
 
 Testerna verifierar bland annat autentisering, rollbaserad åtkomst, patient- och journalflöden, medicinska anteckningar, access-loggar och två-server-funktionalitet.
 
-Kör hela testsviten med:
+### Täckning
+
+`npm run test:unit:coverage` mäter täckning för `src/lib/**/*.ts` och `src/app/api/**/route.ts`, med en tröskel på 70 %:
+
+| Mått | Värde |
+| --- | --- |
+| Statements | 99,13 % |
+| Branches | 97,55 % |
+| Functions | 100 % |
+| Lines | 99,13 % |
+
+Rapporten skrivs till `coverage/`. Undantagna från mätningen är `prisma.ts`,
+`socket-server.ts`, de interface-only typerna `blockchain/access-log.ts` och
+`p2p/message.ts` samt testfilerna.
+
+### Köra testerna
+
+Hela sviten (unit → build → E2E):
 
 `npm run test`
+
+Playwright startar `next start`, så ett produktionsbyggde måste finnas innan
+E2E körs. `npm run test` bygger därför först, men kör du `npm run test:e2e`
+direkt behöver du köra `npm run build` först. Lokalt återanvänds redan igångsatta
+servrar (`reuseExistingServer: !process.env.CI`) — döda en kvarvarande
+`next start`-process eller kör med `CI=1` efter att serverkod ändrats.
 
 Misslyckade tester sparar skärmbilder och traces under `test-results/` och en HTML-rapport i `playwright-report/`.
 
