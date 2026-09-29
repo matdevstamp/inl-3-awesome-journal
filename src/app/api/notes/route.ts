@@ -2,10 +2,11 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { AuthError, requirePermission } from "@/lib/auth";
-import { canAccessPatient, isStaffRole } from "@/lib/auth/permissions";
+import { canAccessPatient } from "@/lib/auth/permissions";
 import { fail, ok } from "@/lib/api/http";
 import { logNoteAccess } from "@/lib/notes/log";
 import { serializeNote } from "@/lib/notes/serialization";
+import { canViewNote } from "@/lib/notes/visibility";
 import { prisma } from "@/lib/prisma";
 import { NOTE_VISIBILITIES } from "@/lib/types/api";
 import type { NoteListResponse, NoteMutationResponse } from "@/lib/types/api";
@@ -62,29 +63,15 @@ export async function GET(request: Request) {
       },
     });
 
-    const isHealthcare = isStaffRole(user.role);
-
-    const visibleNotes = notes.filter((note) => {
-      if (note.visibility === "all") return true;
-
-      if (note.visibility === "healthcare") {
-        return isHealthcare;
-      }
-
-      if (note.visibility === "private") {
-        return note.authorId === user.id;
-      }
-
-      return false;
-    });
-
-    const hiddenNotesCount = notes.length - visibleNotes.length;
+    const readNotes = notes.filter((note) =>
+      canViewNote({ visibility: note.visibility, authorUserId: note.authorId }, user),
+    );
 
     await logNoteAccess(user.id, record.patientId, record.id, "view");
 
     return ok({
-      notes: visibleNotes.map(serializeNote),
-      hiddenNotesCount,
+      notes: readNotes.map(serializeNote),
+      hiddenNotesCount: notes.length - readNotes.length,
     } satisfies NoteListResponse);
   } catch (error) {
     if (error instanceof AuthError) {

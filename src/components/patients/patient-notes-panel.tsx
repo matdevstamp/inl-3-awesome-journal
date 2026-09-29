@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { isStaffRole } from "@/lib/auth/permissions";
-import { DEFAULT_NOTE_VISIBILITY, NOTE_VISIBILITY_LABELS } from "@/lib/patients/mock-patients";
+import { DEFAULT_NOTE_VISIBILITY, NOTE_VISIBILITY_LABELS } from "@/lib/notes/visibility";
 import type { JournalNotePreview, NoteVisibility, PatientJournalResponse } from "@/lib/types/api";
 
 const VISIBILITY_OPTIONS: Array<{
@@ -79,9 +79,7 @@ export function PatientNotesPanel({
           <CardHeader>
             <NotebookPenIcon className="size-5 text-muted-foreground" aria-hidden="true" />
             <CardTitle>Add note</CardTitle>
-            <CardDescription>
-              Choose who should be able to read this note. Backend persistence lands later.
-            </CardDescription>
+            <CardDescription>Choose who should be able to read this note.</CardDescription>
           </CardHeader>
           <CardContent>
             <form className="grid gap-4" onSubmit={handleSubmit}>
@@ -96,9 +94,7 @@ export function PatientNotesPanel({
                   className="min-h-28 resize-y"
                 />
                 <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
-                  <span>
-                    {formError ?? "Mock note is added locally until the notes API is ready."}
-                  </span>
+                  <span>{formError ?? "The note is stored in SQL and logged on-chain."}</span>
                   <span>
                     {noteText.length}/{MAX_NOTE_LENGTH}
                   </span>
