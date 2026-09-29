@@ -7,7 +7,11 @@ import type { Note } from "@/lib/types/api";
 export async function sendAccessLogToPeer(accessLog: BlockchainAccessLog): Promise<void> {
   const message: P2PAccessLogMessage = {
     type: "access_log",
-    from: env.serverId,
+    // `from` names the server that ORIGINATED the log, not the one forwarding
+    // it. `syncServerPeer` re-pushes logs this server received from its peer,
+    // so stamping the local id would make every relayed log fail the peer's
+    // `from === data.serverId` consistency check.
+    from: accessLog.serverId,
     timestamp: new Date().toISOString(),
     data: accessLog,
   };
