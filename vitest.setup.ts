@@ -1,0 +1,9 @@
+/**
+ * Test-wide environment. `env.ts` and the P2P layer read process.env at
+ * import time, so the values must be set before any module under test loads.
+ */
+process.env.JWT_SECRET = "test-secret";
+process.env.DATABASE_URL = "postgresql://test:test@localhost:5432/healthaccess_test";
+process.env.SERVER_ID = "hospital-s";
+process.env.PEER_URL = "http://localhost:3002";
+process.env.PEER_SECRET = "test-peer-secret";
