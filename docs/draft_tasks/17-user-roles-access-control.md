@@ -56,79 +56,54 @@ flowchart TD
 
 ### Role Definitions
 
-#### 1. Doctor (Läkare)
+The current application supports five role values. Permissions are defined in application code in
+`src/lib/auth/permissions.ts`; they are not stored as database permission rows. The database stores
+each user's role and optional organization relation.
 
-- Full access to all patient records
-- Can create/edit medical records
-- Can create notes with any visibility
-- Can view access logs for all patients
-- Can search all patients
+| Role           | Search patients | Read journals    | Create and manage own notes | Read access logs      |
+| -------------- | --------------- | ---------------- | --------------------------- | --------------------- |
+| `doctor`       | All patients    | All patients     | Yes                         | All logs              |
+| `nurse`        | All patients    | All patients     | Yes                         | All logs              |
+| `ambulance`    | All patients    | All patients     | Yes                         | All logs              |
+| `patient`      | No              | Own journal only | No                          | Own patient logs only |
+| `unauthorized` | No              | No               | No                          | No                    |
 
-#### 2. Nurse/Ambulance (Sjuksköterska/Ambulanspersonal)
+Notes marked `all` are visible to patients. Healthcare notes are visible to staff. Private notes are
+visible only to their author. A note can only be edited or deleted by its author.
 
-- Can view patient records
-- Can create notes (private, healthcare, all)
-- Can view access logs for patients they've accessed
-- Can search patients
-- Cannot create/edit medical records
+Healthcare organization (vårdcentral) is not currently a login role. Organization IDs exist in the
+data model and session, but they do not yet restrict patient search, journals, notes, or access logs.
+Organization-scoped access remains an explicit open decision rather than a completed permission.
 
-#### Deferred: Healthcare Organization (Vårdcentral)
+### Denied Access
 
-- Can view records for their organization's patients
-- Can create notes (private, healthcare, all)
-- Can view access logs for organization's patients
-- Can search patients within organization
-
-#### 4. Patient (Patienten)
-
-- Can only view own records
-- Can view own access logs
-- Can see notes with visibility "all" only
-- Cannot create notes
-- Cannot search other patients
-- Cannot manipulate URLs to access other data
-
-#### 5. Unauthorized (Obehörig)
-
-- Sees "Access Denied" page only
-- No access to any data
-- Logged out immediately
+- Missing or invalid JWT sessions receive `401 UNAUTHENTICATED`.
+- Authenticated users without the required permission receive `403 UNAUTHORIZED`.
+- Patients requesting another patient ID receive `403` from the API and an immediate Access Denied
+  state in the frontend before journal data is requested.
+- Forged `x-mock-role` and `x-mock-user-id` headers do not grant access.
+- The internal P2P access-log route has a separate trust model that remains to be decided.
 
 ### Access Control Implementation
 
-```
-Backend Middleware:
-├── authenticate.js      - Verify JWT token
-├── authorize.js         - Check role permissions
-└── validateAccess.js    - Check resource ownership
-
-Frontend Guards:
-├── ProtectedRoute.jsx   - Redirect if not authenticated
-├── RoleGuard.jsx        - Show/hide based on role
-└── PatientGuard.jsx     - Ensure patient can only see own data
-```
+- `src/lib/auth.ts` verifies the JWT session and exposes `requirePermission()` for API routes.
+- `src/lib/auth/permissions.ts` maps each supported role to permissions and validates patient
+  ownership.
+- Protected API routes enforce permissions server-side before reading or changing data.
+- Frontend pages read the verified session from `/api/auth/me` or on the server and hide or block
+  views that the role cannot use.
+- The database relation between `User` and `Patient` supplies the patient's own journal ID.
 
 ### URL Manipulation Prevention
 
-```javascript
-// Backend: Always validate user ID from token, not from request
-app.get("/api/patients/:id", authenticate, (req, res) => {
-  const patientId = req.params.id;
-  const userId = req.user.id;
-  const userRole = req.user.role;
-
-  // Patients can only access their own data
-  if (userRole === "patient" && patientId !== userId) {
-    return res.status(403).json({ error: "Access denied" });
-  }
-
-  // Continue with request...
-});
-```
+`GET /api/patients/:id` compares the requested patient ID with `SessionUser.patientId` for patient
+accounts and returns `403` on a mismatch. The `/patients/[id]` frontend performs the same ownership
+check before mounting the journal component, so protected journal data is never requested after URL
+tampering. The server check remains authoritative.
 
 ## Tasks
 
-- [x] Define role permissions in database
+- [x] Define role permissions in application code
 - [x] Create role-based middleware for backend
 - [x] Implement patient ownership validation
 - [x] Create frontend role guards
@@ -151,6 +126,7 @@ app.get("/api/patients/:id", authenticate, (req, res) => {
 ## Implementation
 
 - Role permissions are centralized in `src/lib/auth/permissions.ts`.
+- The database stores user roles and organization relations, not the permission matrix itself.
 - Protected API routes authorize the JWT session with `requirePermission`.
 - Patient ownership comes from the SQL relation between `users` and `patients`.
 - Mock authentication headers are no longer accepted by protected routes.
