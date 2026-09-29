@@ -41,8 +41,9 @@ test("does not add the same access log twice", () => {
     timestamp: "2026-09-15T12:00:00Z",
   };
 
-  ambulance.receiveAccessLog(accessLog);
-  ambulance.receiveAccessLog(accessLog);
+  expect(ambulance.receiveAccessLog(accessLog)).toBe("stored");
+  // A duplicate is a no-op, not a failure: the two-way sync re-sends every log.
+  expect(ambulance.receiveAccessLog(accessLog)).toBe("duplicate");
 
   expect(ambulance.blockchain.chain).toHaveLength(1);
 });
@@ -60,7 +61,7 @@ test("rejects an invalid access log", () => {
     timestamp: "2026-09-15T12:00:00Z",
   };
 
-  ambulance.receiveAccessLog(invalidAccessLog);
+  expect(ambulance.receiveAccessLog(invalidAccessLog)).toBe("rejected");
 
   expect(ambulance.blockchain.chain).toHaveLength(0);
 });
@@ -83,7 +84,7 @@ test("receives an access log through a P2P message", () => {
     },
   };
 
-  ambulance.receiveMessage(message);
+  expect(ambulance.receiveMessage(message)).toBe("stored");
 
   expect(ambulance.blockchain.chain).toHaveLength(1);
   expect(ambulance.blockchain.chain[0]?.data.eventId).toBe("event-message-1");
@@ -269,7 +270,34 @@ test("syncs a real patient access log and keeps both server chains consistent", 
   expect(hospitalChain.data.chainValid).toBe(true);
   expect(ambulanceChain.data.chainValid).toBe(true);
 
-  expect(ambulanceChain.data.accessLogs).toEqual(hospitalChain.data.accessLogs);
+  // Compare by eventId set, not by array equality: Playwright runs this file
+  // in parallel with the other suites, and a sibling test opening a journal
+  // appends to the chains between our two reads. Concurrent writes can make one
+  // side briefly ahead, so let a second sync round-trip settle, then assert
+  // containment both ways.
+  const eventIds = (chain: { data: { accessLogs: Array<{ eventId: string }> } }) =>
+    new Set(chain.data.accessLogs.map((log) => log.eventId));
+
+  // A second sync round-trip must converge both chains onto the same set.
+  await request.get("http://localhost:3001/api/access-log", {
+    headers: { "x-mock-role": "doctor", "x-mock-user-id": "1" },
+  });
+
+  const settledHospital = await (
+    await request.get("http://localhost:3001/api/p2p/access-log")
+  ).json();
+  const settledAmbulance = await (
+    await request.get("http://localhost:3002/api/p2p/access-log")
+  ).json();
+
+  const settledHospitalIds = eventIds(settledHospital);
+  const settledAmbulanceIds = eventIds(settledAmbulance);
+
+  expect([...settledHospitalIds].filter((id) => !settledAmbulanceIds.has(id))).toEqual([]);
+  expect([...settledAmbulanceIds].filter((id) => !settledHospitalIds.has(id))).toEqual([]);
+
+  expect(settledAmbulance.data.chainValid).toBe(true);
+  expect(settledHospital.data.chainValid).toBe(true);
 });
 
 test("rejects a P2P message with a forged server identity", () => {
@@ -290,7 +318,7 @@ test("rejects a P2P message with a forged server identity", () => {
     },
   };
 
-  ambulance.receiveMessage(message);
+  expect(ambulance.receiveMessage(message)).toBe("rejected");
 
   expect(ambulance.blockchain.chain).toHaveLength(0);
 });
