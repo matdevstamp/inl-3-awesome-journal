@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { visibleNotes } from "@/lib/notes/visibility";
 import type { PatientJournalResponse, SessionUser } from "@/lib/types/api";
 
 export async function getDatabasePatientJournal(patientId: number, viewer: SessionUser) {
@@ -18,10 +19,13 @@ export async function getDatabasePatientJournal(patientId: number, viewer: Sessi
 
   const isOwnJournal = viewer.role === "patient";
   const notes = patient.records.flatMap((record) => record.notes);
-  const visibleNotes = notes.filter((note) =>
-    isOwnJournal
-      ? note.visibility === "all"
-      : note.visibility !== "private" || note.authorId === viewer.id,
+  const readNotes = visibleNotes(
+    notes.map((note) => ({
+      note,
+      visibility: note.visibility,
+      authorUserId: note.authorId,
+    })),
+    viewer,
   );
   const formatDate = (date: Date) => date.toISOString().slice(0, 10);
 
@@ -32,7 +36,7 @@ export async function getDatabasePatientJournal(patientId: number, viewer: Sessi
       dateOfBirth: formatDate(patient.dateOfBirth),
       personalNumber: patient.personalNumber,
       recordCount: patient.records.length,
-      noteCount: visibleNotes.length,
+      noteCount: readNotes.length,
       lastVisit: patient.records[0] ? formatDate(patient.records[0].createdAt) : "-",
     },
     viewerRole: viewer.role,
@@ -45,7 +49,7 @@ export async function getDatabasePatientJournal(patientId: number, viewer: Sessi
       practitioner: record.author.username,
       summary: record.content,
     })),
-    notes: visibleNotes.map((note) => ({
+    notes: readNotes.map(({ note }) => ({
       id: note.id,
       createdAt: note.createdAt.toISOString(),
       author: note.author.username,
@@ -53,9 +57,7 @@ export async function getDatabasePatientJournal(patientId: number, viewer: Sessi
       visibility: note.visibility,
       text: note.content,
     })),
-    hiddenNotesCount: isOwnJournal
-      ? notes.filter((note) => note.visibility === "healthcare").length
-      : 0,
+    hiddenNotesCount: notes.length - readNotes.length,
     accessLogs: [],
   } satisfies PatientJournalResponse;
 }

@@ -44,9 +44,12 @@ export async function POST(request: Request) {
     );
   }
 
-  const stored = serverPeer.receiveMessage(message);
+  const result = serverPeer.receiveMessage(message);
 
-  if (!stored) {
+  // A duplicate is the expected outcome of a two-way sync round-trip, not a
+  // failure: the peer already holds this eventId. Report success either way so
+  // the sender does not log a sync error on every round-trip.
+  if (result === "rejected") {
     return NextResponse.json(
       {
         ok: false,
@@ -59,7 +62,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     ok: true,
-    stored: true,
+    stored: result === "stored",
     data: message,
   });
 }
