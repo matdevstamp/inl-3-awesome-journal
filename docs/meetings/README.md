@@ -21,6 +21,7 @@ Raw recordings and transcripts belong in `archive/` and are not the source of tr
 | 2026-09-17 | Progress review | [2026-09-17-progress-review.md](2026-09-17-progress-review.md) |
 | 2026-09-22 | Standup | [2026-09-22-standup.md](2026-09-22-standup.md) |
 | 2026-09-24 | Progress review | [2026-09-24-progress-review.md](2026-09-24-progress-review.md) |
+| 2026-09-29 | Standup | [2026-09-29-standup.md](2026-09-29-standup.md) |
 
 ## Archive
 
