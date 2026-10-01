@@ -14,6 +14,9 @@ import type { SessionUser } from "@/lib/types/api";
 export function DashboardShell({ user }: { user: SessionUser }) {
   const isStaff = isStaffRole(user.role);
   const ownPatientId = user.patientId;
+  // Access logs and chain verification both live on the journal's Access log
+  // tab. A patient has their own journal; staff reach it by opening a patient.
+  const accessLogHref = isStaff ? "/patients" : `/patients/${ownPatientId}`;
 
   return (
     <main className="flex flex-1 flex-col">
@@ -99,10 +102,16 @@ export function DashboardShell({ user }: { user: SessionUser }) {
             <ActivityIcon className="size-5 text-muted-foreground" aria-hidden="true" />
             <CardTitle>Access logs</CardTitle>
             <CardDescription>
-              Every journal access should appear in the blockchain-backed log.
+              Every journal access is recorded in the blockchain-backed audit chain.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">Waiting for task 15.</CardContent>
+          <CardContent>
+            <Button asChild variant="outline">
+              <Link href={accessLogHref}>
+                {isStaff ? "Open a patient to review" : "Review my access log"}
+              </Link>
+            </Button>
+          </CardContent>
         </Card>
 
         <Card>
@@ -110,11 +119,11 @@ export function DashboardShell({ user }: { user: SessionUser }) {
             <ShieldCheckIcon className="size-5 text-muted-foreground" aria-hidden="true" />
             <CardTitle>Verification</CardTitle>
             <CardDescription>
-              Verification badge placeholder for the blockchain audit state.
+              The audit chain is hash-linked, so any tampered entry breaks verification.
             </CardDescription>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            No chain data loaded yet.
+            The verified/unverified state is shown on the Access log tab.
           </CardContent>
         </Card>
       </section>

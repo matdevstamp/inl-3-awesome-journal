@@ -20,6 +20,11 @@ vi.mock("@/lib/blockchain/access-log-service", () => ({
   getAccessLogBlockchain: () => getAccessLogBlockchain(),
 }));
 
+const findMany = vi.fn();
+vi.mock("@/lib/prisma", () => ({
+  prisma: { user: { findMany: (...args: unknown[]) => findMany(...args) } },
+}));
+
 const { GET } = await import("@/app/api/access-log/route");
 const { signSessionToken } = await import("@/lib/auth");
 import { makeSessionUser } from "@/test-utils/session";
@@ -45,6 +50,7 @@ beforeEach(() => {
     chain: logs.map((data) => ({ data })),
     isValid: () => true,
   });
+  findMany.mockReset().mockResolvedValue([]);
 });
 
 describe("GET /api/access-log", () => {
@@ -104,6 +110,23 @@ describe("GET /api/access-log", () => {
     expect(response.status).toBe(200);
     expect((await response.json()).data.accessLogs).toEqual(logs);
     consoleWarn.mockRestore();
+  });
+
+  it("resolves actor names from SQL without putting them in the chain", async () => {
+    authenticate(user("doctor"));
+    findMany.mockResolvedValue([{ id: 1, username: "dr_test", role: "doctor" }]);
+
+    const body = (await (await GET()).json()) as {
+      data: { accessLogs: typeof logs; actors: Record<string, { username: string; role: string }> };
+    };
+
+    expect(body.data.actors).toEqual({ "1": { username: "dr_test", role: "doctor" } });
+    // The chain entries stay untouched — names are joined at read time.
+    expect(body.data.accessLogs).toEqual(logs);
+    expect(findMany).toHaveBeenCalledWith({
+      where: { id: { in: [1, 4] } },
+      select: { id: true, username: true, role: true },
+    });
   });
 
   it("reports chainValid false instead of failing when the chain is broken", async () => {
