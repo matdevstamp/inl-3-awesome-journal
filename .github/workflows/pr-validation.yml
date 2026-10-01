@@ -99,6 +99,17 @@ jobs:
           node-version: "22"
           cache: "npm"
       - run: npm ci
+      # Fast signal first: Vitest needs no database or browser, and its 70%
+      # coverage gate fails the job before the expensive Playwright setup.
+      - name: Run unit tests with coverage gate
+        run: npm run test:unit:coverage
+      - name: Upload unit coverage report on failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: unit-coverage
+          path: coverage/
+          retention-days: 30
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
       - name: Apply migrations and seed
@@ -113,7 +124,7 @@ jobs:
           name: next-build
           path: .next
       - name: Run e2e tests (both servers)
-        run: npm run test
+        run: npm run test:e2e
       - name: Upload Playwright report on failure
         uses: actions/upload-artifact@v4
         if: failure()

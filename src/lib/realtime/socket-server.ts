@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
 import { createServer } from "node:http";
-import { isStaffRole } from "@/lib/patients/mock-patients";
+import { isStaffRole } from "@/lib/auth/permissions";
 
 import { verifySessionToken } from "@/lib/auth";
 import type { SessionUser } from "@/lib/types/api";
