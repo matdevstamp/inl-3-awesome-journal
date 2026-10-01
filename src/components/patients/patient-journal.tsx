@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { io } from "socket.io-client";
 import Link from "next/link";
 import {
   ActivityIcon,
@@ -10,7 +11,6 @@ import {
   NotebookPenIcon,
 } from "lucide-react";
 
-import { getMockUserDisplayName, mockSessionHeaders } from "@/components/auth/mock-auth";
 import { RoleBadge } from "@/components/common/role-badge";
 import { PatientNotesPanel } from "@/components/patients/patient-notes-panel";
 import { Badge } from "@/components/ui/badge";
@@ -19,15 +19,88 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { apiRequest } from "@/lib/api/client";
-import type { JournalNotePreview, PatientJournalResponse, SessionUser } from "@/lib/types/api";
+import { roleLabel } from "@/components/auth/mock-auth";
+import type {
+  AccessLogActorMap,
+  JournalNotePreview,
+  NoteMutationResponse,
+  NoteVisibility,
+  PatientJournalResponse,
+  SessionUser,
+} from "@/lib/types/api";
 import type { BlockchainAccessLog } from "@/lib/blockchain/access-log";
 
 export function PatientJournal({ patientId, user }: { patientId: string; user: SessionUser }) {
   const [journal, setJournal] = useState<PatientJournalResponse | null>(null);
   const [blockchainAccessLogs, setBlockchainAccessLogs] = useState<BlockchainAccessLog[]>([]);
+  const [actors, setActors] = useState<AccessLogActorMap>({});
   const [chainValid, setChainValid] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [socketConnected, setSocketConnected] = useState(false);
+  const [socketError, setSocketError] = useState<string | null>(null);
+  useEffect(() => {
+    const socketPort =
+      process.env.NEXT_PUBLIC_SOCKET_PORT ?? String(Number(window.location.port || "3000") + 1000);
+
+    const socket = io(`${window.location.protocol}//${window.location.hostname}:${socketPort}`, {
+      reconnection: true,
+      reconnectionAttempts: 5,
+      withCredentials: true,
+    });
+
+    function joinPatientRoom() {
+      setSocketConnected(true);
+      setSocketError(null);
+      socket.emit("join-patient", Number(patientId));
+    }
+
+    socket.on("connect", joinPatientRoom);
+
+    socket.on("disconnect", () => {
+      setSocketConnected(false);
+    });
+
+    socket.on("note-created", ({ note }: { note: JournalNotePreview }) => {
+      setJournal((currentJournal) => {
+        if (!currentJournal) return currentJournal;
+
+        const alreadyExists = currentJournal.notes.some(
+          (existingNote) => existingNote.id === note.id,
+        );
+
+        if (alreadyExists) return currentJournal;
+
+        return {
+          ...currentJournal,
+          notes: [note, ...currentJournal.notes],
+        };
+      });
+    });
+    socket.on("access-log-created", ({ accessLog }: { accessLog: BlockchainAccessLog }) => {
+      setBlockchainAccessLogs((currentLogs) => {
+        const alreadyExists = currentLogs.some((log) => log.eventId === accessLog.eventId);
+
+        if (alreadyExists) {
+          return currentLogs;
+        }
+
+        return [accessLog, ...currentLogs];
+      });
+    });
+    socket.on("socket-error", ({ message }: { code: string; message: string }) => {
+      console.error("[socket-error]", message);
+      setSocketError(message);
+    });
+
+    socket.on("connect_error", (connectError) => {
+      console.error("[socket] connection error:", connectError.message);
+      setSocketError(`Realtime connection error: ${connectError.message}`);
+    });
+    return () => {
+      socket.disconnect();
+    };
+  }, [patientId]);
 
   useEffect(() => {
     let isMounted = true;
@@ -37,14 +110,14 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
         const data = await apiRequest<PatientJournalResponse>(`/api/patients/${patientId}`);
         const accessLogData = await apiRequest<{
           accessLogs: BlockchainAccessLog[];
+          actors: AccessLogActorMap;
           chainValid: boolean;
           viewerUserId: number;
-        }>("/api/access-log", {
-          headers: mockSessionHeaders(user),
-        });
+        }>("/api/access-log");
         if (isMounted) {
           setJournal(data);
           setBlockchainAccessLogs(accessLogData.accessLogs);
+          setActors(accessLogData.actors ?? {});
           setChainValid(accessLogData.chainValid);
           setError(null);
         }
@@ -95,10 +168,48 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
   }
 
   const title = journal.isOwnJournal ? "My health record" : journal.patient.name;
+  async function handleCreateNote(text: string, visibility: NoteVisibility) {
+    if (!journal) {
+      return;
+    }
 
-  function handleCreateNote(note: JournalNotePreview) {
+    const record = journal.records[0];
+
+    if (!record) {
+      return;
+    }
+
+    const result = await apiRequest<NoteMutationResponse>("/api/notes", {
+      method: "POST",
+      body: JSON.stringify({
+        recordId: record.id,
+        text,
+        visibility,
+      }),
+    });
+
+    const note: JournalNotePreview = {
+      id: result.note.id,
+      createdAt: result.note.createdAt,
+      author: result.note.author,
+      authorUserId: result.note.authorUserId,
+      visibility: result.note.visibility,
+      text: result.note.text,
+    };
+
     setJournal((currentJournal) => {
       if (!currentJournal) {
+        return currentJournal;
+      }
+
+      // The room broadcast usually beats the POST response (it fires mid-
+      // request), so the socket handler has already added this note. Skip
+      // when the id is already in the list, or the author sees duplicates.
+      const alreadyExists = currentJournal.notes.some(
+        (existingNote) => existingNote.id === note.id,
+      );
+
+      if (alreadyExists) {
         return currentJournal;
       }
 
@@ -114,6 +225,18 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
       <section className="border-b bg-background px-4 py-6 md:px-6">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-3">
           <RoleBadge role={journal.viewerRole} />
+          <div className="flex items-center gap-2 text-sm">
+            <span
+              className={`size-2 rounded-full ${socketConnected ? "bg-green-500" : "bg-red-500"}`}
+              aria-hidden="true"
+            />
+            <span className="text-muted-foreground">
+              Realtime {socketConnected ? "connected" : "disconnected"}
+            </span>
+          </div>
+          <Badge variant={socketConnected ? "secondary" : "outline"}>
+            {socketConnected ? "Live connected" : (socketError ?? "Reconnecting...")}
+          </Badge>
           <div>
             <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{title}</h1>
             <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
@@ -161,7 +284,9 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
               <ActivityIcon className="size-5" aria-hidden="true" />
               <span>
                 <span className="block font-medium">Access log</span>
-                <span className="block text-xs opacity-75">{journal.accessLogs.length} events</span>
+                <span className="block text-xs opacity-75">
+                  {blockchainAccessLogs.length} events
+                </span>
               </span>
             </TabsTrigger>
           </TabsList>
@@ -172,7 +297,7 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
                 <FileTextIcon className="size-5 text-muted-foreground" aria-hidden="true" />
                 <CardTitle>Medical records</CardTitle>
                 <CardDescription>
-                  Medical information is loaded from SQL in the final flow.
+                  Medical records are read from SQL and never written to the blockchain.
                 </CardDescription>
               </CardHeader>
               <CardContent className="grid gap-3">
@@ -191,11 +316,7 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
           </TabsContent>
 
           <TabsContent value="notes">
-            <PatientNotesPanel
-              authorName={getMockUserDisplayName(user)}
-              journal={journal}
-              onCreateNote={handleCreateNote}
-            />
+            <PatientNotesPanel journal={journal} onCreateNote={handleCreateNote} />
           </TabsContent>
 
           <TabsContent value="access">
@@ -208,25 +329,37 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
                 </CardDescription>
               </CardHeader>
               <CardContent className="grid gap-3">
-                {blockchainAccessLogs.map((log) => (
-                  <div
-                    key={log.eventId}
-                    className="flex flex-col gap-2 rounded-lg border p-3 md:flex-row md:items-center md:justify-between"
-                  >
-                    <div>
-                      <p className="font-medium">User {log.userId}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {log.action.replace("_", " ")} - {log.timestamp}
-                      </p>
-                      <p className="text-xs text-muted-foreground">Server: {log.serverId}</p>
-                    </div>
+                {blockchainAccessLogs.map((log) => {
+                  const actor = actors[String(log.userId)];
 
-                    <Badge variant="secondary" className="w-fit">
-                      <CheckCircle2Icon className="size-3" aria-hidden="true" />
-                      {chainValid ? "Blockchain verified" : "Blockchain verification failed"}
-                    </Badge>
-                  </div>
-                ))}
+                  return (
+                    <div
+                      key={log.eventId}
+                      data-testid="access-log-row"
+                      className="flex flex-col gap-2 rounded-lg border p-3 md:flex-row md:items-center md:justify-between"
+                    >
+                      <div>
+                        <p className="font-medium">
+                          {actor?.username ?? `User ${log.userId}`}
+                          {actor ? (
+                            <span className="ml-2 font-normal text-muted-foreground">
+                              {roleLabel(actor.role)}
+                            </span>
+                          ) : null}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {log.action.replace("_", " ")} - {log.timestamp}
+                        </p>
+                        <p className="text-xs text-muted-foreground">Server: {log.serverId}</p>
+                      </div>
+
+                      <Badge variant="secondary" className="w-fit">
+                        <CheckCircle2Icon className="size-3" aria-hidden="true" />
+                        {chainValid ? "Blockchain verified" : "Blockchain verification failed"}
+                      </Badge>
+                    </div>
+                  );
+                })}
               </CardContent>
             </Card>
           </TabsContent>

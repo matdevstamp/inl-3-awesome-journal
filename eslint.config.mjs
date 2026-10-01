@@ -13,11 +13,15 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generated test/coverage reports (task 19).
+    "coverage/**",
+    "playwright-report/**",
+    "test-results/**",
     // Node scripts that intentionally use CommonJS require()
     "prisma/**/*.js",
   ]),
   {
-    files: ["e2e/**"],
+    files: ["e2e/**", "src/**/*.test.ts", "src/test-utils/**"],
     rules: {
       // Playwright fixture callbacks are named `use` by convention; this is
       // test-runner code, not React, so the hook rules don't apply here.

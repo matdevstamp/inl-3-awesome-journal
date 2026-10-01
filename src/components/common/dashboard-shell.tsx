@@ -1,59 +1,22 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ActivityIcon, FileTextIcon, SearchIcon, ShieldCheckIcon } from "lucide-react";
 
-import { roleLabel, useMockSession } from "@/components/auth/mock-auth";
+import { roleLabel } from "@/components/auth/mock-auth";
 import { AppHeader } from "@/components/common/app-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { patientIdForUser } from "@/lib/patients/mock-patients";
+import { isStaffRole } from "@/lib/auth/permissions";
+import type { SessionUser } from "@/lib/types/api";
 
-const staffRoles = new Set(["doctor", "nurse", "ambulance"]);
-
-export function DashboardShell() {
-  const router = useRouter();
-  const user = useMockSession();
-
-  useEffect(() => {
-    if (user === undefined) {
-      return;
-    }
-
-    if (user === null) {
-      router.push("/login");
-      return;
-    }
-
-    if (user.role === "unauthorized") {
-      router.push("/access-denied");
-    }
-  }, [router, user]);
-
-  if (user === undefined || user === null) {
-    return (
-      <DashboardLoading>
-        <Skeleton className="h-32" />
-        <Skeleton className="h-32" />
-        <Skeleton className="h-32" />
-      </DashboardLoading>
-    );
-  }
-
-  if (user.role === "unauthorized") {
-    return (
-      <DashboardLoading>
-        <Skeleton className="h-32 md:col-span-3" />
-      </DashboardLoading>
-    );
-  }
-
-  const isStaff = staffRoles.has(user.role);
-  const ownPatientId = patientIdForUser(user);
+export function DashboardShell({ user }: { user: SessionUser }) {
+  const isStaff = isStaffRole(user.role);
+  const ownPatientId = user.patientId;
+  // Access logs and chain verification both live on the journal's Access log
+  // tab. A patient has their own journal; staff reach it by opening a patient.
+  const accessLogHref = isStaff ? "/patients" : `/patients/${ownPatientId}`;
 
   return (
     <main className="flex flex-1 flex-col">
@@ -81,8 +44,8 @@ export function DashboardShell() {
                 {isStaff ? "Care staff dashboard" : "My health record"}
               </h1>
               <p className="mt-5 max-w-[500px] text-base leading-7 text-primary-foreground/82 md:text-lg">
-                Signed in as {roleLabel(user.role)}. This mock dashboard lets the frontend move
-                while backend authentication and patient data are being finished.
+                Signed in as {roleLabel(user.role)}. Access to journal features is based on your
+                authenticated role.
               </p>
             </div>
           </div>
@@ -108,7 +71,7 @@ export function DashboardShell() {
               <SearchIcon className="size-5 text-muted-foreground" aria-hidden="true" />
               <CardTitle>Patient search</CardTitle>
               <CardDescription>
-                Search by patient name once the patient API is ready.
+                Search patients by name, date of birth, or personal number.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -122,7 +85,7 @@ export function DashboardShell() {
             <CardHeader>
               <FileTextIcon className="size-5 text-muted-foreground" aria-hidden="true" />
               <CardTitle>Own journal</CardTitle>
-              <CardDescription>Patients go directly to their own journal view.</CardDescription>
+              <CardDescription>Review your records, notes, and access history.</CardDescription>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               <Button asChild>
@@ -139,10 +102,16 @@ export function DashboardShell() {
             <ActivityIcon className="size-5 text-muted-foreground" aria-hidden="true" />
             <CardTitle>Access logs</CardTitle>
             <CardDescription>
-              Every journal access should appear in the blockchain-backed log.
+              Every journal access is recorded in the blockchain-backed audit chain.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">Waiting for task 15.</CardContent>
+          <CardContent>
+            <Button asChild variant="outline">
+              <Link href={accessLogHref}>
+                {isStaff ? "Open a patient to review" : "Review my access log"}
+              </Link>
+            </Button>
+          </CardContent>
         </Card>
 
         <Card>
@@ -150,23 +119,14 @@ export function DashboardShell() {
             <ShieldCheckIcon className="size-5 text-muted-foreground" aria-hidden="true" />
             <CardTitle>Verification</CardTitle>
             <CardDescription>
-              Verification badge placeholder for the blockchain audit state.
+              The audit chain is hash-linked, so any tampered entry breaks verification.
             </CardDescription>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            No chain data loaded yet.
+            The verified/unverified state is shown on the Access log tab.
           </CardContent>
         </Card>
       </section>
-    </main>
-  );
-}
-
-function DashboardLoading({ children }: { children: ReactNode }) {
-  return (
-    <main className="flex flex-1 flex-col">
-      <AppHeader />
-      <section className="grid gap-4 p-4 md:grid-cols-3 md:p-6">{children}</section>
     </main>
   );
 }

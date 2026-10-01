@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P0 - Foundation
 - **Deadline:** 2026-09-07
-- **Status:** TODO
+- **Status:** DONE
 - **Assignee:** Team (Gate 1 — Matias coordinates)
 - **Tags:** graphify, architecture, documentation, mermaid, required, gate:1-decisions
 - **Dependencies:** 01-project-setup-group-contract.md, 02-database-choice-discussion.md

@@ -1,13 +1,13 @@
-import { AuthError } from "@/lib/auth";
+import { AuthError, requirePermission } from "@/lib/auth";
 import { fail, ok } from "@/lib/api/http";
-import { requireRoleOrMock } from "@/lib/api/mock-auth";
 import { getAccessLogBlockchain } from "@/lib/blockchain/access-log-service";
-import { patientIdForUser } from "@/lib/patients/mock-patients";
 import { syncServerPeer } from "@/app/api/p2p/server-peer";
+import { prisma } from "@/lib/prisma";
+import type { AccessLogActorMap } from "@/lib/types/api";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const user = await requireRoleOrMock(request, "doctor", "nurse", "ambulance", "patient");
+    const user = await requirePermission("readAccessLogs");
     try {
       await syncServerPeer();
     } catch (error) {
@@ -19,11 +19,24 @@ export async function GET(request: Request) {
 
     const accessLogs =
       user.role === "patient"
-        ? allAccessLogs.filter((log) => log.patientId === patientIdForUser(user))
+        ? allAccessLogs.filter((log) => log.patientId === user.patientId)
         : allAccessLogs;
+
+    // The chain stores only a userId (it must not carry personal data), so the
+    // display name is resolved from SQL here, at read time.
+    const actorIds = [...new Set(accessLogs.map((log) => log.userId))];
+    const actors = await prisma.user.findMany({
+      where: { id: { in: actorIds } },
+      select: { id: true, username: true, role: true },
+    });
+
+    const actorMap: AccessLogActorMap = Object.fromEntries(
+      actors.map((actor) => [String(actor.id), { username: actor.username, role: actor.role }]),
+    );
 
     return ok({
       accessLogs,
+      actors: actorMap,
       chainValid: blockchain.isValid(),
       viewerUserId: user.id,
     });

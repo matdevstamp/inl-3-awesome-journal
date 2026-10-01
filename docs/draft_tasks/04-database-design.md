@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-07
-- **Status:** In review
+- **Status:** DONE
 - **Assignee:** matdevstamp
 - **Tags:** database, backend, required, gate:2-scaffold
 - **Dependencies:** 01-project-setup-group-contract.md, 02-database-choice-discussion.md, 03-graphify-architecture-artifacts.md
@@ -155,18 +155,18 @@ CREATE INDEX idx_access_logs_patient ON access_logs(patient_id);
 - [x] Create seed data script with test users and patients
 - [x] Add the `generator erd` block (above) to `prisma/schema.prisma` so `npx prisma generate` emits `docs/diagrams/data-model.md`
 - [x] Document database structure in README (link diagram + migrations)
-- [ ] Test CRUD operations for all entities
+- [x] Test CRUD operations for all entities
 - [x] Verify GDPR compliance (no medical records on blockchain)
 
 ## Done Criteria
 
-- [ ] All tables created with proper relationships
-- [ ] Indexes added for search operations
-- [ ] Seed data script works correctly
-- [ ] `data-model.md` regenerates automatically via `npx prisma generate` and renders on GitHub
-- [ ] Database documentation is complete
-- [ ] All team members can connect to database
-- [ ] CRUD operations tested for all entities
+- [x] All tables created with proper relationships
+- [x] Indexes added for search operations
+- [x] Seed data script works correctly
+- [x] `data-model.md` regenerates automatically via `npx prisma generate` and renders on GitHub
+- [x] Database documentation is complete
+- [x] All team members can connect to database
+- [x] CRUD operations tested for all entities
 
 ## Notes
 
@@ -180,5 +180,5 @@ CREATE INDEX idx_access_logs_patient ON access_logs(patient_id);
 
 - [x] PostgreSQL vs SQLite? → **PostgreSQL** (see task 02-database-choice-discussion.md)
 - [x] Prisma as single source of truth? → yes; DBML dropped
-- [ ] How to handle database seeding?
-- [ ] Do we need indexes for this project scale?
+- [x] How to handle database seeding?
+- [x] Do we need indexes for this project scale?

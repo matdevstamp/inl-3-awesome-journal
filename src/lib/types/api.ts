@@ -4,8 +4,15 @@
  * no OpenAPI/generated client; both sides live in one TS codebase).
  */
 
-/** The five supported access roles. */
-export const ROLES = ["doctor", "nurse", "ambulance", "patient", "unauthorized"] as const;
+/** The supported access roles. */
+export const ROLES = [
+  "doctor",
+  "nurse",
+  "ambulance",
+  "primary_care",
+  "patient",
+  "unauthorized",
+] as const;
 export type Role = (typeof ROLES)[number];
 
 /** Note visibility levels. */
@@ -18,6 +25,7 @@ export interface SessionUser {
   username: string;
   role: Role;
   organizationId: number | null;
+  patientId: number | null;
 }
 
 /** Standard envelope for every JSON API response. */
@@ -132,6 +140,13 @@ export interface NoteMutationResponse {
 export interface NoteDeleteResponse {
   deletedId: number;
 }
+
+/**
+ * userId → display name for access-log events. Resolved from SQL at read time
+ * because the chain itself must not carry personal data. Keyed by string since
+ * it arrives as a JSON object.
+ */
+export type AccessLogActorMap = Record<string, { username: string; role: Role }>;
 
 /** Access event preview for patient and staff views. */
 export interface AccessLogPreview {

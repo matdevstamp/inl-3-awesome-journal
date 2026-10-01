@@ -2,11 +2,12 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-29
-- **Status:** TODO
-- **Assignee:** Team
+- **Deadline:** 2026-10-01
+- **Status:** IN PROGRESS
+- **Assignee:** Kassim10
 - **Tags:** presentation, demo, required, gate:5-delivery
 - **Dependencies:** 19-testing.md, 09-playwright-e2e-testing.md, 20-documentation.md
+- **GitHub Issue:** #31 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/31)
 - **Estimated Effort:** 6h
 
 ## Requirements

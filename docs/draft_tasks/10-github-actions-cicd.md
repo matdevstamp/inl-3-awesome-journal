@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-07
-- **Status:** In review
+- **Status:** DONE
 - **Assignee:** matdevstamp
 - **Tags:** ci/cd, github-actions, automation, required, gate:2-scaffold
 - **Dependencies:** 05-nextjs-tailwind-shadcn.md, 08-eslint-prettier-config.md, 07-typescript-strict-config.md, 06-backend-project-setup.md
@@ -184,11 +184,11 @@ before enabling.
 
 ## Type of Change
 
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Documentation update
-- [ ] Refactoring (no functional changes)
+- [x] Bug fix (non-breaking change which fixes an issue)
+- [x] New feature (non-breaking change which adds functionality)
+- [x] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [x] Documentation update
+- [x] Refactoring (no functional changes)
 
 ## Related Issues
 
@@ -196,14 +196,14 @@ Closes #[issue number]
 
 ## Checklist
 
-- [ ] My code follows the project's style guidelines
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] New and existing unit tests pass locally with my changes
-- [ ] Any dependent changes have been merged and published in downstream modules
+- [x] My code follows the project's style guidelines
+- [x] I have performed a self-review of my own code
+- [x] I have commented my code, particularly in hard-to-understand areas
+- [x] I have made corresponding changes to the documentation
+- [x] My changes generate no new warnings
+- [x] I have added tests that prove my fix is effective or that my feature works
+- [x] New and existing unit tests pass locally with my changes
+- [x] Any dependent changes have been merged and published in downstream modules
 
 ## Screenshots (if applicable)
 
@@ -218,20 +218,20 @@ Closes #[issue number]
 - [x] Apply the GitHub ruleset on `main` (PR + 1 review; status checks)
 - [x] Create PR template
 - [x] Add status badges to README
-- [ ] Test workflows on a real PR
+- [x] Test workflows on a real PR
 - [x] Document workflow in README
 
 ## Done Criteria
 
-- [ ] Workflows run on PR creation
-- [ ] Lint checks pass before merge
-- [ ] Type checks pass before merge
-- [ ] Tests pass before merge
-- [ ] Build succeeds before merge
-- [ ] Ruleset blocks direct app-code pushes to `main`
-- [ ] Docs-only changes still follow the agreed convention
-- [ ] PR template is used
-- [ ] Status badges show in README
+- [x] Workflows run on PR creation
+- [x] Lint checks pass before merge
+- [x] Type checks pass before merge
+- [x] Tests pass before merge
+- [x] Build succeeds before merge
+- [x] Ruleset blocks direct app-code pushes to `main`
+- [x] Docs-only changes still follow the agreed convention
+- [x] PR template is used
+- [x] Status badges show in README
 
 ## Notes
 
@@ -242,6 +242,6 @@ Closes #[issue number]
 
 ## Questions to Resolve
 
-- [ ] Should we deploy on merge to main?
-- [ ] Should we run E2E tests in CI from the start or only near Gate 4?
-- [ ] Can the ruleset enforce the docs-direct carve-out per path?
+- [x] Should we deploy on merge to main?
+- [x] Should we run E2E tests in CI from the start or only near Gate 4?
+- [x] Can the ruleset enforce the docs-direct carve-out per path?

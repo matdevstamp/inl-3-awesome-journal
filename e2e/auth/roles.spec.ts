@@ -4,6 +4,7 @@ const users = [
   { username: "dr_test", role: "doctor" },
   { username: "nurse_test", role: "nurse" },
   { username: "amb_test", role: "ambulance" },
+  { username: "vc_test", role: "primary_care" },
   { username: "patient_test", role: "patient" },
   { username: "unauth_test", role: "unauthorized" },
 ] as const;
