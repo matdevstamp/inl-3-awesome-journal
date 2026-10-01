@@ -33,3 +33,9 @@ yarn-error.log*
 playwright-report/
 test-results/
 blob-report/
+
+# ---- Demo recording ----
+# Only the harness is tracked: the scripts, the scene scripts and the caption
+# text. Everything under demo/out is build output — regenerate it with
+# `npm run demo`, which needs the Edge TTS voices and the two local servers.
+demo/out/

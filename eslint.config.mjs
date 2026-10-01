@@ -19,6 +19,9 @@ const eslintConfig = defineConfig([
     "test-results/**",
     // Node scripts that intentionally use CommonJS require()
     "prisma/**/*.js",
+    // Bundles the demo harness builds before running (see demo:narrate,
+    // demo:compose). Generated, and already excluded by .gitignore.
+    "demo/out/**",
   ]),
   {
     files: ["e2e/**", "src/**/*.test.ts", "src/test-utils/**"],
