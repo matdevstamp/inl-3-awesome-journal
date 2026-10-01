@@ -13,6 +13,9 @@ const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
   doctor: ["searchPatients", "readPatient", "createNote", "readAccessLogs"],
   nurse: ["searchPatients", "readPatient", "createNote", "readAccessLogs"],
   ambulance: ["searchPatients", "readPatient", "createNote", "readAccessLogs"],
+  // Primary-care staff carry the same clinical permissions as hospital staff.
+  // The clinic itself is the organization they belong to, not a privilege tier.
+  primary_care: ["searchPatients", "readPatient", "createNote", "readAccessLogs"],
   patient: ["readPatient", "readAccessLogs"],
   unauthorized: [],
 };
@@ -27,5 +30,5 @@ export function canAccessPatient(user: SessionUser, patientId: number): boolean 
 }
 
 export function isStaffRole(role: Role): boolean {
-  return role === "doctor" || role === "nurse" || role === "ambulance";
+  return role === "doctor" || role === "nurse" || role === "ambulance" || role === "primary_care";
 }
