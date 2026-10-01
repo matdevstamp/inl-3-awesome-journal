@@ -2,7 +2,7 @@
 
 _Auto-generated from the draft tasks in `docs/draft_tasks/`. Do not edit by hand._
 
-Open in **[Mermaid Live](https://mermaid.live/edit#pako:eNqVldtO20AQhl9lZAkEKiE-BEi4C3GASASlJLRqxc1ib-wBZ9faXRMixFP0tu_R-z5Kn6TjQw5USSi-iTfj_eaf0-6LFciQW6dWxIQxdwLoMWgSDgMlH3hgYIQTnqDgpS1khp9LNWEG4Bs9tX6_5vuljT2jntt27mEnvBOlQRMHpYAL2gxOzecBalrr0mo7C19DbrIUduFCSfrtSGEUo7___PwBpxBKwQ_Atd3jmt2q2Y0DcMKK4ILPDLtnmkMnlhhw8FEHmc69vL_bI38sjXE8g7YKYjQkJVOcFgbH5F-vR5wsEW8CdGvDgI3HMpnzG0t1PtcYCYqwjPQ9rn0E1_zZHD5o-AQjhskURQid4ZCWOmZhIOoZ_i_rGM5Y8MgJ8Dbde3MXNzIj-ZdMhAlXuhCpniiZev99-AmMZikfBgpT4hqFhKf6jTHKFDMby7CKaEJ3eIXCUGwDxY1Brj6KaMEgYbOpwig20HW7MOLaoIjW7zym92qnY8MFmsvsHtpFJTV0evWOD1-lehwncvqxDvBq55zlLVR1uOMsUt8e9Cix7czEXBgMtsTVWlHnwrmiYcgBtz1qoieeyHRCBNhreTvw-xe4zbpn5y-hpHj3CUeNi0__AL050IMBuc4BX5BPi1Izav21SpzGipIG9HlIuhO4loZrmKKJiaHxHhM0s3JmZQJ7rlPoOqq7ja2yXHeZROcIzhIZPAYxQ0GVoNbTcCWjaFMJXXtF2jEM3AHNi5lS0aA3SROep2hzild3v6lfo9ajZEdl11X0E7jV1JA3MuH5aFTiFuHaRbR23S2KYGQo1wbrrehtwpBi5eYQJZwpSdPMymZdwhpbYc0N7XdEJ2xCn6pZ5am1mINd-JyxolBtrWmsBB2VS3cnW92tNCRF6csgW6Z3F266bb_fpX4sYF7da7wHm2t38_Of6wWLFimrJn6pzduG86pKWgdWpDC0To3K-IE14XQZ5Uvr5ZVMKRPfpZzMrXTHRLF1OmaJplWW5lebj4zKXn3y-heaYDD6)** (pako/zlib-compressed, verified to round-trip).
+Open in **[Mermaid Live](https://mermaid.live/edit#pako:eNqVVdtO20AQ_ZWRJVBQCbHXISS8hThAJEApgVateFnsjT3g7Fq7a0KE-Iq-9j_63k_pl3QcOxcqIMUv8Wa8Z86cM7P75IQqEs6hE3Np7Y0EeizaVMBQqzsRWrjCiUhRijIWcSuOlZ5wC_CNnvr5eT0Iyhh_RLOIbd3CVnQjy4AhHFQSTmgzePVAhGhobcqo6y1zjYTNM9iGE63ot6ek1Zz-_vPzBxxCpKTYBeayVt3t1N3mLnhRhcAg4JbfciOglygMBQRowtwUWTbv9ikfzxIcz6CrwwQtUcm1oIXFMeU3r0McrCBeFMjqo5CPxypd4DdX7AJhMJZUYVnpJlx3Hy7Eo927M_AJrjimU5QR9EYjWpqER6Fs5Pi_WC044uG9IICXctcWKS5VTvRPuYxSoc2cpH4gMc3OZvADuJplYhRqzAjXaiR48m-Mca65fdOGdYg29EdnKC3VNtTCWhT6oxAdGKZ8NtUYJxb6rA9XwliU8es7W_Re7fRcOEF7mt9Cd-6kgd6g0Qvgq9L341RNP9YBfv1Y8KKFqg73vKX03eGAhO3mNhHSYvhOXZ01dgyONQ1DAXA9oCZ6EKnKJoQAtY6_Bb9_AWs3fLd4iRTVu0Nw1Lj48A-gvwD0YUipC4AvKKZzqzm1_qtMvOYakyaci4h4p3ChrDAwRZsQhsFbTNHOyplVKdSYN-e132DNd2kxthLR24ejVIX3YcJRkhPUegbOVBy_ZSFz16i1YMiGNC92SqbBYJKlopDobYnXd7_wr1kfkNhx2XUV-gFcG2rIS5WKYjQqcsty2-68XK_VYO_bwPw1ym0YUbnC7qGCI61ooHnZr7V2u7TV26hf-40m3KdzNqVP9axK1llOwzZ8zvncrq4xNFySDsxXBWIrrlRWoMJ8peg2XPa7wXkfah6bc202_A1UOyuqrDj0hVmi0SLj1ZjXSi3dBvPfxfMr_5xdJ9YYOYdW52LXmQi6goql8_RMoYzL70pNFlG6WeLEORzz1NAqz4oLLUBOZlefPP8FwuwuEQ)** (pako/zlib-compressed, verified to round-trip).
 
 Regenerate whenever task metadata changes:
 
@@ -50,10 +50,10 @@ gantt
     15 Blockchain Access Logging ✓ : done, 2026-09-20, 2d
     16 P2P Network Implementation ✓ : done, 2026-09-20, 2d
     section Gate 4-Integration
-    17 User Roles & Access Control (0% · 0/20 · todo) : active, 2026-09-23, 2d
-    18 Socket.io Broadcasting (0% · 0/24 · todo) : active, 2026-09-28, 1d
+    17 User Roles & Access Control (80% · 16/20 · doing) : active, 2026-09-23, 2d
+    18 Socket.io Broadcasting (88% · 21/24 · doing) : active, 2026-09-28, 1d
     section Gate 5-Delivery
-    19 Testing & Quality Assurance (0% · 0/27 · todo) : active, 2026-09-29, 2d
-    20 Documentation & README (9% · 3/34 · todo) : active, 2026-09-29, 1d
-    21 Presentation Preparation (0% · 0/23 · todo) : active, 2026-09-30, 2d
+    19 Testing & Quality Assurance ✓ : done, 2026-09-22, 2d
+    20 Documentation & README (12% · 4/34 · doing) : active, 2026-09-29, 1d
+    21 Presentation Preparation (0% · 0/23 · doing) : active, 2026-09-30, 2d
 ```

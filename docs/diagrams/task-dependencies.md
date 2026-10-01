@@ -2,7 +2,7 @@
 
 _Auto-generated from the draft tasks in `docs/draft_tasks/`. Do not edit by hand._
 
-Open in **[Mermaid Live](https://mermaid.live/edit#pako:eNqFV91O40YUfpWjIBCoBDL-SZxUqhQIyyLtrlLCtlJLL8b2OJnFeKKZMWm02qfobd-j932UPknPJLaTHFzKDfI35zu_3xyGr51EpaIz6mS5WiULri08TB4LwJ_jY5ipXKbAtVYrGEO3-wNcjeAKUrEURWpAFYiexrlKnkQK8RrGZw11oqxFMJeFcNQL0CLnDrnoOidj4EWKrrgW9UlDvVa50mYEcy1EAalCD3__BXFeCpAFLLXCA2MclnKzQJdzzddgVargtFAWjMUyRFrlYsoYz5cLzDqRRqrC_PrYucWAwLqTGnrs_La1fugxPO4xmGr1RSQWZsKWSziBW63w97UqrOYI__PnH3scz3E8mHDLY24EXC-UTARMpElK4wIQe9_Z--gT85IZ9k0nC2kxXIntGGsrM4xhDkjYcFKPSXiWqTyty_G6swrZixS4SMEus4kwcl5gPdu6DtMKnXEIn8Tv9uKLge_ggct8JXFQ17MZfpoFT5PispSt7L5j9-GKoxqQctjA09rpvSox1_c4_Vxos0lEv2CzzBlxN3DuBvCwXopZouUSPVkt0SHOIJPzUnP7urGRI0VwM_sgC4sZT7WwVgr9JmnoSEOY5ny90nK-sHDj3cCDMFYW80Nb1kNb1oNbad-XMYwT587A9d3l9QR-VvrJXaP_mVsmuJtzI0O_-65C9uI4FTLWNHM8vcNWjUu7EIWVSUsVzGmQefBOo0Qd5fMdDvtF5Gr5jBw4HfrH7sp40aXf29wdhdWd7TlwomQ-TNG5I_wkxWozHo7iJLGcqlgAH0WKueTwSVlhYCXtAllGxjKXdr29KyqHU49tIoeXXtAa2MmOhXDl9giuILzj4yRxN_yDms9fj8DpjPVh6k1RqXaFTYe752UuXJmvG_O6_6gMMd8KoR5B0L3bgXuhnAbZAD4bVNC9yoXTa5VbU11vU1zv0tt01W2h_dqcIFmEixTnaC-kgiut8BLxrbZ25OA1-XXmqcjli9DrOu0QF9gW2Yvo1MyGjXxP4MeSb-YxNgb1X-Be2oUdtOTsOY1jNROVlLuensD9zXjy8QaFtCH7l37QRnbC9dz6FKbh4seSV1dvF9t_o2Rcw5s_N7haKeA3S5cCtUVALRrAp0BNCalFAwQV0G-W5H8Bg2YRUqC2iJrdRoHaYkh9DCmlASIKVD5Yj1jsgAEF-hSoqmWMUhilMBrWoxSPUjwaxW-2HQU8AjSUgFICSgkoJaSJhTSxsNlEFdCnFn0adkDDNoBPgYACdR4RtWiAPgU8CtQ-hjT1IfXRABEBavF7vWZ1VEAzWwrgViAWPnna7bw58uERe-NouNc-chTslUiOor3M29NIcm7MRGTbZ2Qm83x0lCYiTaJzg_v7SYyOwjCKvew8ca_O0RGLQ9FCdqu0YsdimMUNm4X9MOnV7F4aDDgj7M3LdEvONj8NOe7FIglrchj0xYBXh133tsWXN1-PQgj2PG4G56r5_hD02kC_DQzawLAN7LeBgzYwagOHLSA-nlrAtoqYt-07QdtKYkGraVtNrK0mvE5uSASM2sBhC4jXogVkNdg578y1TDsjq0tx3nkW-pm7z87Xb3i05MUvSj3Xp_hvxnzRGWU8N_hVLlOU9ERyfABUJt_-BSvs9Z0)** (pako/zlib-compressed, verified to round-trip).
+Open in **[Mermaid Live](https://mermaid.live/edit#pako:eNqFV91u2zYUfpUDFykcLI5FSrJlDxjgxGkboC28ON2ArbugJMpmo4gGSdUzij7Fbvceu9-j7El2aEuKzXCdbwJ_PN_5_XjMfOllMue9aa8o5TZbM2Xgfv6xAvycncFSliIHppTcwgwGgx_gagpXkPMNr3INskK0n5Yye-A5pDuYnXfUuTQGwVJU3FIvQfGSWeRyYJ3MgFU5umKKtycd9VqWUukprBTnFeQSPfz9F6RlzUFUsFESD7S2WM70Gl2uFNuBkbmEfiUNaINl8LzJRdcpnm_WmHUmtJCV_vVj7zUGBDKYt9DH3m8H6_uA4HFAYKHkJ54ZWHJTb-AlvFYS_17LyiiG8D9__nHEoZZDYc4MS5nmcL2WIuMwFzqrtQ3g2IfWPkSfmJcosG8qWwuD4Wpsx0wZUWAMfULChjv16IwVhSzzthw6WDbIUaTIRoqeMptzLVYV1nOo6zSt2BrH8J7_bi4_afgO7pkotwIHdb1c4le9ZnlWDWvhZY8sewRXDNWAlNMG9lund7LGXN_g9Euu9D4R9Rmbpc8dd2Prbgz3uw1fZkps0JNRAh3iDAqxqhUzzxubWFICN8u3ojKY8UJxYwRX3yRNLGkCi5Lttkqs1gZu6A3cc21EtTq1JQHakgBeC_OmTmGWWXcarm-H13P4WaoHe43-Z24FZ3bOnQzDwasGOYpjVUhI18zZ4hZbNavNmldGZJ4qiNUgofBKoUQt5cMtDvszL-XmETnQn4Rn9srQZBgG-7sjsbrzIwdWlCSEBTq3hJ8E3-7Hw1CcTiyrKhLBO55jLiW8l4Zr2AqzRpYWqSiF2R3uiiyhT8k-cjykkTewlR2J4cruEVxBeMdnWWZv-Fu5Wj0fgdUZGcGCLlCpZotNh9vHTcltmc8b87z_qAy-OgihHUE0uH0Cj0JZDZIxfNCooDtZcqvXJreuuiTYV0dGQ-rvq9UkSXCX4ijNpZBwpSTeI3aQVz9JDnMh_vY8zz_npfjM1a5NPsY1dkCOglpNk0kn4pfwY832U5lpjbegwu100lVqhY0FzGVWPzXyJdzdzObvbqBP6D7LaBh6Z0itXqndmlx3bPyyYc2N6x-6FAxp-K0icf3uf2ZwpbpA2C1bF2gtIteiA0IXaCmxa9EBUQOMuuX4X8C4W4Au0Fok3U5zgdZi4vqYuJQOSFyg8UECx-IJGLvAyAWaaglxKcSlEDcsdSnUpVA3SthtORegDtBRIpcSuZTIpcRuYrGbWNxtoAYYuRYjN-zYDdsBoQtELtDmkbgWHTByAeoCrY-Jm_rE9dEBiQO04qdBtywaoJutC-BicCxC50n35M2ST4_IN44mR-1zjqKjEp2j5ChzfxpZybSe8-LwfCxEWU5f5BnPs-RC495-4NMXcZyktLjI7Gtz-oKkMfeQ7fJs2CmfFGnHJvEozoKWHeTRmBGHvX-RHsjF_tOR0yDlWdyS42jEx6w5HNg3Lb642W4aQ3TkcT84W833pyD1gaEPjHxg7ANHPnDsAxMfOPGA-GjygL6KCD303UF9JZHIa-qrifhqImMvP_Givqpo4DOlpEN7F72VEnlvalTNL3qPXD0y-7X35SsebVj1i5SP7Sn-i7Fa96YFKzV-qzc5ynouGP7sNyZf_wVUB_Tt)** (pako/zlib-compressed, verified to round-trip).
 
 Regenerate whenever task metadata changes:
 
@@ -54,13 +54,13 @@ flowchart TD
     T16["16 P2P Network Implementation ✓"]
     end
     subgraph integration["Gate 4-Integration"]
-    T17["17 User Roles & Access Control (0% · 0/20 · todo)"]
-    T18["18 Socket.io Broadcasting (0% · 0/24 · todo)"]
+    T17["17 User Roles & Access Control (80% · 16/20 · doing)"]
+    T18["18 Socket.io Broadcasting (88% · 21/24 · doing)"]
     end
     subgraph delivery["Gate 5-Delivery"]
-    T19["19 Testing & Quality Assurance (0% · 0/27 · todo)"]
-    T20["20 Documentation & README (9% · 3/34 · todo)"]
-    T21["21 Presentation Preparation (0% · 0/23 · todo)"]
+    T19["19 Testing & Quality Assurance ✓"]
+    T20["20 Documentation & README (12% · 4/34 · doing)"]
+    T21["21 Presentation Preparation (0% · 0/23 · doing)"]
     end
     T01 --> T02
     T01 --> T03
@@ -142,9 +142,9 @@ flowchart TD
     class T14 doing;
     class T15 done;
     class T16 done;
-    class T17 todo;
-    class T18 todo;
-    class T19 todo;
-    class T20 todo;
-    class T21 todo;
+    class T17 doing;
+    class T18 doing;
+    class T19 done;
+    class T20 doing;
+    class T21 doing;
 ```
