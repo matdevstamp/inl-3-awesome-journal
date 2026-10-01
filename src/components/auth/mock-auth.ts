@@ -47,6 +47,14 @@ export const MOCK_USERS: Array<SessionUser & { displayName: string }> = [
     patientId: null,
     displayName: "Unauthorized visitor",
   },
+  {
+    id: 6,
+    username: "vc_test",
+    role: "primary_care",
+    organizationId: 3,
+    patientId: null,
+    displayName: "Vårdcentralen Ekfors (nurse)",
+  },
 ];
 
 export function roleLabel(role: Role): string {
@@ -54,6 +62,7 @@ export function roleLabel(role: Role): string {
     doctor: "Doctor",
     nurse: "Nurse",
     ambulance: "Ambulance",
+    primary_care: "Primary care",
     patient: "Patient",
     unauthorized: "Unauthorized",
   };

@@ -25,6 +25,7 @@ describe("hasPermission", () => {
     doctor: [...PERMISSIONS],
     nurse: [...PERMISSIONS],
     ambulance: [...PERMISSIONS],
+    primary_care: [...PERMISSIONS],
     patient: ["readPatient", "readAccessLogs"],
     unauthorized: [],
   };
@@ -50,7 +51,7 @@ describe("hasPermission", () => {
 
 describe("canAccessPatient", () => {
   it("lets staff open any patient journal", () => {
-    for (const role of ["doctor", "nurse", "ambulance"] as const) {
+    for (const role of ["doctor", "nurse", "ambulance", "primary_care"] as const) {
       expect(canAccessPatient(user(role), 99)).toBe(true);
     }
   });
@@ -72,13 +73,24 @@ describe("canAccessPatient", () => {
 });
 
 describe("isStaffRole", () => {
-  it("recognises the three clinical roles", () => {
-    for (const role of ["doctor", "nurse", "ambulance"] as const) {
+  it("recognises the clinical roles", () => {
+    for (const role of ["doctor", "nurse", "ambulance", "primary_care"] as const) {
       expect(isStaffRole(role)).toBe(true);
     }
   });
 
   it("rejects patient and unauthorized roles", () => {
-    expect(ROLES.filter(isStaffRole)).toEqual(["doctor", "nurse", "ambulance"]);
+    expect(ROLES.filter(isStaffRole)).toEqual(["doctor", "nurse", "ambulance", "primary_care"]);
+  });
+
+  // The frontend gates the search page, the note form and the realtime rooms on
+  // isStaffRole while the API gates on hasPermission. A role added to one and
+  // not the other signs in fine and then hits an empty page, so keep both in step.
+  it("keeps isStaffRole and the searchPatients permission in agreement", () => {
+    for (const role of ROLES) {
+      expect(isStaffRole(role), `${role} disagrees between frontend and API`).toBe(
+        hasPermission(role, "searchPatients"),
+      );
+    }
   });
 });

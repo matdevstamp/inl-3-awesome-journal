@@ -54,6 +54,7 @@ Tillåtna roller:
 - doctor
 - nurse
 - ambulance
+- primary_care
 
 Följande roller har inte tillgång till patientsökningen:
 
@@ -75,7 +76,7 @@ Endpointen används bland annat för att kontrollera att servern är igång.
 ### GET /api/patients/:id
 
 Returnerar patient och journalvyn från SQL. Kräver JWT-cookie och rollen `doctor`,
-`nurse`, `ambulance` eller `patient`.
+`nurse`, `ambulance`, `primary_care` eller `patient`.
 
 Patientrollen får endast öppna sitt eget patient-ID.
 
@@ -206,13 +207,14 @@ till samma kontroll där är en möjlig uppföljning.
 
 ## Roller och behörighet
 
-Systemet har fem roller:
+Systemet har sex roller:
 
 | Roll         | Beskrivning               |
 | ------------ | ------------------------- |
 | doctor       | Läkare                    |
 | nurse        | Sjuksköterska             |
 | ambulance    | Ambulanspersonal          |
+| primary_care | Vårdcentralpersonal       |
 | patient      | Patient                   |
 | unauthorized | Användare utan behörighet |
 
@@ -225,11 +227,30 @@ användarens roll och organisationskoppling, men inte en separat lista med permi
 | doctor       | Alla patienter | Alla patienter      | Ja                            | Alla loggar               |
 | nurse        | Alla patienter | Alla patienter      | Ja                            | Alla loggar               |
 | ambulance    | Alla patienter | Alla patienter      | Ja                            | Alla loggar               |
+| primary_care | Alla patienter | Alla patienter      | Ja                            | Alla loggar               |
 | patient      | Nej            | Endast egen journal | Nej                           | Endast egna patientloggar |
 | unauthorized | Nej            | Nej                 | Nej                           | Nej                       |
 
-Vårdcentral är inte en implementerad inloggningsroll. Organisationskopplingar finns i datamodellen,
-men organisationsbaserad filtrering är ännu inte implementerad.
+### Vårdcentral
+
+Råkravet räknar vårdcentral som en av fem användarroller. Den implementeras därför som rollen
+`primary_care` med samma kliniska behörigheter som sjukhuspersonal, eftersom specen inte ger
+vårdcentral några egna unika behörigheter.
+
+Två saker är samtidigt sanna och det är lätt att blanda ihop dem:
+
+- **Vårdcentralen är en organisation.** Den finns som `Organization.type = "clinic"` och personalen
+  kopplas till den via `User.organizationId`. Demoanvändaren `vc_test` tillhör `Vårdcentralen Ekfors`.
+- **Vårdcentralpersonalen är en inloggningsroll.** `primary_care` ger samma åtkomst som `doctor`,
+  `nurse` och `ambulance`.
+
+Att rollen har samma permissions som sjukhuspersonal är ett medvetet val, inte ett glapp. Ingen
+organisationsbaserad filtrering är implementerad, så `primary_care` ser samma patienter som övrig
+personal. Att begränsa åtkomsten till den egna vårdcentralens patienter är en möjlig uppföljning, men
+det är en funktion kravet inte beskriver och den är inte gjord.
+
+Rollen lades till via `ALTER TYPE "Role" ADD VALUE 'primary_care'`, se
+`prisma/migrations/20261001000000_add_primary_care_role`.
 
 En saknad eller ogiltig JWT-session ger `401`. En autentiserad användare utan rätt permission ger
 `403`. Patienter som försöker öppna ett annat patient-ID stoppas både av API:t och av frontend innan

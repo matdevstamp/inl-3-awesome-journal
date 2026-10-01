@@ -152,4 +152,35 @@ test.describe("patient search", () => {
     expect((await request.get("/api/patients/abc")).status()).toBe(400);
     expect((await request.get("/api/patients/999")).status()).toBe(404);
   });
+
+  test("lets primary-care staff search and open a journal", async ({ request }) => {
+    // The vårdcentral role carries the same clinical permissions as hospital
+    // staff, so the whole staff flow has to work for it end to end.
+    const login = await request.post("/api/auth/login", {
+      data: { username: "vc_test", password: "test123" },
+    });
+    expect(login.status()).toBe(200);
+
+    const search = await apiGet<PatientSearchResponse>(request, "/api/patients?q=Anna&filter=name");
+    expect(search.total).toBe(1);
+
+    const journal = await request.get("/api/patients/1");
+    expect(journal.status()).toBe(200);
+    expect((await journal.json()).data.viewerRole).toBe("primary_care");
+  });
+
+  test("signs primary-care staff in through the login form to the staff dashboard", async ({
+    page,
+  }) => {
+    await page.goto("/login");
+    await page.getByRole("combobox", { name: "Demo user" }).click();
+    await page.getByRole("option", { name: "Vårdcentralen Ekfors (nurse) - Primary care" }).click();
+    await page.getByLabel("Password").fill("test123");
+    await page.getByRole("button", { name: "Sign in" }).click();
+
+    await expect(page).toHaveURL(/\/dashboard$/);
+    // isStaffRole drives this heading; a role missing from it would land the
+    // clinic user on the patient-facing copy instead.
+    await expect(page.getByRole("heading", { name: "Care staff dashboard" })).toBeVisible();
+  });
 });
