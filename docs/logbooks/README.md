@@ -6,12 +6,14 @@ Därför ligger en CSV per person här. Det är vår dagliga logg över vad vi g
 
 ## Filer
 
-| Fil | Person | Person-roll (fylls i efter kickoff) |
+| Fil | Person | Roll i gruppen |
 |---|---|---|
-| `loggbok-Kassim10.csv` | Kassim Segerberg | TBD |
-| `loggbok-rcilomba.csv` | Ramadan | TBD |
-| `loggbok-umoraghad0-del.csv` | Najma Hasan | TBD |
-| `loggbok-matdevstamp.csv` | Matias Marti | TBD |
+| `loggbok-Kassim10.csv` | Kassim Segerberg | Backend (Task 11, 14), dokumentation och presentation (Task 20, 21) |
+| `loggbok-rcilomba.csv` | Ramadan | UI/Frontend, Task 18 |
+| `loggbok-umoraghad0-del.csv` | Najma Hasan | Roller och åtkomstkontroll, Task 17 |
+| `loggbok-matdevstamp.csv` | Matias Marti | Koordinator/Lead, Gate 2-setup, docs |
+
+Roller hämtade från `README.md` (Team).
 
 ## Kolumner
 
@@ -40,13 +42,19 @@ Exempelrad:
 
 ## Vecko-koll (kurskrav: minst 2 dokumenterade möten/vecka)
 
-| Vecka | Mötesanteckningar i `docs/meetings/` | Dagliga rader inlagda | OK? |
-|---|---|---|---|
-| 1 (2–8 sep) | kickoff 4 sep + TBD | TBD | ☐ |
-| 2 (9–15 sep) | TBD | TBD | ☐ |
-| 3 (16–22 sep) | TBD | TBD | ☐ |
-| 4 (23–29 sep) | TBD | TBD | ☐ |
-| 5 (30 sep–2 okt) | TBD | TBD | ☐ |
+| Vecka | Mötesanteckningar i `docs/meetings/` | OK? |
+|---|---|---|
+| 1 (2–8 sep) | 4 sep kickoff, 8 sep standup | ☑ |
+| 2 (9–15 sep) | 10 sep progress review, 15 sep standup | ☑ |
+| 3 (16–22 sep) | 17 sep progress review, 22 sep standup | ☑ |
+| 4 (23–29 sep) | 24 sep progress review, 29 sep standup | ☑ |
+| 5 (30 sep–2 okt) | Endast redovisningsdagen 2 okt | ☐ |
+
+Vecka 5 är den sista och kortar (2 okt är redovisningsdag). Antalet mötesanteckningar når inte två
+den veckan; det redovisas muntligt i stället för att skriva en anteckning i efterhand.
+
+Kolumnen för dagliga rader är borttagen på grund av att den krävde uppgifter om vad varje enskild
+skrivit. Var och en fyller sin egen CSV.
 
 ## Öppet beslut (tas på kickoff, se gruppkontraktet)
 
