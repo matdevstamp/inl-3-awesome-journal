@@ -11,7 +11,7 @@ const PASSWORD = "test123";
 async function main() {
   const passwordHash = await bcrypt.hash(PASSWORD, 10);
 
-  const [hospital, ambulance] = await Promise.all([
+  const [hospital, ambulance, clinic] = await Promise.all([
     prisma.organization.upsert({
       where: { id: 1 },
       update: {},
@@ -28,6 +28,17 @@ async function main() {
         id: 2,
         name: "Ambulans Syd",
         type: "ambulance service",
+      },
+    }),
+    // The clinic is an organization its staff belong to. It grants no extra
+    // clinical permission — see src/lib/auth/permissions.ts.
+    prisma.organization.upsert({
+      where: { id: 3 },
+      update: {},
+      create: {
+        id: 3,
+        name: "Vårdcentralen Ekfors",
+        type: "clinic",
       },
     }),
   ]);
@@ -62,6 +73,12 @@ async function main() {
       username: "unauth_test",
       role: "unauthorized",
       organizationId: null,
+    },
+    {
+      id: 6,
+      username: "vc_test",
+      role: "primary_care",
+      organizationId: clinic.id,
     },
   ];
 
