@@ -31,7 +31,9 @@ test.describe("access logs", () => {
   test("shows the acting user, the action and the originating server", async ({ page }) => {
     await openAccessLogTab(page, "dr_test");
 
-    await expect(page.getByText("User 1").first()).toBeVisible();
+    // The chain stores a userId only; the name is joined from SQL at read time,
+    // since access logs must not carry personal data on-chain.
+    await expect(page.getByText("dr_test").first()).toBeVisible();
     await expect(page.getByText(/Server: (hospital-s|ambulance-a)/).first()).toBeVisible();
   });
 

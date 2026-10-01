@@ -19,7 +19,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { apiRequest } from "@/lib/api/client";
+import { roleLabel } from "@/components/auth/mock-auth";
 import type {
+  AccessLogActorMap,
   JournalNotePreview,
   NoteMutationResponse,
   NoteVisibility,
@@ -31,6 +33,7 @@ import type { BlockchainAccessLog } from "@/lib/blockchain/access-log";
 export function PatientJournal({ patientId, user }: { patientId: string; user: SessionUser }) {
   const [journal, setJournal] = useState<PatientJournalResponse | null>(null);
   const [blockchainAccessLogs, setBlockchainAccessLogs] = useState<BlockchainAccessLog[]>([]);
+  const [actors, setActors] = useState<AccessLogActorMap>({});
   const [chainValid, setChainValid] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -107,12 +110,14 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
         const data = await apiRequest<PatientJournalResponse>(`/api/patients/${patientId}`);
         const accessLogData = await apiRequest<{
           accessLogs: BlockchainAccessLog[];
+          actors: AccessLogActorMap;
           chainValid: boolean;
           viewerUserId: number;
         }>("/api/access-log");
         if (isMounted) {
           setJournal(data);
           setBlockchainAccessLogs(accessLogData.accessLogs);
+          setActors(accessLogData.actors ?? {});
           setChainValid(accessLogData.chainValid);
           setError(null);
         }
@@ -279,7 +284,9 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
               <ActivityIcon className="size-5" aria-hidden="true" />
               <span>
                 <span className="block font-medium">Access log</span>
-                <span className="block text-xs opacity-75">{journal.accessLogs.length} events</span>
+                <span className="block text-xs opacity-75">
+                  {blockchainAccessLogs.length} events
+                </span>
               </span>
             </TabsTrigger>
           </TabsList>
@@ -290,7 +297,7 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
                 <FileTextIcon className="size-5 text-muted-foreground" aria-hidden="true" />
                 <CardTitle>Medical records</CardTitle>
                 <CardDescription>
-                  Medical information is loaded from SQL in the final flow.
+                  Medical records are read from SQL and never written to the blockchain.
                 </CardDescription>
               </CardHeader>
               <CardContent className="grid gap-3">
@@ -322,26 +329,37 @@ export function PatientJournal({ patientId, user }: { patientId: string; user: S
                 </CardDescription>
               </CardHeader>
               <CardContent className="grid gap-3">
-                {blockchainAccessLogs.map((log) => (
-                  <div
-                    key={log.eventId}
-                    data-testid="access-log-row"
-                    className="flex flex-col gap-2 rounded-lg border p-3 md:flex-row md:items-center md:justify-between"
-                  >
-                    <div>
-                      <p className="font-medium">User {log.userId}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {log.action.replace("_", " ")} - {log.timestamp}
-                      </p>
-                      <p className="text-xs text-muted-foreground">Server: {log.serverId}</p>
-                    </div>
+                {blockchainAccessLogs.map((log) => {
+                  const actor = actors[String(log.userId)];
 
-                    <Badge variant="secondary" className="w-fit">
-                      <CheckCircle2Icon className="size-3" aria-hidden="true" />
-                      {chainValid ? "Blockchain verified" : "Blockchain verification failed"}
-                    </Badge>
-                  </div>
-                ))}
+                  return (
+                    <div
+                      key={log.eventId}
+                      data-testid="access-log-row"
+                      className="flex flex-col gap-2 rounded-lg border p-3 md:flex-row md:items-center md:justify-between"
+                    >
+                      <div>
+                        <p className="font-medium">
+                          {actor?.username ?? `User ${log.userId}`}
+                          {actor ? (
+                            <span className="ml-2 font-normal text-muted-foreground">
+                              {roleLabel(actor.role)}
+                            </span>
+                          ) : null}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {log.action.replace("_", " ")} - {log.timestamp}
+                        </p>
+                        <p className="text-xs text-muted-foreground">Server: {log.serverId}</p>
+                      </div>
+
+                      <Badge variant="secondary" className="w-fit">
+                        <CheckCircle2Icon className="size-3" aria-hidden="true" />
+                        {chainValid ? "Blockchain verified" : "Blockchain verification failed"}
+                      </Badge>
+                    </div>
+                  );
+                })}
               </CardContent>
             </Card>
           </TabsContent>

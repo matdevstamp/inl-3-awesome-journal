@@ -134,6 +134,13 @@ export interface NoteDeleteResponse {
   deletedId: number;
 }
 
+/**
+ * userId → display name for access-log events. Resolved from SQL at read time
+ * because the chain itself must not carry personal data. Keyed by string since
+ * it arrives as a JSON object.
+ */
+export type AccessLogActorMap = Record<string, { username: string; role: Role }>;
+
 /** Access event preview for patient and staff views. */
 export interface AccessLogPreview {
   id: number;

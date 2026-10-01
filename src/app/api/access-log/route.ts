@@ -2,6 +2,8 @@ import { AuthError, requirePermission } from "@/lib/auth";
 import { fail, ok } from "@/lib/api/http";
 import { getAccessLogBlockchain } from "@/lib/blockchain/access-log-service";
 import { syncServerPeer } from "@/app/api/p2p/server-peer";
+import { prisma } from "@/lib/prisma";
+import type { AccessLogActorMap } from "@/lib/types/api";
 
 export async function GET() {
   try {
@@ -20,8 +22,21 @@ export async function GET() {
         ? allAccessLogs.filter((log) => log.patientId === user.patientId)
         : allAccessLogs;
 
+    // The chain stores only a userId (it must not carry personal data), so the
+    // display name is resolved from SQL here, at read time.
+    const actorIds = [...new Set(accessLogs.map((log) => log.userId))];
+    const actors = await prisma.user.findMany({
+      where: { id: { in: actorIds } },
+      select: { id: true, username: true, role: true },
+    });
+
+    const actorMap: AccessLogActorMap = Object.fromEntries(
+      actors.map((actor) => [String(actor.id), { username: actor.username, role: actor.role }]),
+    );
+
     return ok({
       accessLogs,
+      actors: actorMap,
       chainValid: blockchain.isValid(),
       viewerUserId: user.id,
     });
