@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { AuthError, requireRole } from "@/lib/auth";
+import { AuthError, requirePermission } from "@/lib/auth";
+import { canAccessPatient } from "@/lib/auth/permissions";
 import { fail, ok } from "@/lib/api/http";
-import { isStaffRole, patientIdForUser } from "@/lib/patients/mock-patients";
 import { logNoteAccess } from "@/lib/notes/log";
 import { serializeNote } from "@/lib/notes/serialization";
+import { canViewNote } from "@/lib/notes/visibility";
 import { prisma } from "@/lib/prisma";
 import { NOTE_VISIBILITIES } from "@/lib/types/api";
 import type { NoteListResponse, NoteMutationResponse } from "@/lib/types/api";
+import { sendNoteToPeer } from "@/lib/p2p/transport";
+import { broadcastNoteCreated } from "@/lib/realtime/broadcast";
 
 const createNoteSchema = z.object({
   recordId: z.number().int().positive(),
@@ -18,7 +21,7 @@ const createNoteSchema = z.object({
 
 export async function GET(request: Request) {
   try {
-    const user = await requireRole("doctor", "nurse", "ambulance", "patient");
+    const user = await requirePermission("readPatient");
 
     const url = new URL(request.url);
     const recordIdParam = url.searchParams.get("recordId");
@@ -40,9 +43,7 @@ export async function GET(request: Request) {
       return fail("NOT_FOUND", "Medical record not found", 404);
     }
 
-    const canOpenJournal = isStaffRole(user.role) || patientIdForUser(user) === record.patientId;
-
-    if (!canOpenJournal) {
+    if (!canAccessPatient(user, record.patientId)) {
       await logNoteAccess(user.id, record.patientId, record.id, "view_denied");
       return fail("UNAUTHORIZED", "Patients can only read their own journal notes.", 403);
     }
@@ -62,29 +63,15 @@ export async function GET(request: Request) {
       },
     });
 
-    const isHealthcare = isStaffRole(user.role);
-
-    const visibleNotes = notes.filter((note) => {
-      if (note.visibility === "all") return true;
-
-      if (note.visibility === "healthcare") {
-        return isHealthcare;
-      }
-
-      if (note.visibility === "private") {
-        return note.authorId === user.id;
-      }
-
-      return false;
-    });
-
-    const hiddenNotesCount = notes.length - visibleNotes.length;
+    const readNotes = notes.filter((note) =>
+      canViewNote({ visibility: note.visibility, authorUserId: note.authorId }, user),
+    );
 
     await logNoteAccess(user.id, record.patientId, record.id, "view");
 
     return ok({
-      notes: visibleNotes.map(serializeNote),
-      hiddenNotesCount,
+      notes: readNotes.map(serializeNote),
+      hiddenNotesCount: notes.length - readNotes.length,
     } satisfies NoteListResponse);
   } catch (error) {
     if (error instanceof AuthError) {
@@ -97,7 +84,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const user = await requireRole("doctor", "nurse", "ambulance");
+    const user = await requirePermission("createNote");
 
     let body: unknown;
 
@@ -146,11 +133,16 @@ export async function POST(request: Request) {
 
     await logNoteAccess(user.id, record.patientId, record.id, "create");
 
+    const serializedNote = serializeNote(note);
+
+    await broadcastNoteCreated(record.patientId, serializedNote);
+    await sendNoteToPeer(record.patientId, serializedNote);
+
     return NextResponse.json(
       {
         ok: true,
         data: {
-          note: serializeNote(note),
+          note: serializedNote,
         },
       } satisfies { ok: true; data: NoteMutationResponse },
       { status: 201 },

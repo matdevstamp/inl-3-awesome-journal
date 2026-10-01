@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
 
   const user = await prisma.user.findUnique({
     where: { username },
+    include: { patient: { select: { id: true } } },
   });
 
   if (!user) {
@@ -67,6 +68,7 @@ export async function POST(request: NextRequest) {
     username: user.username,
     role: user.role,
     organizationId: user.organizationId,
+    patientId: user.patient?.id ?? null,
   };
 
   loginRateLimiter.reset(ip);

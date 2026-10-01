@@ -18,6 +18,7 @@ export interface SessionUser {
   username: string;
   role: Role;
   organizationId: number | null;
+  patientId: number | null;
 }
 
 /** Standard envelope for every JSON API response. */

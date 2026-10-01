@@ -74,32 +74,135 @@ Endpointen används bland annat för att kontrollera att servern är igång.
 
 ### GET /api/patients/:id
 
-Returnerar patient och journalvyn från SQL. Kräver JWT-cookie och rollen doctor, nurse,
-ambulance eller patient. Patientrollen får bara öppna sitt eget patient-ID. Svaret följer
-`PatientJournalResponse` i `src/lib/types/api.ts`. Privat anteckning visas bara för sin
-författare, healthcare för vårdpersonal och all även för patienten. En patient får bara
-antalet dolda healthcare-anteckningar, inte innehållet i dem.
+Returnerar patient och journalvyn från SQL. Kräver JWT-cookie och rollen `doctor`,
+`nurse`, `ambulance` eller `patient`.
+
+Patientrollen får endast öppna sitt eget patient-ID.
+
+Svaret följer `PatientJournalResponse` i `src/lib/types/api.ts`.
+
+Synligheten för anteckningar styrs av deras `visibility`:
+
+- `private` visas endast författaren
+- `healthcare` visas för vårdpersonal
+- `all` kan visas för behöriga användare inklusive patienten
+
+En patient får information om att healthcare-anteckningar finns, men inte deras innehåll.
 
 Ogiltigt ID ger 400, saknad session 401, nekad åtkomst 403 och okänt patient-ID 404.
-Patientens koppling till användar-ID ligger ännu i en tillfällig mappning; datamodellen
-saknar en relation mellan User och Patient. Vyns audit-händelser hanteras separat av
-access-log/API:t.
-
-Funktionalitet för medicinska journaler tillhör Task 14.
-
-Route-strukturen finns förberedd i API:t, men full CRUD-funktionalitet implementeras separat i Task 14.
+Patientens koppling till användar-ID valideras genom relationen mellan `User` och
+`Patient` i databasen (`users.patient` ↔ `patients.user_id`). Vyns audit-händelser
+hanteras separat av access-log/API:t.
 
 ## Anteckningar
 
-Funktionalitet för anteckningar och synlighetsnivåer tillhör Task 14.
+Anteckningar är kopplade till medicinska journalposter och har tre
+synlighetsnivåer:
 
-Route-strukturen finns förberedd, medan full CRUD och kontroll av synlighetsnivåer implementeras separat i Task 14.
+- `private`
+- `healthcare`
+- `all`
+
+Anteckningar lagras i SQL-databasen och innehåller aldrig patientdata på blockkedjan.
+
+API:t använder gemensamma TypeScript-typer i:
+
+`src/lib/types/api.ts`
+
+Implementation och visibility-kontroller finns i:
+
+- `src/app/api/notes/route.ts`
+- `src/app/api/notes/[id]/route.ts`
+
+### GET /api/notes
+
+Hämtar anteckningar som användaren har rätt att se.
+
+Åtkomsten kontrolleras server-side utifrån den autentiserade användarens
+roll och anteckningens synlighetsnivå.
+
+### POST /api/notes
+
+Skapar en ny anteckning.
+
+Endpointen kräver autentisering och kontrollerar användarens behörighet innan
+anteckningen skapas.
+
+### PATCH /api/notes/:id
+
+Uppdaterar en befintlig anteckning efter server-side behörighetskontroll.
+
+### DELETE /api/notes/:id
+
+Tar bort en befintlig anteckning efter server-side behörighetskontroll.
 
 ## Access logs
 
-Blockchain-baserad access-loggning tillhör Task 15.
+Access-loggar används för att registrera åtkomst till patientdata.
 
-Route-strukturen finns förberedd, men den fullständiga implementationen görs i Task 15.
+Access-loggen sparas i SQL och synkroniseras sedan med projektets blockchain
+access-log chain.
+
+Medicinsk information lagras aldrig på blockkedjan.
+
+Blockchain-relaterad implementation finns i projektets access-loggning och
+P2P-lager.
+
+### GET /api/access-log
+
+Returnerar access-loggen tillsammans med `chainValid` och `viewerUserId`, och
+försöker först hämta peer-servarns loggar via `syncServerPeer()` (misslyckas det
+faller API:t tillbaka på den lokala loggen).
+
+Kräver `readAccessLogs`, alltså `doctor`, `nurse`, `ambulance` eller `patient`.
+En `patient` får endast loggar för sitt eget `patientId`; vårdpersonal får alla.
+Utan giltig session `401`, utan rätt behörighet `403`.
+
+### GET /api/records
+
+Finns som route men är inte implementerad och returnerar `501 Not Implemented`.
+Funktionen tillhör Task 14.
+
+## P2P-endpoints
+
+Server-till-server-kommunikation mellan projektets två instanser. Dessa routes
+använder **inte** användarens JWT-session.
+
+### GET /api/p2p/access-log
+
+Hämtar den lokala blockchain-access-loggen, inklusive kontroll av kedjans
+giltighet.
+
+### POST /api/p2p/access-log
+
+Tar emot en access-logg från peer-servern. Meddelandet valideras strukturellt
+innan det accepteras.
+
+### POST /api/p2p/note
+
+Tar emot en anteckningsnotis från peer-servern och vidarebefordrar den till den
+andra instansens klienter. Meddelandet valideras strukturellt innan det
+accepteras.
+
+### Peer-autentisering
+
+P2P-routsen kräver `x-peer-secret`-header med rätt värde. Kontrollen görs av
+`isPeerAuthorized()` i `src/lib/p2p/peer-auth.ts`:
+
+| Route                          | Auth-krav                     |
+| ------------------------------ | ----------------------------- |
+| `POST /api/p2p/access-log`     | `x-peer-secret`, annars `401` |
+| `POST /api/p2p/note`           | `x-peer-secret`, annars `401` |
+| `GET /api/p2p/access-log`      | **ingen kontroll**            |
+
+Värdet läses ur `PEER_SECRET` (standard `dev-peer-secret-change-me`) och måste
+vara identiskt i båda instanserna.
+
+`GET /api/p2p/access-log` är det enda undantaget: handler`n
+(`src/app/api/p2p/access-log/route.ts:96`) tar emot `GET` utan
+`isPeerAuthorized`-kontroll och returnerar access-loggen direkt. Detta är en
+känd begränsning i demoläge — endpointen ska inte exponeras publikt. Att lägga
+till samma kontroll där är en möjlig uppföljning.
 
 ## Roller och behörighet
 
@@ -113,9 +216,24 @@ Systemet har fem roller:
 | patient      | Patient                   |
 | unauthorized | Användare utan behörighet |
 
-Skyddade API-routes kontrollerar autentisering och behörighet server-side.
+Skyddade API-routes kontrollerar autentisering och behörighet server-side med
+`requirePermission()`. Behörighetsmatrisen finns i `src/lib/auth/permissions.ts`; databasen lagrar
+användarens roll och organisationskoppling, men inte en separat lista med permissions.
 
-Funktionen `requireRole()` används för att kontrollera att en autentiserad användare har rätt roll för en skyddad endpoint.
+| Roll         | Patientsökning | Journaler           | Skapa/ändra egna anteckningar | Accessloggar              |
+| ------------ | -------------- | ------------------- | ----------------------------- | ------------------------- |
+| doctor       | Alla patienter | Alla patienter      | Ja                            | Alla loggar               |
+| nurse        | Alla patienter | Alla patienter      | Ja                            | Alla loggar               |
+| ambulance    | Alla patienter | Alla patienter      | Ja                            | Alla loggar               |
+| patient      | Nej            | Endast egen journal | Nej                           | Endast egna patientloggar |
+| unauthorized | Nej            | Nej                 | Nej                           | Nej                       |
+
+Vårdcentral är inte en implementerad inloggningsroll. Organisationskopplingar finns i datamodellen,
+men organisationsbaserad filtrering är ännu inte implementerad.
+
+En saknad eller ogiltig JWT-session ger `401`. En autentiserad användare utan rätt permission ger
+`403`. Patienter som försöker öppna ett annat patient-ID stoppas både av API:t och av frontend innan
+journaldata hämtas. Mock-headers ger aldrig behörighet.
 
 ## JWT och sessionshantering
 

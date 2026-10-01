@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { AuthError, requireRole } from "@/lib/auth";
+import { AuthError, requirePermission } from "@/lib/auth";
 import { fail, ok } from "@/lib/api/http";
 import { logNoteAccess } from "@/lib/notes/log";
 import { serializeNote } from "@/lib/notes/serialization";
@@ -21,7 +21,7 @@ interface RouteContext {
 
 export async function PATCH(request: Request, context: RouteContext) {
   try {
-    const user = await requireRole("doctor", "nurse", "ambulance");
+    const user = await requirePermission("createNote");
 
     const { id } = await context.params;
     const noteId = Number(id);
@@ -95,7 +95,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 
 export async function DELETE(_request: Request, context: RouteContext) {
   try {
-    const user = await requireRole("doctor", "nurse", "ambulance");
+    const user = await requirePermission("createNote");
 
     const { id } = await context.params;
     const noteId = Number(id);

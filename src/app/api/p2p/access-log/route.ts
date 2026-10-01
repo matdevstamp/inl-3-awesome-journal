@@ -1,9 +1,21 @@
 import { NextResponse } from "next/server";
 import { serverPeer } from "@/app/api/p2p/server-peer";
 import type { P2PAccessLogMessage } from "@/lib/p2p/message";
+import { isPeerAuthorized } from "@/lib/p2p/peer-auth";
 import { getAccessLogBlockchain } from "@/lib/blockchain/access-log-service";
 
 export async function POST(request: Request) {
+  if (!isPeerAuthorized(request)) {
+    return NextResponse.json(
+      {
+        ok: false,
+        stored: false,
+        error: "Unauthorized peer",
+      },
+      { status: 401 },
+    );
+  }
+
   let message: P2PAccessLogMessage;
 
   try {
@@ -32,9 +44,12 @@ export async function POST(request: Request) {
     );
   }
 
-  const stored = serverPeer.receiveMessage(message);
+  const result = serverPeer.receiveMessage(message);
 
-  if (!stored) {
+  // A duplicate is the expected outcome of a two-way sync round-trip, not a
+  // failure: the peer already holds this eventId. Report success either way so
+  // the sender does not log a sync error on every round-trip.
+  if (result === "rejected") {
     return NextResponse.json(
       {
         ok: false,
@@ -47,7 +62,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     ok: true,
-    stored: true,
+    stored: result === "stored",
     data: message,
   });
 }

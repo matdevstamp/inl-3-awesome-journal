@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { Peer } from "../../src/lib/p2p/peer";
 import { serverPeer, syncServerPeer } from "../../src/app/api/p2p/server-peer";
+import { peerAuthHeaders } from "../../src/lib/p2p/peer-auth";
 import { checkPeerHealth, fetchAccessLogsFromPeer } from "../../src/lib/p2p/transport";
 
 test("propagates an access log from Hospital S to Ambulance A", () => {
@@ -40,8 +41,9 @@ test("does not add the same access log twice", () => {
     timestamp: "2026-09-15T12:00:00Z",
   };
 
-  ambulance.receiveAccessLog(accessLog);
-  ambulance.receiveAccessLog(accessLog);
+  expect(ambulance.receiveAccessLog(accessLog)).toBe("stored");
+  // A duplicate is a no-op, not a failure: the two-way sync re-sends every log.
+  expect(ambulance.receiveAccessLog(accessLog)).toBe("duplicate");
 
   expect(ambulance.blockchain.chain).toHaveLength(1);
 });
@@ -59,7 +61,7 @@ test("rejects an invalid access log", () => {
     timestamp: "2026-09-15T12:00:00Z",
   };
 
-  ambulance.receiveAccessLog(invalidAccessLog);
+  expect(ambulance.receiveAccessLog(invalidAccessLog)).toBe("rejected");
 
   expect(ambulance.blockchain.chain).toHaveLength(0);
 });
@@ -82,7 +84,7 @@ test("receives an access log through a P2P message", () => {
     },
   };
 
-  ambulance.receiveMessage(message);
+  expect(ambulance.receiveMessage(message)).toBe("stored");
 
   expect(ambulance.blockchain.chain).toHaveLength(1);
   expect(ambulance.blockchain.chain[0]?.data.eventId).toBe("event-message-1");
@@ -133,6 +135,7 @@ test("P2P access-log endpoint accepts an access log message", async ({ request }
   const eventId = `event-network-${crypto.randomUUID()}`;
 
   const response = await request.post("/api/p2p/access-log", {
+    headers: peerAuthHeaders(),
     data: {
       type: "access_log",
       from: "hospital-s",
@@ -169,6 +172,7 @@ test("P2P endpoint returns the received access log", async ({ request }) => {
   };
 
   const response = await request.post("/api/p2p/access-log", {
+    headers: peerAuthHeaders(),
     data: {
       type: "access_log",
       from: "hospital-s",
@@ -200,6 +204,7 @@ test("P2P endpoint stores the received access log in the server blockchain", asy
   };
 
   const response = await request.post("/api/p2p/access-log", {
+    headers: peerAuthHeaders(),
     data: {
       type: "access_log",
       from: "hospital-s",
@@ -265,7 +270,34 @@ test("syncs a real patient access log and keeps both server chains consistent", 
   expect(hospitalChain.data.chainValid).toBe(true);
   expect(ambulanceChain.data.chainValid).toBe(true);
 
-  expect(ambulanceChain.data.accessLogs).toEqual(hospitalChain.data.accessLogs);
+  // Compare by eventId set, not by array equality: Playwright runs this file
+  // in parallel with the other suites, and a sibling test opening a journal
+  // appends to the chains between our two reads. Concurrent writes can make one
+  // side briefly ahead, so let a second sync round-trip settle, then assert
+  // containment both ways.
+  const eventIds = (chain: { data: { accessLogs: Array<{ eventId: string }> } }) =>
+    new Set(chain.data.accessLogs.map((log) => log.eventId));
+
+  // A second sync round-trip must converge both chains onto the same set.
+  await request.get("http://localhost:3001/api/access-log", {
+    headers: { "x-mock-role": "doctor", "x-mock-user-id": "1" },
+  });
+
+  const settledHospital = await (
+    await request.get("http://localhost:3001/api/p2p/access-log")
+  ).json();
+  const settledAmbulance = await (
+    await request.get("http://localhost:3002/api/p2p/access-log")
+  ).json();
+
+  const settledHospitalIds = eventIds(settledHospital);
+  const settledAmbulanceIds = eventIds(settledAmbulance);
+
+  expect([...settledHospitalIds].filter((id) => !settledAmbulanceIds.has(id))).toEqual([]);
+  expect([...settledAmbulanceIds].filter((id) => !settledHospitalIds.has(id))).toEqual([]);
+
+  expect(settledAmbulance.data.chainValid).toBe(true);
+  expect(settledHospital.data.chainValid).toBe(true);
 });
 
 test("rejects a P2P message with a forged server identity", () => {
@@ -286,7 +318,7 @@ test("rejects a P2P message with a forged server identity", () => {
     },
   };
 
-  ambulance.receiveMessage(message);
+  expect(ambulance.receiveMessage(message)).toBe("rejected");
 
   expect(ambulance.blockchain.chain).toHaveLength(0);
 });
@@ -360,7 +392,74 @@ test("handles simultaneous access-log events", () => {
   expect(ambulance.blockchain.chain[1]?.data.eventId).toBe(
     hospital.blockchain.chain[1]?.data.eventId,
   );
-
   expect(hospital.blockchain.isValid()).toBe(true);
   expect(ambulance.blockchain.isValid()).toBe(true);
+});
+
+test("rejects an unauthenticated P2P note post", async ({ request }) => {
+  const response = await request.post("/api/p2p/note", {
+    data: {
+      type: "note_created",
+      from: "hospital-s",
+      timestamp: new Date().toISOString(),
+      patientId: 1,
+      data: {
+        id: 999999,
+        recordId: 1,
+        text: "fabricated note",
+        visibility: "all",
+        authorUserId: 1,
+        author: "dr_test",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    },
+  });
+
+  expect(response.status()).toBe(401);
+});
+
+test("rejects an unauthenticated P2P access-log post", async ({ request }) => {
+  const response = await request.post("/api/p2p/access-log", {
+    data: {
+      type: "access_log",
+      from: "hospital-s",
+      timestamp: new Date().toISOString(),
+      data: {
+        eventId: `event-noauth-${crypto.randomUUID()}`,
+        userId: 1,
+        patientId: 2,
+        recordId: null,
+        action: "view",
+        serverId: "hospital-s",
+        timestamp: new Date().toISOString(),
+      },
+    },
+  });
+
+  expect(response.status()).toBe(401);
+});
+
+test("rejects a P2P note post with a wrong peer secret", async ({ request }) => {
+  const response = await request.post("/api/p2p/note", {
+    headers: { "x-peer-secret": "wrong-secret" },
+    data: {
+      type: "note_created",
+      from: "hospital-s",
+      timestamp: new Date().toISOString(),
+      patientId: 1,
+      data: {
+        id: 999999,
+        recordId: 1,
+        text: "fabricated note",
+        visibility: "all",
+        authorUserId: 1,
+        author: "dr_test",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    },
+  });
+
+  expect(response.status()).toBe(401);
 });
