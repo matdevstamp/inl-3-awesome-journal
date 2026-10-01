@@ -69,7 +69,7 @@ export function DashboardShell({ user }: { user: SessionUser }) {
               <SearchIcon className="size-5 text-muted-foreground" aria-hidden="true" />
               <CardTitle>Patient search</CardTitle>
               <CardDescription>
-                Search by patient name once the patient API is ready.
+                Search patients by name, date of birth, or personal number.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -83,7 +83,7 @@ export function DashboardShell({ user }: { user: SessionUser }) {
             <CardHeader>
               <FileTextIcon className="size-5 text-muted-foreground" aria-hidden="true" />
               <CardTitle>Own journal</CardTitle>
-              <CardDescription>Patients go directly to their own journal view.</CardDescription>
+              <CardDescription>Review your records, notes, and access history.</CardDescription>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               <Button asChild>
