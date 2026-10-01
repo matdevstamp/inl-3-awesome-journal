@@ -4,8 +4,15 @@
  * no OpenAPI/generated client; both sides live in one TS codebase).
  */
 
-/** The five supported access roles. */
-export const ROLES = ["doctor", "nurse", "ambulance", "patient", "unauthorized"] as const;
+/** The supported access roles. */
+export const ROLES = [
+  "doctor",
+  "nurse",
+  "ambulance",
+  "primary_care",
+  "patient",
+  "unauthorized",
+] as const;
 export type Role = (typeof ROLES)[number];
 
 /** Note visibility levels. */

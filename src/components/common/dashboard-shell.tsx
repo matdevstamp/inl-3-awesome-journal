@@ -8,12 +8,11 @@ import { roleLabel } from "@/components/auth/mock-auth";
 import { AppHeader } from "@/components/common/app-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { isStaffRole } from "@/lib/auth/permissions";
 import type { SessionUser } from "@/lib/types/api";
 
-const staffRoles = new Set(["doctor", "nurse", "ambulance"]);
-
 export function DashboardShell({ user }: { user: SessionUser }) {
-  const isStaff = staffRoles.has(user.role);
+  const isStaff = isStaffRole(user.role);
   const ownPatientId = user.patientId;
   // Access logs and chain verification both live on the journal's Access log
   // tab. A patient has their own journal; staff reach it by opening a patient.

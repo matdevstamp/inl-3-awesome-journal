@@ -27,6 +27,7 @@ enum Role {
   doctor
   nurse
   ambulance
+  primary_care
   patient
   unauthorized
 }

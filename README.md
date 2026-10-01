@@ -30,7 +30,7 @@ loggar i efterhand (GDPR-kravet om att patienter ska kunna se vem som har
 - **Frontend + backend:** fullstack Next.js (React + route handlers i samma
   TypeScript-app), kört två gånger på port **3001** och **3002** för P2P-demon
 - **UI:** Tailwind CSS + shadcn/ui
-- **Auth:** JWT i httpOnly cookie, 5 användarroller
+- **Auth:** JWT i httpOnly cookie, 6 användarroller (inkl. `primary_care` för vårdcentralpersonal)
 - **DB:** PostgreSQL via Prisma (schema = enda källan, Mermaid-ER genereras)
 - **Realtid/P2P:** Socket.IO för broadcast mellan servrarna
 - **Access-log:** enkel egen blockkedja (custom chain)
@@ -147,6 +147,8 @@ Om Playwright saknar Chromium kan webbläsaren installeras med:
 13. Kontrollera att användaren nekas åtkomst till skyddade resurser.
 14. Öppna access-loggen och visa att blockchain-kedjan är giltig.
 15. Visa att access-loggar kan synkroniseras mellan de två serverinstanserna.
+16. Logga in som **Primary care** (`vc_test`, vårdcentralen Ekfors) och visa att
+    vårdcentralpersonal får samma kliniska åtkomst som övrig personal.
 
 ### Privacy boundary
 
@@ -288,13 +290,13 @@ Grunddatan är fiktiv (GDPR: inga journaler på blockkedjan, bara access-loggar)
 | POST | `/api/auth/logout` | Logga ut och ta bort sessionen | Autentiserad |
 | GET | `/api/auth/me` | Hämta aktuell användare | Autentiserad |
 | GET | `/api/health` | Kontrollera API/serverstatus | Publik |
-| GET | `/api/patients` | Söka och paginera patienter | doctor, nurse, ambulance |
-| GET | `/api/patients/:id` | Hämta patient och journalvy | doctor, nurse, ambulance, patient |
-| GET | `/api/notes?recordId={id}` | Hämta anteckningar för en journalpost enligt behörighet | doctor, nurse, ambulance, patient |
-| POST | `/api/notes` | Skapa medicinsk anteckning | doctor, nurse, ambulance |
-| PATCH | `/api/notes/:id` | Ändra en egen anteckning | doctor, nurse, ambulance |
-| DELETE | `/api/notes/:id` | Ta bort en egen anteckning | doctor, nurse, ambulance |
-| GET | `/api/access-log` | Visa access-loggar och kontrollera blockchainens giltighet | doctor, nurse, ambulance, patient |
+| GET | `/api/patients` | Söka och paginera patienter | doctor, nurse, ambulance, primary_care |
+| GET | `/api/patients/:id` | Hämta patient och journalvy | doctor, nurse, ambulance, primary_care, patient |
+| GET | `/api/notes?recordId={id}` | Hämta anteckningar för en journalpost enligt behörighet | doctor, nurse, ambulance, primary_care, patient |
+| POST | `/api/notes` | Skapa medicinsk anteckning | doctor, nurse, ambulance, primary_care |
+| PATCH | `/api/notes/:id` | Ändra en egen anteckning | doctor, nurse, ambulance, primary_care |
+| DELETE | `/api/notes/:id` | Ta bort en egen anteckning | doctor, nurse, ambulance, primary_care |
+| GET | `/api/access-log` | Visa access-loggar och kontrollera blockchainens giltighet | doctor, nurse, ambulance, primary_care, patient |
 | GET | `/api/p2p/access-log` | Hämta lokal blockchain-access-logg | P2P |
 | POST | `/api/p2p/access-log` | Ta emot och validera access-logg från peer-server | P2P |
 | POST | `/api/p2p/note` | Ta emot och validera anteckningsnotis från peer-server | P2P |

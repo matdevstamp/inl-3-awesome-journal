@@ -5,6 +5,7 @@ erDiagram
             doctor doctor
 nurse nurse
 ambulance ambulance
+primary_care primary_care
 patient patient
 unauthorized unauthorized
         }
