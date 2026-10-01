@@ -40,7 +40,13 @@ export function LoginForm() {
         method: "POST",
         body: JSON.stringify({ username, password }),
       });
-      router.push(user.role === "unauthorized" ? "/access-denied" : "/dashboard");
+      if (user.role === "unauthorized" || (user.role === "patient" && !user.patientId)) {
+        router.push("/access-denied");
+      } else if (user.role === "patient") {
+        router.push(`/patients/${user.patientId}`);
+      } else {
+        router.push("/dashboard");
+      }
     } catch (cause) {
       setError(
         cause instanceof ApiClientError && cause.status === 401
