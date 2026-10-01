@@ -2,11 +2,12 @@
 
 ## Metadata
 - **Priority:** P0 - Required throughout
-- **Deadline:** 2026-09-24 (final; initial slice 2026-09-05)
-- **Status:** TODO
-- **Assignee:** matdevstamp
+- **Deadline:** 2026-09-29
+- **Status:** IN PROGRESS
+- **Assignee:** Kassim10
 - **Tags:** documentation, readme, required, gate:5-delivery
 - **Dependencies:** 01-project-setup-group-contract.md
+- **GitHub Issue:** #30 (https://github.com/matdevstamp/inl-3-awesome-journal/issues/30)
 - **Related:** 03-graphify-architecture-artifacts.md, 19-testing.md
 - **Estimated Effort:** 4h
 
@@ -20,7 +21,7 @@
   - Team member contributions
 - Document at least 2 project meetings per week
 - Every meeting note must include a short checkpoint against `docs/Raw_Requirements.md`
-- Meeting notes must identify the facilitator, timekeeper, note-taker, attendees, decisions, blockers, and action-item owners
+- Meeting notes must identify the facilitator, timekeeper, note-taker, decisions, blockers, and action-item owners. Attendance and absence may be recorded as `Not recorded` when the people affected have not consented to being identified.
 - Update instructions as project progresses
 
 Document the bug-report workflow: raw intake, lead triage, draft-task conversion, E2E reproduction, red/green fix progression, review evidence, and closure. The raw bug log must contain no patient data or secrets.
@@ -184,4 +185,4 @@ If React Query is selected, document the typed client setup, query-key conventio
 - [ ] Which screenshot tool to use?
 - [x] How detailed should API documentation be? → route-handler table in README
 - [x] Should we use a documentation generator? → no (shared types; kickoff)
-- [ ] How to format meeting notes consistently?
+- [x] How to format meeting notes consistently? → `YYYY-MM-DD-<meeting-type>.md`; use the structure in [`docs/MEETING_TEMPLATE.md`](../MEETING_TEMPLATE.md) and keep raw transcripts in `docs/meetings/archive/`.

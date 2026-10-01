@@ -2,8 +2,8 @@
 
 ## Metadata
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-16
-- **Status:** TODO
+- **Deadline:** 2026-09-21
+- **Status:** DONE
 - **Assignee:** umoraghad0-del (pair-programmering)
 - **Tags:** networking, p2p, distributed, required, gate:3-features, stream:D-audit
 - **Dependencies:** 15-blockchain-access-logging.md, 06-backend-project-setup.md
@@ -136,28 +136,28 @@ Sync Process:
 
 ## Tasks
 
-- [ ] Set up multiple server instances
-- [ ] Implement P2P communication protocol
-- [ ] Create peer discovery mechanism
-- [ ] Implement heartbeat system
-- [ ] Add blockchain sync between servers
+- [x] Set up multiple server instances
+- [x] Implement P2P communication protocol
+- [x] Create peer discovery mechanism
+- [x] Implement heartbeat system
+- [x] Add blockchain sync between servers
 - [ ] Handle network partitions
-- [ ] Implement data consistency checks
-- [ ] Add peer health monitoring
+- [x] Implement data consistency checks
+- [x] Add peer health monitoring
 - [ ] Create failover mechanism
-- [ ] Test with simultaneous access
+- [x] Test with simultaneous access
 
 ## Done Criteria
 
-- [ ] 2+ servers run simultaneously
-- [ ] Servers can discover each other
-- [ ] Access logs sync between servers
-- [ ] Blockchain is consistent across servers
+- [x] 2+ servers run simultaneously
+- [x] Servers can discover each other
+- [x] Access logs sync between servers
+- [x] Blockchain is consistent across servers
 - [ ] Network partitions are handled gracefully
-- [ ] Heartbeat detects failed peers
-- [ ] Data consistency is maintained
-- [ ] Servers can recover from disconnection
-- [ ] Simultaneous access works correctly
+- [x] Heartbeat detects failed peers
+- [x] Data consistency is maintained
+- [x] Servers can recover from disconnection
+- [x] Simultaneous access works correctly
 - [ ] Performance is acceptable
 
 ## Notes
@@ -167,6 +167,7 @@ Sync Process:
 - Use WebSockets for real-time communication
 - Consider using a P2P library like libp2p for production
 - Log all P2P operations for debugging
+- Core delivered in PR #33 (`feature/16-p2p-network`, **under review**): two-server Playwright setup (3001/3002), message protocol, peer discovery with dedup/validation, heartbeat + health checks, access-log sync + recovery, e2e tests. Remaining after review: P2P payload validation (MED), graceful partition handling, failover, perf validation.
 
 ## Questions to Resolve
 

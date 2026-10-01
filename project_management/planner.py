@@ -132,6 +132,154 @@ def _task_text(task):
         return ""
 
 
+# ── Project board → draft sync (plan sync) ─────────────────────
+# GitHub Project Status field values mapped onto draft *Metadata*
+# ``Status`` lines so the local plan "listens to" the board.
+_BOARD_TO_STATUS = {
+    "Backlog": "TODO",
+    "Ready": "READY",
+    "In progress": "IN PROGRESS",
+    "In review": "IN REVIEW",
+    "Done": "DONE",
+}
+
+
+def board_status_to_status(board_status, issue_state):
+    """Map a project board Status + issue state to draft Status metadata.
+
+    A closed issue without a board status counts as done (its PR merged).
+    An open issue without a board status returns None, meaning "leave the
+    draft alone" rather than inventing a status.
+    """
+    if board_status and board_status.strip():
+        normalized = board_status.strip()
+        return _BOARD_TO_STATUS.get(normalized, normalized.upper())
+    if (issue_state or "").lower() == "closed":
+        return "DONE"
+    return None
+
+
+def _normalize_checkbox_text(line):
+    """Lowercase and strip everything except letters/digits for matching."""
+    return re.sub(r"[^a-z0-9]+", "", line.lower())
+
+
+def _checkbox_body(line):
+    """Normalize a checkbox line excluding its `- [x]`/`- [ ]` marker."""
+    match = _BOX_RE.match(line)
+    body = line[match.end() :] if match else line
+    return _normalize_checkbox_text(body)
+
+
+def _checkbox_candidates(body, index):
+    """Return candidate marks for ``body`` from a {normalized: [marks]} index.
+
+    A key matches when it equals ``body`` or one is a prefix of the other;
+    that tolerates GitHub-side annotations such as
+    ``~~task~~ — moved to issue #N`` in either direction. Only unique,
+    unambiguous matches are returned.
+    """
+    if body in index:
+        return index[body]
+    related = [
+        key
+        for key, marks in index.items()
+        if body.startswith(key) or key.startswith(body)
+    ]
+    if len(related) == 1 and len(index[related[0]]) == 1:
+        return index[related[0]]
+    return []
+
+
+def sync_checkboxes(draft_text, issue_text):
+    """Flip draft `- [ ]` boxes to `- [x]` where the issue has them checked.
+
+    Checked always wins: a box checked on GitHub is checked in the draft, and a
+    box checked in the draft is never unchecked by the sync (progress is
+    monotonic). Returns ``(new_text, changed_count)``.
+    """
+    issue_marks = {}
+    for line in (issue_text or "").splitlines():
+        match = _BOX_RE.match(line)
+        if not match:
+            continue
+        body = _checkbox_body(line)
+        issue_marks.setdefault(body, []).append(match.group(1))
+
+    changed = 0
+    lines = draft_text.splitlines()
+    for i, line in enumerate(lines):
+        match = _BOX_RE.match(line)
+        if not match:
+            continue
+        if match.group(1).lower() == "x":
+            continue
+        candidates = _checkbox_candidates(_checkbox_body(line), issue_marks)
+        if len(candidates) == 1 and candidates[0].lower() == "x":
+            lines[i] = re.sub(r"\[.\]", "[x]", line, count=1)
+            changed += 1
+    new_text = "\n".join(lines)
+    if draft_text.endswith("\n"):
+        new_text += "\n"
+    return new_text, changed
+
+
+def issue_checkboxes_from_draft(issue_text, draft_text):
+    """Flip issue `- [ ]` boxes to `- [x]` where the draft has them checked.
+
+    The mirror-image of :func:`sync_checkboxes`: checked always wins, so a box
+    the reviewer ticked locally is promoted to the GitHub issue body without
+    ever unchecking a box the issue already has checked. Returns
+    ``(new_issue_text, changed_count)``.
+    """
+    draft_marks = {}
+    for line in (draft_text or "").splitlines():
+        match = _BOX_RE.match(line)
+        if not match:
+            continue
+        body = _checkbox_body(line)
+        draft_marks.setdefault(body, []).append(match.group(1))
+
+    changed = 0
+    lines = (issue_text or "").splitlines()
+    for i, line in enumerate(lines):
+        match = _BOX_RE.match(line)
+        if not match:
+            continue
+        if match.group(1).lower() == "x":
+            continue
+        candidates = _checkbox_candidates(_checkbox_body(line), draft_marks)
+        if len(candidates) == 1 and candidates[0].lower() == "x":
+            lines[i] = re.sub(r"\[.\]", "[x]", line, count=1)
+            changed += 1
+    new_text = "\n".join(lines)
+    if issue_text and issue_text.endswith("\n"):
+        new_text += "\n"
+    return new_text, changed
+
+
+def sync_task_text(text, issue_state, issue_body, board_status):
+    """Reconcile a draft task file text against GitHub issue state.
+
+    Returns ``(new_text, changes)`` where ``changes`` is a list of human
+    readable strings describing what differs. No changes -> unchanged text.
+    Checkbox reconciliation keeps a box checked once either side checks it.
+    """
+    changes = []
+    new_text = text
+    status = board_status_to_status(board_status, issue_state)
+    if status:
+        match = _METADATA["status"].search(new_text)
+        if match and match.group(1).strip().upper() != status:
+            start, end = match.span(1)
+            new_text = new_text[:start] + status + new_text[end:]
+            changes.append(f"Status: {match.group(1).strip()} -> {status}")
+    new_text, flipped = sync_checkboxes(new_text, issue_body)
+    if flipped:
+        changes.append(f"checkboxes: {flipped} checked on GitHub")
+    return new_text, changes
+
+
 def _task_label(task, text):
     """Node/task label: '01 Title (50% · 3/6 · doing)' or '01 Title ✓' when done."""
     title = task.title.replace('"', "'").strip()
