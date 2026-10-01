@@ -26,5 +26,5 @@ datum,typ,vad_gjorde_jag,blockerare,nasta_steg,relaterat,anteckning_eller_lank
 2026-09-28,daily,"Följde upp mergad URL-guard och planerade återstående säkerhets- och dokumentationspunkter för Task 17.","P2P/realtime ändras av Najma och behöver samordnas.","Ta dokumentationspunkterna 7-8 utan att röra P2P-koden.","Task 17 / #27","-"
 2026-09-29,dokumentation,"Förtydligade var permissions lagras och dokumenterade rollmatris, nekad åtkomst, patientägarskap samt öppna organisationsregler.",-,"Skicka dokumentations-PR för review och uppdatera loggboken.","Task 17 / #27","docs/api/README.md; docs/draft_tasks/17-user-roles-access-control.md"
 2026-09-30,,,,,,
-2026-10-01,,,,,,
+2026-10-01,kodning,"Fixade redirect till patientens egen journal efter inloggning och uppdaterade dashboardtexter.","Felsökte Docker, produktionsbuild och Playwright.","Förbereda min del av presentationen.","Task 17 / #27","Build och 3 inloggningstester godkända; PR granskad och mergad."
 2026-10-02,,,,,,
