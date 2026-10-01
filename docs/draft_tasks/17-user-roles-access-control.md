@@ -3,7 +3,7 @@
 ## Metadata
 
 - **Priority:** P0 - Critical
-- **Deadline:** 2026-09-18
+- **Deadline:** 2026-09-24
 - **Status:** DOING
 - **Assignee:** rcilomba
 - **Tags:** security, roles, access-control, required, gate:4-integration

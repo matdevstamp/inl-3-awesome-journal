@@ -2,6 +2,8 @@
 
 _Auto-generated from the draft tasks in `docs/draft_tasks/`. Do not edit by hand._
 
+Open in **[Mermaid Live](https://mermaid.live/edit#pako:eNqFV91u2zYUfpUDFykcLI5FSrJlDxjgxGkboC28ON2ArbugJMpmo4gGSdUzij7Fbvceu9-j7El2aEuKzXCdbwJ_PN_5_XjMfOllMue9aa8o5TZbM2Xgfv6xAvycncFSliIHppTcwgwGgx_gagpXkPMNr3INskK0n5Yye-A5pDuYnXfUuTQGwVJU3FIvQfGSWeRyYJ3MgFU5umKKtycd9VqWUukprBTnFeQSPfz9F6RlzUFUsFESD7S2WM70Gl2uFNuBkbmEfiUNaINl8LzJRdcpnm_WmHUmtJCV_vVj7zUGBDKYt9DH3m8H6_uA4HFAYKHkJ54ZWHJTb-AlvFYS_17LyiiG8D9__nHEoZZDYc4MS5nmcL2WIuMwFzqrtQ3g2IfWPkSfmJcosG8qWwuD4Wpsx0wZUWAMfULChjv16IwVhSzzthw6WDbIUaTIRoqeMptzLVYV1nOo6zSt2BrH8J7_bi4_afgO7pkotwIHdb1c4le9ZnlWDWvhZY8sewRXDNWAlNMG9lund7LGXN_g9Euu9D4R9Rmbpc8dd2Prbgz3uw1fZkps0JNRAh3iDAqxqhUzzxubWFICN8u3ojKY8UJxYwRX3yRNLGkCi5Lttkqs1gZu6A3cc21EtTq1JQHakgBeC_OmTmGWWXcarm-H13P4WaoHe43-Z24FZ3bOnQzDwasGOYpjVUhI18zZ4hZbNavNmldGZJ4qiNUgofBKoUQt5cMtDvszL-XmETnQn4Rn9srQZBgG-7sjsbrzIwdWlCSEBTq3hJ8E3-7Hw1CcTiyrKhLBO55jLiW8l4Zr2AqzRpYWqSiF2R3uiiyhT8k-cjykkTewlR2J4cruEVxBeMdnWWZv-Fu5Wj0fgdUZGcGCLlCpZotNh9vHTcltmc8b87z_qAy-OgihHUE0uH0Cj0JZDZIxfNCooDtZcqvXJreuuiTYV0dGQ-rvq9UkSXCX4ijNpZBwpSTeI3aQVz9JDnMh_vY8zz_npfjM1a5NPsY1dkCOglpNk0kn4pfwY832U5lpjbegwu100lVqhY0FzGVWPzXyJdzdzObvbqBP6D7LaBh6Z0itXqndmlx3bPyyYc2N6x-6FAxp-K0icf3uf2ZwpbpA2C1bF2gtIteiA0IXaCmxa9EBUQOMuuX4X8C4W4Au0Fok3U5zgdZi4vqYuJQOSFyg8UECx-IJGLvAyAWaaglxKcSlEDcsdSnUpVA3SthtORegDtBRIpcSuZTIpcRuYrGbWNxtoAYYuRYjN-zYDdsBoQtELtDmkbgWHTByAeoCrY-Jm_rE9dEBiQO04qdBtywaoJutC-BicCxC50n35M2ST4_IN44mR-1zjqKjEp2j5ChzfxpZybSe8-LwfCxEWU5f5BnPs-RC495-4NMXcZyktLjI7Gtz-oKkMfeQ7fJs2CmfFGnHJvEozoKWHeTRmBGHvX-RHsjF_tOR0yDlWdyS42jEx6w5HNg3Lb642W4aQ3TkcT84W833pyD1gaEPjHxg7ANHPnDsAxMfOPGA-GjygL6KCD303UF9JZHIa-qrifhqImMvP_Givqpo4DOlpEN7F72VEnlvalTNL3qPXD0y-7X35SsebVj1i5SP7Sn-i7Fa96YFKzV-qzc5ynouGP7sNyZf_wVUB_Tt)** (pako/zlib-compressed, verified to round-trip).
+
 Regenerate whenever task metadata changes:
 
 ```bash
@@ -30,35 +32,35 @@ flowchart TD
     %% Dotted line A -. related .- B: A and B are related
     %% Colors: green done · blue in progress · dashed gray todo (not started)
     subgraph decisions["Gate 1-Decisions"]
-    T01["01 Project Setup & Group Contract (23% · 6/26 · todo)"]
-    T02["02 Database Choice Discussion (27% · 4/15 · todo)"]
-    T03["03 Graphify Architecture Artifacts (100% · 7/7 · todo)"]
+    T01["01 Project Setup & Group Contract ✓"]
+    T02["02 Database Choice Discussion ✓"]
+    T03["03 Graphify Architecture Artifacts ✓"]
     end
     subgraph scaffold["Gate 2-Scaffold"]
-    T04["04 Database Design & Setup (50% · 10/20 · doing)"]
-    T05["05 Next.js + Tailwind CSS + shadcn/ui Setup (0% · 0/21 · doing)"]
-    T06["06 Backend Project Setup (Next.js Route Handlers & Services) (48% · 11/23 · doing)"]
-    T07["07 TypeScript Strict Configuration (45% · 10/22 · doing)"]
-    T08["08 ESLint + Prettier Configuration (32% · 7/22 · doing)"]
-    T09["09 Playwright E2E Testing (11% · 3/27 · doing)"]
-    T10["10 GitHub Actions CI/CD Workflow (21% · 7/33 · doing)"]
+    T04["04 Database Design & Setup ✓"]
+    T05["05 Next.js + Tailwind CSS + shadcn/ui Setup ✓"]
+    T06["06 Backend Project Setup (Next.js Route Handlers & Services) ✓"]
+    T07["07 TypeScript Strict Configuration ✓"]
+    T08["08 ESLint + Prettier Configuration ✓"]
+    T09["09 Playwright E2E Testing ✓"]
+    T10["10 GitHub Actions CI/CD Workflow ✓"]
     end
     subgraph features["Gate 3-Features"]
-    T11["11 Backend API & Authentication (8% · 2/24 · todo)"]
-    T12["12 Frontend UI Development (13% · 4/30 · todo)"]
-    T13["13 Patient View & Search (0% · 0/25 · todo)"]
-    T14["14 Medical Notes with Visibility Control (0% · 0/23 · todo)"]
-    T15["15 Blockchain Access Logging (0% · 0/23 · todo)"]
-    T16["16 P2P Network Implementation (0% · 0/24 · todo)"]
+    T11["11 Backend API & Authentication ✓"]
+    T12["12 Frontend UI Development (93% · 28/30 · doing)"]
+    T13["13 Patient View & Search ✓"]
+    T14["14 Medical Notes with Visibility Control (21% · 5/24 · doing)"]
+    T15["15 Blockchain Access Logging ✓"]
+    T16["16 P2P Network Implementation ✓"]
     end
     subgraph integration["Gate 4-Integration"]
-    T17["17 User Roles & Access Control (0% · 0/20 · todo)"]
-    T18["18 Socket.io Broadcasting (0% · 0/24 · todo)"]
+    T17["17 User Roles & Access Control (80% · 16/20 · doing)"]
+    T18["18 Socket.io Broadcasting (88% · 21/24 · doing)"]
     end
     subgraph delivery["Gate 5-Delivery"]
-    T19["19 Testing & Quality Assurance (0% · 0/27 · todo)"]
-    T20["20 Documentation & README (9% · 3/34 · todo)"]
-    T21["21 Presentation Preparation (0% · 0/23 · todo)"]
+    T19["19 Testing & Quality Assurance ✓"]
+    T20["20 Documentation & README (12% · 4/34 · doing)"]
+    T21["21 Presentation Preparation (0% · 0/23 · doing)"]
     end
     T01 --> T02
     T01 --> T03
@@ -124,25 +126,25 @@ flowchart TD
     classDef done fill:#dcedc8,stroke:#558b2f,color:#1b5e20
     classDef doing fill:#dbe9fb,stroke:#1565c0,color:#0d47a1
     classDef todo fill:#ffffff,stroke:#b0bec5,color:#546e7a,stroke-dasharray:5 4
-    class T01 todo;
-    class T02 todo;
-    class T03 todo;
-    class T04 doing;
-    class T05 doing;
-    class T06 doing;
-    class T07 doing;
-    class T08 doing;
-    class T09 doing;
-    class T10 doing;
-    class T11 todo;
-    class T12 todo;
-    class T13 todo;
-    class T14 todo;
-    class T15 todo;
-    class T16 todo;
-    class T17 todo;
-    class T18 todo;
-    class T19 todo;
-    class T20 todo;
-    class T21 todo;
+    class T01 done;
+    class T02 done;
+    class T03 done;
+    class T04 done;
+    class T05 done;
+    class T06 done;
+    class T07 done;
+    class T08 done;
+    class T09 done;
+    class T10 done;
+    class T11 done;
+    class T12 doing;
+    class T13 done;
+    class T14 doing;
+    class T15 done;
+    class T16 done;
+    class T17 doing;
+    class T18 doing;
+    class T19 done;
+    class T20 doing;
+    class T21 doing;
 ```

@@ -77,6 +77,57 @@ class GitHubClient:
     def issues(self, state="open"):
         return self.request("GET", f"/issues?state={quote(state)}&per_page=100")
 
+    def issue_board_statuses(self):
+        """Return {issue number: project Status field value} for project items.
+
+        Iterates every project the repository belongs to and reads each item's
+        Status single-select value. Issues without a Status are omitted.
+        """
+        owner, name = self.repository.split("/", 1)
+        query = """
+        query($owner: String!, $name: String!) {
+            repository(owner: $owner, name: $name) {
+                projectsV2(first: 20) {
+                    nodes {
+                        items(first: 100) {
+                            nodes {
+                                content {
+                                    ... on Issue { number }
+                                }
+                                fieldValues(first: 30) {
+                                    nodes {
+                                        ... on ProjectV2ItemFieldSingleSelectValue {
+                                            name
+                                            field { ... on ProjectV2FieldCommon { name } }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        """
+        data = self.graphql(query, {"owner": owner, "name": name})
+        statuses = {}
+        for project in data.get("repository", {}).get("projectsV2", {}).get("nodes", []):
+            for item in project.get("items", {}).get("nodes", []):
+                issue = item.get("content")
+                if not issue or "number" not in issue:
+                    continue
+                status = next(
+                    (
+                        value.get("name")
+                        for value in item.get("fieldValues", {}).get("nodes", [])
+                        if value.get("field", {}).get("name") == "Status" and value.get("name")
+                    ),
+                    None,
+                )
+                if status:
+                    statuses.setdefault(issue["number"], status)
+        return statuses
+
     def issue(self, number):
         return self.request("GET", f"/issues/{number}")
 

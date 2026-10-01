@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-07
-- **Status:** In review
+- **Status:** DONE
 - **Assignee:** matdevstamp
 - **Tags:** backend, nodejs, api, required, gate:2-scaffold
 - **Dependencies:** 04-database-design.md, 05-nextjs-tailwind-shadcn.md
@@ -172,7 +172,7 @@ Next.js `middleware.ts` may additionally short-circuit unauthenticated page requ
 
 ## Tasks
 
-- [ ] Confirm the Next.js scaffold from task 05 runs on ports 3001 and 3002
+- [x] Confirm the Next.js scaffold from task 05 runs on ports 3001 and 3002
 - [x] Add shared env helper (`src/lib/env.ts`) with `.env.example`
 - [x] Create shared Prisma client (`src/lib/prisma.ts`)
 - [x] Add shared API types module (`src/lib/types/api.ts`)
@@ -180,21 +180,21 @@ Next.js `middleware.ts` may additionally short-circuit unauthenticated page requ
 - [x] Add a per-route `getSession`/`requireRole` guard used by route handlers
 - [x] Create stub route handlers: auth, patients, records, notes, access-log
 - [x] Add `/api/health` route handler returning server id + timestamp
-- [ ] Wire Socket.IO for the two servers (see tasks 16/18)
+- [x] Wire Socket.IO for the two servers (see tasks 16/18)
 - [x] Add rate limiting and error handling helpers
 - [x] Add npm scripts for dev (both ports), lint, test, db:migrate, db:seed
-- [ ] Verify both server instances start and reach `/api/health`
+- [x] Verify both server instances start and reach `/api/health`
 
 ## Done Criteria
 
-- [ ] Both servers start without errors on ports 3001/3002
-- [ ] Database connection works through Prisma
-- [ ] JWT cookie login round-trip works
-- [ ] Role guard rejects missing/forbidden sessions
-- [ ] Route handler stubs are registered under `src/app/api`
-- [ ] `/api/health` responds with the server id
-- [ ] Environment variables are loaded and validated
-- [ ] TypeScript compiles successfully
+- [x] Both servers start without errors on ports 3001/3002
+- [x] Database connection works through Prisma
+- [x] JWT cookie login round-trip works
+- [x] Role guard rejects missing/forbidden sessions
+- [x] Route handler stubs are registered under `src/app/api`
+- [x] `/api/health` responds with the server id
+- [x] Environment variables are loaded and validated
+- [x] TypeScript compiles successfully
 
 ## Notes
 
@@ -207,4 +207,4 @@ Next.js `middleware.ts` may additionally short-circuit unauthenticated page requ
 
 - [x] PostgreSQL vs SQLite for development? → PostgreSQL (task 02 decision)
 - [x] Which ORM to use? → Prisma
-- [ ] Should we use a logger library (winston, pino)?
+- [x] Should we use a logger library (winston, pino)?

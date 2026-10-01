@@ -3,7 +3,7 @@
 ## Metadata
 - **Priority:** P0 - Critical
 - **Deadline:** 2026-09-07
-- **Status:** In review
+- **Status:** DONE
 - **Assignee:** matdevstamp
 - **Tags:** frontend, tooling, ui, required, gate:2-scaffold
 - **Dependencies:** 01-project-setup-group-contract.md, 03-graphify-architecture-artifacts.md
@@ -308,27 +308,27 @@ export function cn(...inputs: ClassValue[]) {
 
 ## Tasks
 
-- [ ] Scaffold Next.js (App Router, TypeScript) at the repo root
-- [ ] Install and configure Tailwind CSS
-- [ ] Setup shadcn/ui with components.json
-- [ ] Install core shadcn/ui components
-- [ ] Configure path aliases (@/* in tsconfig.json)
-- [ ] Setup CSS variables for theming
-- [ ] Create cn() utility function
-- [ ] Add dark mode support
-- [ ] Verify the app runs on ports 3001 and 3002
-- [ ] Add a minimal /api/health route handler and a login shell
+- [x] Scaffold Next.js (App Router, TypeScript) at the repo root
+- [x] Install and configure Tailwind CSS
+- [x] Setup shadcn/ui with components.json
+- [x] Install core shadcn/ui components
+- [x] Configure path aliases (@/* in tsconfig.json)
+- [x] Setup CSS variables for theming
+- [x] Create cn() utility function
+- [x] Add dark mode support
+- [x] Verify the app runs on ports 3001 and 3002
+- [x] Add a minimal /api/health route handler and a login shell
 
 ## Done Criteria
 
-- [ ] `npm run dev -- -p 3001` and `npm run dev -- -p 3002` both start
-- [ ] Tailwind classes are applied
-- [ ] shadcn/ui components render properly
-- [ ] Path aliases work (@/components)
-- [ ] A route handler responds on /api/health
-- [ ] Dark mode toggle works
-- [ ] Hot module replacement works
-- [ ] Production build succeeds
+- [x] `npm run dev -- -p 3001` and `npm run dev -- -p 3002` both start
+- [x] Tailwind classes are applied
+- [x] shadcn/ui components render properly
+- [x] Path aliases work (@/components)
+- [x] A route handler responds on /api/health
+- [x] Dark mode toggle works
+- [x] Hot module replacement works
+- [x] Production build succeeds
 
 ## Notes
 
@@ -340,6 +340,6 @@ export function cn(...inputs: ClassValue[]) {
 
 ## Questions to Resolve
 
-- [ ] Which shadcn/ui components do we need initially?
-- [ ] Should we use dark mode from the start?
-- [ ] Custom color palette or default shadcn colors?
+- [x] Which shadcn/ui components do we need initially?
+- [x] Should we use dark mode from the start?
+- [x] Custom color palette or default shadcn colors?
